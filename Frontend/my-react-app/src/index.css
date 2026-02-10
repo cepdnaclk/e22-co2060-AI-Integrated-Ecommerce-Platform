@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.smooth-bg {
+  background: linear-gradient(
+    120deg,
+    #000000,
+    #011724,
+    #001b27,
+    #032c44,
+    #013955,
+    #02324e,
+    #002130,
+    #001d2d,
+    #01070a
+  );
+  background-size: 400% 400%;
+  animation: smoothGradient 24s ease-in-out infinite;
+}
+
+@keyframes smoothGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* viewport */
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* moving track (EXACTLY 200%) */
+.marquee-track {
+  display: flex;
+  width: 200%;
+  animation: marquee 30s linear infinite;
+}
+
+/* each half */
+.marquee-group {
+  display: flex;
+  width: 50%;
+  justify-content: space-around;
+}
+
+/* pause on hover (optional) */
+.marquee-container:hover .marquee-track {
+  animation-play-state: paused;
+}
