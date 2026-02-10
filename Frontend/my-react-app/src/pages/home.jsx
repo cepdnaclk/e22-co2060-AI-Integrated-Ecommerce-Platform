@@ -3,6 +3,7 @@ import SponsorBar from "../components/sponsorbar.jsx";
 import CountUp from "../components/CountUp.jsx";
 import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
+import Lottie from "lottie-react";
 
 export default function Home() {
   return (
@@ -164,10 +165,11 @@ export default function Home() {
 
         {/* Image */}
         <div className="md:w-1/2">
-          <img
-            src="/path/to/image.jpg"
-            alt="Featured Product"
-            className="w-full h-auto rounded-lg shadow-lg"
+          <Lottie
+            path="/3danimation1.json"
+            loop
+            autoplay
+            className="w-full max-w-[520px]"
           />
         </div>
       </div>
