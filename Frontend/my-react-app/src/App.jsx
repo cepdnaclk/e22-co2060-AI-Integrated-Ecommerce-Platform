@@ -1,14 +1,18 @@
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-import React from 'react' 
-import Home from './pages/home.jsx'
-
+import Home from "./pages/home.jsx";
+import Login from "./pages/login.jsx";
 
 function App() {
-  
-
   return (
-    <Home />
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
