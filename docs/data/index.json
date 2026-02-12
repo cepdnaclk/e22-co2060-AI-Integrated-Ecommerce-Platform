@@ -1,0 +1,37 @@
+{
+    "team": [
+        {
+            "name": "Geethma Chandoopa",
+            "email": "e22180@eng.pdn.ac.lk",
+            "eNumber": "E/22/180"
+        },
+        {
+            "name": "Yasiru Liyanage",
+            "email": "e22288@eng.pdn.ac.lk",
+            "eNumber": "E/22/288"
+        },
+        {
+            "name": "Yuneth Hansira",
+            "email": "e22132@eng.pdn.ac.lk",
+            "eNumber": "E/22/132"
+        },
+        {
+            "name": "Tharusha Inuwara",
+            "email": "e22154@eng.pdn.ac.lk",
+            "eNumber": "E/22/154"
+        }
+    ],
+    "supervisors": [
+        {
+            "name": "Dr. Supervisor 1",
+            "email": "email@eng.pdn.ac.lk"
+        },
+        {
+            "name": "Supervisor 2",
+            "email": "email@eng.pdn.ac.lk"
+        }
+    ],
+    "tags": ["Web", "Software Systems", "CO2060"],
+    "image":"cover_page.jpg",
+    "thumbnail":"thumbnail.jpg"
+}
