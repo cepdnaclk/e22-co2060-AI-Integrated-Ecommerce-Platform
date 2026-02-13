@@ -15,22 +15,39 @@ const Login = ({ onClose }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // 🔹 SEND TOKEN TO BACKEND
+  // 🔹 SEND FIREBASE TOKEN TO BACKEND
   const sendTokenToBackend = async (idToken) => {
-    const response = await fetch("http://192.168.248.238:3000/api/auth/login", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${idToken}`,
-      },
-    });
+    try {
+      const response = await fetch(
+        "http://localhost:3000/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${idToken}`,
+          },
+        }
+      );
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message || "Backend login failed");
+      const data = await response.json();
 
-    localStorage.setItem("token", data.token || idToken);
-    localStorage.setItem("user", JSON.stringify(data.user || {}));
+      if (!response.ok) {
+        throw new Error(data.message || "Backend login failed");
+      }
 
-    if (onClose) onClose();
+      console.log("✅ Backend response:", data);
+
+      // Store YOUR backend JWT (not Firebase token)
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      if (onClose) onClose();
+
+      return data;
+    } catch (err) {
+      console.error("❌ Backend error:", err);
+      setError("Backend connection failed");
+    }
   };
 
   // 🔹 EMAIL + PASSWORD LOGIN
@@ -47,8 +64,15 @@ const Login = ({ onClose }) => {
       );
 
       const idToken = await userCredential.user.getIdToken();
+<<<<<<< HEAD
       await sendTokenToBackend(idToken);
     } catch (err) {
+=======
+
+      await sendTokenToBackend(idToken);
+    } catch (err) {
+      console.error("❌ Firebase login error:", err);
+>>>>>>> origin/dev_yuneth
       setError(err.message);
     } finally {
       setLoading(false);
@@ -63,9 +87,18 @@ const Login = ({ onClose }) => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
+<<<<<<< HEAD
       const idToken = await result.user.getIdToken();
       await sendTokenToBackend(idToken);
     } catch (err) {
+=======
+
+      const idToken = await result.user.getIdToken();
+
+      await sendTokenToBackend(idToken);
+    } catch (err) {
+      console.error("❌ Google login error:", err);
+>>>>>>> origin/dev_yuneth
       setError(err.message);
     } finally {
       setLoading(false);
@@ -74,6 +107,10 @@ const Login = ({ onClose }) => {
 
   return (
     <div className="min-h-screen w-screen grid grid-cols-1 md:grid-cols-2 bg-blue-100">
+<<<<<<< HEAD
+=======
+      
+>>>>>>> origin/dev_yuneth
       {/* LEFT PANEL */}
       <div className="relative flex flex-col justify-center px-12 text-white bg-gradient-to-br from-[#0d1424] via-[#072454] to-[#1945a5]">
         <h2 className="text-4xl font-bold mb-6">WELCOME</h2>
@@ -85,7 +122,13 @@ const Login = ({ onClose }) => {
       {/* RIGHT PANEL */}
       <div className="flex items-center justify-center bg-white">
         <div className="w-full max-w-md px-8">
+<<<<<<< HEAD
           <h3 className="text-2xl font-semibold text-gray-800 mb-6">Sign in</h3>
+=======
+          <h3 className="text-2xl font-semibold text-gray-800 mb-6">
+            Sign in
+          </h3>
+>>>>>>> origin/dev_yuneth
 
           {error && (
             <p className="mb-4 bg-red-100 text-red-600 text-sm p-2 rounded">
@@ -94,6 +137,10 @@ const Login = ({ onClose }) => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/dev_yuneth
             <input
               type="email"
               placeholder="Email"
@@ -112,6 +159,10 @@ const Login = ({ onClose }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/dev_yuneth
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -128,7 +179,11 @@ const Login = ({ onClose }) => {
               {loading ? "Signing in..." : "Sign in"}
             </button>
 
+<<<<<<< HEAD
             {/* 🔥 GOOGLE LOGIN BUTTON */}
+=======
+            {/* GOOGLE LOGIN */}
+>>>>>>> origin/dev_yuneth
             <button
               type="button"
               onClick={handleGoogleLogin}
@@ -136,6 +191,10 @@ const Login = ({ onClose }) => {
             >
               Continue with Google
             </button>
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/dev_yuneth
           </form>
         </div>
       </div>
