@@ -6,6 +6,7 @@ import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
 import Lottie from "lottie-react";
 import Login from "./login.jsx";
+import SeasonalCarShowcase from "../components/seasonalCar.jsx";
 
 export default function Home() {
   const navigate = useNavigate();
@@ -153,6 +154,9 @@ export default function Home() {
       </div>
 
       <SponsorBar />
+      <SeasonalCarShowcase />
+
+      {/* SEASONAL CAR SHOWCASE */}
     </div>
   );
 }
