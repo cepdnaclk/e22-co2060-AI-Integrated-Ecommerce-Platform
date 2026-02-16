@@ -1,10 +1,17 @@
-const FilterSidebar = ({ setSearch }) => {
+const categories = [
+  "All",
+  "Electronics",
+  "Fashion",
+  "Home & Garden"
+];
+
+const FilterSidebar = ({ setSearch, setCategory }) => {
   return (
     <aside className="hidden lg:block w-72 bg-white/5 backdrop-blur rounded-2xl border border-white/10 p-5 space-y-6">
 
       <h3 className="text-lg font-semibold">Filters</h3>
 
-      {/* Search */}
+      {/* 🔍 Search */}
       <div>
         <p className="text-sm font-medium mb-2">Search</p>
         <input
@@ -16,12 +23,23 @@ const FilterSidebar = ({ setSearch }) => {
         />
       </div>
 
-      {/* Category */}
+      {/* 📂 Category */}
       <div>
         <p className="text-sm font-medium mb-2">Category</p>
-        {["All", "Electronics", "Fashion", "Home & Garden"].map((item) => (
-          <label key={item} className="flex items-center gap-2 text-sm text-gray-300 mb-2">
-            <input type="checkbox" className="accent-blue-500" />
+
+        {categories.map((item) => (
+          <label
+            key={item}
+            className="flex items-center gap-2 text-sm text-gray-300 mb-2 cursor-pointer"
+          >
+            <input
+              type="radio"
+              name="category"
+              className="accent-blue-500"
+              onChange={() =>
+                setCategory(item === "All" ? null : item)
+              }
+            />
             {item}
           </label>
         ))}

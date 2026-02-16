@@ -37,7 +37,6 @@ const productSchema = new mongoose.Schema(
       required: true
     },
 
-    // ✅ NEW FIELD
     category: {
       type: String,
       required: true,
@@ -45,10 +44,17 @@ const productSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true // adds createdAt & updatedAt
+    timestamps: true
   }
 );
 
-const productModel = mongoose.model("product", productSchema);
+/* ✅ TEXT INDEX (INVERTED INDEX) */
+productSchema.index({
+  productName: "text",
+  sellerName: "text",
+  category: "text",
+  warranty: "text"
+});
 
+const productModel = mongoose.model("product", productSchema);
 export default productModel;

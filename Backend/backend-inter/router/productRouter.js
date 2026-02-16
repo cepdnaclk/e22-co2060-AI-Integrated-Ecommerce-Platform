@@ -5,7 +5,8 @@ import {
   deleteProduct,
   getTopThreeProducts,
   getAllProducts,
-  getProductById        // ✅ ADD THIS
+  getProductById,
+  searchProductsPost
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -15,6 +16,24 @@ const router = express.Router();
  * POST /api/products/create
  */
 router.post("/create", createProduct);
+
+/**
+ * 🔍 POST SEARCH (MUST BE BEFORE :id)
+ * POST /api/products/search
+ */
+router.post("/search", searchProductsPost);
+
+/**
+ * GET TOP 3 PRODUCTS (AI)
+ * GET /api/products/top-three
+ */
+router.get("/top-three", getTopThreeProducts);
+
+/**
+ * BROWSE + SEARCH PRODUCTS (GET)
+ * GET /api/products?search=hp gaming laptop
+ */
+router.get("/", getAllProducts);
 
 /**
  * UPDATE PRODUCT
@@ -29,19 +48,7 @@ router.put("/:id", updateProduct);
 router.delete("/:id", deleteProduct);
 
 /**
- * BROWSE / LIST PRODUCTS
- * GET /api/products
- */
-router.get("/", getAllProducts);
-
-/**
- * GET TOP 3 PRODUCTS
- * GET /api/products/top-three
- */
-router.get("/top-three", getTopThreeProducts);
-
-/**
- * ✅ PRODUCT DETAILS
+ * PRODUCT DETAILS
  * GET /api/products/:id
  * ⚠️ MUST BE LAST
  */
