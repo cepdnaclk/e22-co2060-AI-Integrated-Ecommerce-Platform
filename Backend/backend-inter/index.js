@@ -1,16 +1,24 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import dotenv from "dotenv";
+
+// Routers
 import authRouter from "./router/authRouter.js";
-import "./cron/dailySendToAI.js";
 import aiRouter from "./router/aiRouter.js";
 import productRouter from "./router/productRouter.js";
+import sellerOfferRouter from "./router/sellerOfferRouter.js"; // ✅ NEW
 
+// Cron jobs
+import "./cron/dailySendToAI.js";
 
 // ================== CONFIG ==================
-const PORT = 3000;
+dotenv.config();
+
+const PORT = process.env.PORT || 3000;
 
 const mongoURI =
+  process.env.MONGO_URI ||
   "mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/?appName=Cluster0";
 
 // ================== APP ==================
@@ -26,24 +34,20 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "http://192.168.248.238:5173",
+      "http://192.168.248.238:5173"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: true
   })
 );
 
-// ================== TOKEN DEBUG MIDDLEWARE ==================
-// This logs token if frontend sends it
-
+// ================== TOKEN DEBUG (OPTIONAL) ==================
 app.use((req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (authHeader) {
     console.log("🔐 Authorization Header:", authHeader);
-  } else {
-    console.log("⚠️ No Authorization header found");
   }
 
   next();
@@ -54,13 +58,18 @@ app.use((req, res, next) => {
 // Auth routes
 app.use("/api/auth", authRouter);
 
-// AI result routes
+// AI routes
 app.use("/api/ai", aiRouter);
 
-// Product routes
+// Product routes (global catalog + browsing)
 app.use("/api/products", productRouter);
 
-// Test protected route
+// ✅ Seller Offer routes (price, stock, seller-specific)
+app.use("/api/seller-offers", sellerOfferRouter);
+
+// ================== TEST ROUTES ==================
+
+// Protected test route
 app.get("/api/protected", (req, res) => {
   const authHeader = req.headers.authorization;
 
@@ -72,7 +81,7 @@ app.get("/api/protected", (req, res) => {
 
   res.json({
     message: "Token received successfully ✅",
-    token: token,
+    token
   });
 });
 
