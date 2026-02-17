@@ -1,36 +1,36 @@
 import productModel from "../models/products.js";
+import sellerOfferModel from "../models/sellerOffer.js";
 import TopProduct from "../models/topProducts.js";
 
 /**
- * CREATE PRODUCT
+ * ✅ CREATE PRODUCT (ADMIN ONLY)
+ * Product = global catalog item
  */
-export function createProduct(req, res) {
-  const productData = new productModel({
-    price: req.body.price,
-    productName: req.body.productName,
-    sellerName: req.body.sellerName,
-    image: req.body.image,
-    warranty: req.body.warranty,
-    category: req.body.category,
-    isAvailable: true
-  });
-
-  productData
-    .save()
-    .then(() => {
-      // 🔹 Text index is updated automatically by MongoDB
-      res.json({ message: "Product created successfully" });
-    })
-    .catch((error) => {
-      res.status(500).json({
-        message: "Error creating product",
-        error: error.message
-      });
+export async function createProduct(req, res) {
+  try {
+    const product = await productModel.create({
+      productName: req.body.productName,
+      image: req.body.image,
+      category: req.body.category,
+      description: req.body.description,
+      brand: req.body.brand,
+      specs: req.body.specs
     });
+
+    res.status(201).json({
+      message: "Product created successfully",
+      product
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error creating product",
+      error: error.message
+    });
+  }
 }
 
 /**
- * UPDATE PRODUCT
+ * ✅ UPDATE PRODUCT (ADMIN ONLY)
  */
 export async function updateProduct(req, res) {
   try {
@@ -44,7 +44,6 @@ export async function updateProduct(req, res) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // 🔹 MongoDB updates text index automatically
     res.json({
       message: "Product updated successfully",
       product: updated
@@ -58,18 +57,23 @@ export async function updateProduct(req, res) {
 }
 
 /**
- * DELETE PRODUCT
+ * ✅ DELETE PRODUCT (ADMIN ONLY)
+ * Also removes seller offers + AI rankings
  */
 export async function deleteProduct(req, res) {
   try {
-    const deleted = await productModel.findByIdAndDelete(req.params.id);
+    const productId = req.params.id;
 
+    const deleted = await productModel.findByIdAndDelete(productId);
     if (!deleted) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Remove from AI ranking table
-    await TopProduct.deleteMany({ productId: req.params.id });
+    // remove related seller offers
+    await sellerOfferModel.deleteMany({ productId });
+
+    // remove AI ranking
+    await TopProduct.deleteMany({ productId });
 
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
@@ -81,7 +85,7 @@ export async function deleteProduct(req, res) {
 }
 
 /**
- * BROWSE PRODUCT LISTING + 🔍 KEYWORD SEARCH (TEXT INDEX)
+ * ✅ BROWSE PRODUCTS + SEARCH + FILTER
  * GET /api/products
  */
 export async function getAllProducts(req, res) {
@@ -89,60 +93,93 @@ export async function getAllProducts(req, res) {
     const {
       page = 1,
       limit = 8,
-      search,        // 🔍 keyword search
-      minPrice,
-      maxPrice,
+      search,
       category,
-      available,
       sort
     } = req.query;
 
-    let query = {};
+    const pipeline = [];
 
-    /* 🔍 KEYWORD SEARCH (USING INVERTED INDEX) */
+    /* 🔍 TEXT SEARCH */
     if (search) {
-      query.$text = { $search: search };
+      pipeline.push(
+        { $match: { $text: { $search: search } } },
+        { $addFields: { score: { $meta: "textScore" } } }
+      );
     }
 
     /* CATEGORY FILTER */
     if (category) {
-      query.category = category;
+      pipeline.push({ $match: { category } });
     }
 
-    /* PRICE FILTER */
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
-    }
+    /* JOIN SELLER OFFERS */
+    pipeline.push({
+      $lookup: {
+        from: "selleroffers",
+        localField: "_id",
+        foreignField: "productId",
+        as: "offers"
+      }
+    });
 
-    /* AVAILABILITY FILTER */
-    if (available !== undefined) {
-      query.isAvailable = available === "true";
-    }
+    /* MARKETPLACE CALCULATIONS */
+    pipeline.push({
+      $addFields: {
+        sellerCount: {
+          $size: {
+            $filter: {
+              input: "$offers",
+              as: "o",
+              cond: { $eq: ["$$o.isActive", true] }
+            }
+          }
+        },
+        minPrice: {
+          $min: {
+            $map: {
+              input: {
+                $filter: {
+                  input: "$offers",
+                  as: "o",
+                  cond: { $eq: ["$$o.isActive", true] }
+                }
+              },
+              as: "x",
+              in: "$$x.price"
+            }
+          }
+        }
+      }
+    });
 
     /* SORTING */
-    let sortOption = {};
     if (search) {
-      // 🔹 Sort by relevance if searching
-      sortOption = { score: { $meta: "textScore" } };
+      pipeline.push({ $sort: { score: -1 } });
+    } else if (sort === "price_asc") {
+      pipeline.push({ $sort: { minPrice: 1 } });
+    } else if (sort === "price_desc") {
+      pipeline.push({ $sort: { minPrice: -1 } });
+    } else if (sort === "latest") {
+      pipeline.push({ $sort: { createdAt: -1 } });
     } else {
-      if (sort === "price_asc") sortOption.price = 1;
-      if (sort === "price_desc") sortOption.price = -1;
-      if (sort === "latest") sortOption.createdAt = -1;
-      if (sort === "popular") sortOption.howManyproductsSold = -1;
+      pipeline.push({ $sort: { createdAt: -1 } });
     }
 
-    const products = await productModel
-      .find(
-        query,
-        search ? { score: { $meta: "textScore" } } : {}
-      )
-      .sort(sortOption)
-      .skip((page - 1) * limit)
-      .limit(Number(limit));
+    /* PAGINATION */
+    pipeline.push(
+      { $skip: (page - 1) * Number(limit) },
+      { $limit: Number(limit) }
+    );
 
-    const totalProducts = await productModel.countDocuments(query);
+    /* CLEAN RESPONSE */
+    pipeline.push({ $project: { offers: 0 } });
+
+    const products = await productModel.aggregate(pipeline);
+
+    const totalProducts = await productModel.countDocuments(
+      search ? { $text: { $search: search } } : {}
+    );
 
     res.json({
       products,
@@ -150,7 +187,6 @@ export async function getAllProducts(req, res) {
       currentPage: Number(page),
       totalPages: Math.ceil(totalProducts / limit)
     });
-
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch products",
@@ -160,7 +196,7 @@ export async function getAllProducts(req, res) {
 }
 
 /**
- * PRODUCT DETAILS
+ * ✅ PRODUCT DETAILS + ALL SELLERS
  * GET /api/products/:id
  */
 export async function getProductById(req, res) {
@@ -171,7 +207,14 @@ export async function getProductById(req, res) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    res.json(product);
+    const offers = await sellerOfferModel
+      .find({ productId: req.params.id, isActive: true })
+      .select("-__v");
+
+    res.json({
+      product,
+      offers
+    });
   } catch (error) {
     res.status(500).json({
       message: "Error fetching product",
@@ -181,7 +224,8 @@ export async function getProductById(req, res) {
 }
 
 /**
- * GET TOP 3 PRODUCTS (AI)
+ * ✅ TOP 3 PRODUCTS (AI)
+ * Uses marketplace data now
  */
 export async function getTopThreeProducts(req, res) {
   try {
@@ -190,88 +234,27 @@ export async function getTopThreeProducts(req, res) {
       .limit(3)
       .populate("productId");
 
-    const response = topProducts.map((item) => ({
-      productId: item.productId._id,
-      productName: item.productId.productName,
-      sellerName: item.productId.sellerName,
-      image: item.productId.image,
-      score: item.score
-    }));
+    const response = await Promise.all(
+      topProducts.map(async (item) => {
+        const minOffer = await sellerOfferModel
+          .find({ productId: item.productId._id, isActive: true })
+          .sort({ price: 1 })
+          .limit(1);
+
+        return {
+          productId: item.productId._id,
+          productName: item.productId.productName,
+          image: item.productId.image,
+          minPrice: minOffer[0]?.price || null,
+          score: item.score
+        };
+      })
+    );
 
     res.json(response);
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch top products",
-      error: error.message
-    });
-  }
-}
-
-/**
- * 🔍 SEARCH PRODUCTS (POST)
- * POST /api/products/search
- */
-export async function searchProductsPost(req, res) {
-  try {
-    const {
-      search,
-      minPrice,
-      maxPrice,
-      category,
-      available,
-      page = 1,
-      limit = 8
-    } = req.body;
-
-    let query = {};
-
-    // 🔍 KEYWORD SEARCH (TEXT INDEX)
-    if (search) {
-      query.$text = { $search: search };
-    }
-
-    // CATEGORY FILTER
-    if (category) {
-      query.category = category;
-    }
-
-    // PRICE FILTER
-    if (minPrice || maxPrice) {
-      query.price = {};
-      if (minPrice) query.price.$gte = Number(minPrice);
-      if (maxPrice) query.price.$lte = Number(maxPrice);
-    }
-
-    // AVAILABILITY FILTER
-    if (available !== undefined) {
-      query.isAvailable = available;
-    }
-
-    const products = await productModel
-      .find(
-        query,
-        search ? { score: { $meta: "textScore" } } : {}
-      )
-      .sort(
-        search ? { score: { $meta: "textScore" } } : { createdAt: -1 }
-      )
-      .skip((page - 1) * limit)
-      .limit(Number(limit));
-
-    const totalProducts = await productModel.countDocuments(query);
-
-    res.json({
-      products,
-      totalProducts,
-      currentPage: Number(page),
-      totalPages: Math.ceil(totalProducts / limit)
-    });
-
-  } catch (error) {
-    console.error("❌ POST SEARCH ERROR:", error);
-
-    res.status(500).json({
-      message: "Search failed",
       error: error.message
     });
   }

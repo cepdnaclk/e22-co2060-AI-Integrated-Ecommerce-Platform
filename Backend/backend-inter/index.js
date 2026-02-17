@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import authRouter from "./router/authRouter.js";
 import aiRouter from "./router/aiRouter.js";
 import productRouter from "./router/productRouter.js";
+import sellerOfferRouter from "./router/sellerOfferRouter.js"; // ✅ NEW
 
 // Cron jobs
 import "./cron/dailySendToAI.js";
@@ -60,8 +61,11 @@ app.use("/api/auth", authRouter);
 // AI routes
 app.use("/api/ai", aiRouter);
 
-// Product routes (includes SEARCH)
+// Product routes (global catalog + browsing)
 app.use("/api/products", productRouter);
+
+// ✅ Seller Offer routes (price, stock, seller-specific)
+app.use("/api/seller-offers", sellerOfferRouter);
 
 // ================== TEST ROUTES ==================
 

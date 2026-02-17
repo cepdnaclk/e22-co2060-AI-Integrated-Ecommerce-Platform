@@ -1,11 +1,17 @@
 import ProductCard from "./ProductCard";
 
 /**
- * @param {Array} products - real products from backend
+ * @param {Array} products - products from backend
+ * Each product contains:
+ *  - _id
+ *  - productName
+ *  - image
+ *  - minPrice
+ *  - sellerCount
  * @param {Boolean} loading
  * @param {String} error
  */
-const ProductGrid = ({ products, loading, error }) => {
+const ProductGrid = ({ products = [], loading = false, error = "" }) => {
   // 🔄 Loading state
   if (loading) {
     return (
@@ -25,19 +31,26 @@ const ProductGrid = ({ products, loading, error }) => {
   }
 
   // 🚫 No products found
-  if (!products || products.length === 0) {
+  if (products.length === 0) {
     return (
       <p className="text-gray-400 text-center mt-10">
-        No products found
+        No products available
       </p>
     );
   }
 
-  // ✅ Normal product grid
+  // ✅ Marketplace product grid
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
       {products.map((product) => (
-        <ProductCard key={product._id} product={product} />
+        <ProductCard
+          key={product._id}
+          product={{
+            ...product,
+            minPrice: product.minPrice ?? null,
+            sellerCount: product.sellerCount ?? 0
+          }}
+        />
       ))}
     </div>
   );

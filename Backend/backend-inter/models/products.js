@@ -2,45 +2,38 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    price: {
-      type: Number,
-      required: true
-    },
-
     productName: {
       type: String,
-      required: true
+      required: true,
+      index: true
     },
 
     image: {
       type: String,
-      default: "/images/default-profile.png"
-    },
-
-    isAvailable: {
-      type: Boolean,
-      default: true
-    },
-
-    warranty: {
-      type: String,
-      default: "No warranty"
-    },
-
-    howManyproductsSold: {
-      type: Number,
-      default: 0
-    },
-
-    sellerName: {
-      type: String,
-      required: true
+      default: "/images/default-product.png"
     },
 
     category: {
       type: String,
       required: true,
       index: true
+    },
+
+    description: {
+      type: String
+    },
+
+    brand: {
+      type: String
+    },
+
+    specs: {
+      type: Object
+    },
+
+    howManyProductsSold: {
+      type: Number,
+      default: 0
     }
   },
   {
@@ -48,13 +41,13 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-/* ✅ TEXT INDEX (INVERTED INDEX) */
+/* ✅ TEXT INDEX (FOR SEARCH) */
 productSchema.index({
   productName: "text",
-  sellerName: "text",
   category: "text",
-  warranty: "text"
+  brand: "text",
+  description: "text"
 });
 
-const productModel = mongoose.model("product", productSchema);
+const productModel = mongoose.model("Product", productSchema);
 export default productModel;

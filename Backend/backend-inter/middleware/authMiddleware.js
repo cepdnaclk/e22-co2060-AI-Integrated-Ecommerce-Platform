@@ -1,41 +1,47 @@
 import jwt from "jsonwebtoken";
 
+/**
+ * ✅ VERIFY JWT TOKEN
+ * Attaches decoded user to req.user
+ */
 export function verifyToken(req, res, next) {
   const authHeader = req.headers.authorization;
 
-  if (!authHeader) {
-    return res.json({
-      message: "Authorization header missing",
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({
+      message: "Authorization token missing or malformed"
     });
   }
 
-  console.log("🔐 Authorization Header:", authHeader);
-
   const token = authHeader.split(" ")[1];
-
-  console.log("📥 Token received from frontend:", token);
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    console.log("✅ Token verified successfully");
-    console.log("👤 Decoded user:", decoded);
+    // Attach user info to request
+    req.user = {
+      id: decoded.id,
+      role: decoded.role,
+      email: decoded.email
+    };
 
-    req.user = decoded;
     next();
   } catch (err) {
-    console.log("❌ Token verification failed");
-    return res.json({
-      message: "Invalid or expired token",
+    return res.status(401).json({
+      message: "Invalid or expired token"
     });
   }
 }
 
+/**
+ * ✅ ROLE-BASED AUTHORIZATION
+ * Usage: authorizeRoles("admin"), authorizeRoles("seller")
+ */
 export function authorizeRoles(...allowedRoles) {
   return (req, res, next) => {
-    if (!allowedRoles.includes(req.user.role)) {
+    if (!req.user || !allowedRoles.includes(req.user.role)) {
       return res.status(403).json({
-        message: "Access denied",
+        message: "Access denied: insufficient permissions"
       });
     }
     next();

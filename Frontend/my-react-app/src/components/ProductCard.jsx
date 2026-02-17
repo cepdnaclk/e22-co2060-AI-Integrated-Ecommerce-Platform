@@ -18,21 +18,31 @@ const ProductCard = ({ product }) => {
         {product.productName}
       </h3>
 
-      <p className="text-gray-600">
-        Seller: {product.sellerName}
+      {/* ✅ Marketplace price */}
+      {product.minPrice ? (
+        <p className="font-bold text-green-600">
+          From Rs. {product.minPrice.toLocaleString()}
+        </p>
+      ) : (
+        <p className="text-red-500 text-sm">
+          No sellers available
+        </p>
+      )}
+
+      {/* ✅ Seller count */}
+      <p className="text-sm text-gray-500 mt-1">
+        {product.sellerCount || 0} sellers
       </p>
 
-      <p className="font-bold text-green-600">
-        Rs. {product.price}
-      </p>
-
-      <p
-        className={`text-sm mt-1 ${
-          product.isAvailable ? "text-green-500" : "text-red-500"
-        }`}
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          navigate(`/products/${product._id}`);
+        }}
+        className="mt-3 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
       >
-        {product.isAvailable ? "In Stock" : "Out of Stock"}
-      </p>
+        View Sellers
+      </button>
     </div>
   );
 };

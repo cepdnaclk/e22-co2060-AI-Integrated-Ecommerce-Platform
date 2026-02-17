@@ -3,10 +3,18 @@
 const BASE_URL = "http://localhost:3000/api/products";
 
 /**
- * 📦 GET PRODUCTS (Browse / Filters / Pagination)
- * Uses query params
+ * 📦 GET PRODUCTS (Browse / Search / Filters / Pagination)
+ *
+ * Uses query params only
+ *
  * Example:
- * fetchProducts({ page: 1, limit: 8, category: "Electronics" })
+ * fetchProducts({
+ *   page: 1,
+ *   limit: 8,
+ *   search: "iphone",
+ *   category: "Electronics",
+ *   sort: "price_asc"
+ * })
  */
 export const fetchProducts = async (params = {}) => {
   try {
@@ -19,34 +27,31 @@ export const fetchProducts = async (params = {}) => {
 
     return await response.json();
   } catch (error) {
-    console.error("Fetch products error:", error);
+    console.error("❌ Fetch products error:", error);
     throw error;
   }
 };
 
 /**
- * 🔍 POST SEARCH PRODUCTS (TEXT SEARCH)
- * Uses request body
- * Example:
- * searchProducts({ search: "hp gaming laptop", category: "Electronics" })
+ * 📦 GET PRODUCT DETAILS + SELLER OFFERS
+ *
+ * Backend returns:
+ * {
+ *   product: {...},
+ *   offers: [...]
+ * }
  */
-export const searchProducts = async (filters = {}) => {
+export const fetchProductDetails = async (productId) => {
   try {
-    const response = await fetch(`${BASE_URL}/search`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(filters)
-    });
+    const response = await fetch(`${BASE_URL}/${productId}`);
 
     if (!response.ok) {
-      throw new Error("Failed to search products");
+      throw new Error("Failed to fetch product details");
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Search products error:", error);
+    console.error("❌ Fetch product details error:", error);
     throw error;
   }
 };

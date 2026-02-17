@@ -1,8 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  fetchProducts,
-  searchProducts
-} from "../services/productService";
+import { fetchProducts } from "../services/productService";
 import FilterSidebar from "../components/FilterSidebar";
 import ProductGrid from "../components/ProductGrid";
 
@@ -10,11 +7,13 @@ const ProductListing = () => {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(null);
-  const [sort, setSort] = useState("popular");
+  const [sort, setSort] = useState("latest");
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [totalProducts, setTotalProducts] = useState(0);
 
+  /* 🔄 Load products (browse + search) */
   useEffect(() => {
     const delay = setTimeout(() => {
       loadProducts();
@@ -28,28 +27,16 @@ const ProductListing = () => {
       setLoading(true);
       setError("");
 
-      let data;
-
-      // 🔍 POST SEARCH (MongoDB text index)
-      if (search.trim() !== "") {
-        data = await searchProducts({
-          search,
-          category,
-          page,
-          limit: 8
-        });
-      }
-      // 📦 GET BROWSE
-      else {
-        data = await fetchProducts({
-          category,
-          sort,
-          page,
-          limit: 8
-        });
-      }
+      const data = await fetchProducts({
+        search: search.trim() || undefined,
+        category,
+        sort,
+        page,
+        limit: 8
+      });
 
       setProducts(data?.products || []);
+      setTotalProducts(data?.totalProducts || 0);
     } catch (err) {
       console.error("❌ Product load error:", err);
       setError("Failed to load products");
@@ -65,7 +52,7 @@ const ProductListing = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-semibold">Browse Products</h1>
         <p className="text-gray-400 text-sm">
-          Find what fits your lifestyle
+          Compare prices from multiple sellers
         </p>
       </div>
 
@@ -73,8 +60,14 @@ const ProductListing = () => {
 
         {/* Sidebar */}
         <FilterSidebar
-          setSearch={setSearch}
-          setCategory={setCategory}
+          setSearch={(val) => {
+            setSearch(val);
+            setPage(1); // reset page on new search
+          }}
+          setCategory={(val) => {
+            setCategory(val);
+            setPage(1);
+          }}
         />
 
         {/* Main */}
@@ -88,16 +81,14 @@ const ProductListing = () => {
                 value={sort}
                 onChange={(e) => setSort(e.target.value)}
                 className="bg-white/10 border border-white/10 px-3 py-1 rounded-lg text-sm"
-                disabled={search !== ""}
               >
-                <option value="popular">Popular</option>
                 <option value="latest">Latest</option>
                 <option value="price_asc">Price ↑</option>
                 <option value="price_desc">Price ↓</option>
               </select>
             </div>
             <p className="text-sm text-gray-400">
-              {products.length} Results
+              {totalProducts} Results
             </p>
           </div>
 
@@ -108,10 +99,13 @@ const ProductListing = () => {
             error={error}
           />
 
-          {/* Pagination (disabled during search) */}
-          {!search && (
+          {/* Pagination */}
+          {!search && totalProducts > 8 && (
             <div className="flex justify-center gap-3 mt-10">
-              {[1, 2, 3, 4].map((p) => (
+              {Array.from(
+                { length: Math.ceil(totalProducts / 8) },
+                (_, i) => i + 1
+              ).map((p) => (
                 <button
                   key={p}
                   onClick={() => setPage(p)}
