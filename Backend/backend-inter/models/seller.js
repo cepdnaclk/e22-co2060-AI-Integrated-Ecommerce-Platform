@@ -43,10 +43,11 @@ const sellerSchema = new mongoose.Schema(
       default: 0
     },
 
-    // ✅ Admin verification flag
-    verified: {
-      type: Boolean,
-      default: false
+    // 🔐 Seller verification workflow (NEW)
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending"
     },
 
     // 📍 Business address
