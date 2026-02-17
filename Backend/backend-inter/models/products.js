@@ -1,49 +1,53 @@
-import mongoose from "mongoose"
+import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
-    {
-        price :{
-            type : Number,
-            required : true
+  {
+    productName: {
+      type: String,
+      required: true,
+      index: true
+    },
 
-        },
+    image: {
+      type: String,
+      default: "/images/default-product.png"
+    },
 
-        productName :{
-            type : String,
-            required : true
-        },
+    category: {
+      type: String,
+      required: true,
+      index: true
+    },
 
-        image :{
-            type : String,
-            default : "/images/default-profile.png"
-        },
+    description: {
+      type: String
+    },
 
-        isAvailable :{
-            type : Boolean,
-            required : true,
-            default : true
-        },
+    brand: {
+      type: String
+    },
 
-        warranty :{
-            type : String,
-            required : true,
-            default : true
-        },
+    specs: {
+      type: Object
+    },
 
-        howManyproductsSold :{
-            type : Number,
-            required : true,
-            default : 0
-        },
-
-        sellerName :{
-            type : String,
-            required : true
-        }
-
+    howManyProductsSold: {
+      type: Number,
+      default: 0
     }
-)
+  },
+  {
+    timestamps: true
+  }
+);
 
-const productModel = mongoose.model("product",productSchema)
+/* ✅ TEXT INDEX (FOR SEARCH) */
+productSchema.index({
+  productName: "text",
+  category: "text",
+  brand: "text",
+  description: "text"
+});
 
-export default productModel
+const productModel = mongoose.model("Product", productSchema);
+export default productModel;
