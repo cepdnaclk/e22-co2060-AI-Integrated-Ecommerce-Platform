@@ -1,5 +1,5 @@
 ___
-# DELETE THIS INSTRUCTIONS AND ADD AN INTRODUCTION ABOUT YOUR PROJECT
+This project proposes an intelligent e-commerce platform that dynamically identifies and promotes trending electronic products by analyzing real-time online data. The system integrates AI-based trend analysis with automated workflows to improve product visibility and reduce manual effort in content management and marketing.
 ___
 
 # eYY-co2060-project-template
