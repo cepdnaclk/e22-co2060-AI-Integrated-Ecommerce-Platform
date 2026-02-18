@@ -3,13 +3,15 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// Routers
+// ================== ROUTERS ==================
 import authRouter from "./router/authRouter.js";
 import aiRouter from "./router/aiRouter.js";
 import productRouter from "./router/productRouter.js";
-import sellerOfferRouter from "./router/sellerOfferRouter.js"; // ✅ NEW
+import sellerOfferRouter from "./router/sellerOfferRouter.js";
+import cartRouter from "./router/cartRouter.js";      // ✅ Cart
+import orderRouter from "./router/orderRouter.js";    // ✅ Order
 
-// Cron jobs
+// ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
 
 // ================== CONFIG ==================
@@ -26,7 +28,7 @@ const app = express();
 
 // ================== MIDDLEWARE ==================
 
-// Parse JSON bodies
+// Parse JSON request bodies
 app.use(express.json());
 
 // CORS configuration
@@ -45,27 +47,31 @@ app.use(
 // ================== TOKEN DEBUG (OPTIONAL) ==================
 app.use((req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (authHeader) {
     console.log("🔐 Authorization Header:", authHeader);
   }
-
   next();
 });
 
 // ================== ROUTES ==================
 
-// Auth routes
+// Auth (login, register)
 app.use("/api/auth", authRouter);
 
-// AI routes
+// AI features
 app.use("/api/ai", aiRouter);
 
-// Product routes (global catalog + browsing)
+// Product catalog (browse products)
 app.use("/api/products", productRouter);
 
-// ✅ Seller Offer routes (price, stock, seller-specific)
+// Seller offers (price, stock per seller)
 app.use("/api/seller-offers", sellerOfferRouter);
+
+// 🛒 Cart (buyer side)
+app.use("/api/cart", cartRouter);
+
+// 📦 Orders (checkout & order history)
+app.use("/api/orders", orderRouter);
 
 // ================== TEST ROUTES ==================
 

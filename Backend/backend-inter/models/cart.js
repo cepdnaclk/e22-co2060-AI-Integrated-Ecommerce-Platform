@@ -91,7 +91,7 @@ const cartSchema = new mongoose.Schema(
  */
 
 // One cart per user
-cartSchema.index({ userId: 1 });
+
 
 /**
  * ======================================================

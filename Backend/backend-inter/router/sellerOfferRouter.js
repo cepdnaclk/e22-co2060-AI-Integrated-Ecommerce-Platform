@@ -1,13 +1,20 @@
 import express from "express";
 import { addSellerOffer } from "../controllers/sellerOfferController.js";
-import { verifyToken, authorizeRoles } from "../middleware/authMiddleware.js";
+import authMiddleware, { authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
+/**
+ * ======================================================
+ * SELLER OFFER ROUTES
+ * ======================================================
+ * Only authenticated SELLERS can create offers
+ * ======================================================
+ */
 router.post(
   "/",
-  verifyToken,
-  authorizeRoles("seller"),
+  authMiddleware,          // ✅ default export (verifyToken)
+  authorizeRoles("seller"),// ✅ named export
   addSellerOffer
 );
 
