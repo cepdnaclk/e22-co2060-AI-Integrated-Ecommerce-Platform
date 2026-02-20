@@ -1,5 +1,1 @@
-[
-  "iPhone",
-  "Android Phone",
-  "Laptop"
-]
+[{"Keyword":"iPhone","GrowthRate":1.4966371697,"Acceleration":95518402,"Consistency":166482311.3976400197,"RelativePerformance":2.3803076043,"ConsistencyScore":0.000000006,"TrendScore":1.2498845315},{"Keyword":"Android Phone","GrowthRate":1.2417675988,"Acceleration":6339746,"Consistency":67584630.9418798685,"RelativePerformance":1.895348413,"ConsistencyScore":0.0000000148,"TrendScore":1.0011883451},{"Keyword":"Laptop","GrowthRate":0.9990549029,"Acceleration":1127149,"Consistency":988068.8731812676,"RelativePerformance":0.0610492188,"ConsistencyScore":0.0000010121,"TrendScore":0.4868792622}]

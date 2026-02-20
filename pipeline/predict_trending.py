@@ -1,4 +1,3 @@
-'''
 import pandas as pd
 import os
 from models.trend_model import score
@@ -30,9 +29,9 @@ os.makedirs("output", exist_ok=True)
 top3.to_json(OUTPUT_FILE, orient="records")
 
 print("🔥 Top-3 trending products generated successfully")
+
+
 '''
-
-
 #only giving keywords to trending_top3.json for app/main.py to consume
 
 import pandas as pd
@@ -74,3 +73,4 @@ with open(OUTPUT_FILE, "w") as f:
 
 print("🔥 Top-3 trending keywords generated successfully")
 
+'''
