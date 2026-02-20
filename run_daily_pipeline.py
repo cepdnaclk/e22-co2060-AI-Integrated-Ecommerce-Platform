@@ -7,3 +7,5 @@ import pipeline.update_history
 import pipeline.feature_engineering
 import pipeline.predict_trending
 #run_daily_pipeline.py
+#03:00 UTC - running the whole pipeline in sequence
+
