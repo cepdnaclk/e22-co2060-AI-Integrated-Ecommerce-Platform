@@ -1,45 +1,69 @@
 import { useEffect, useState } from "react";
 import { fetchProducts } from "../services/productService";
+import { searchSellerOffers } from "../services/sellerOfferService";
 import FilterSidebar from "../components/FilterSidebar";
 import ProductGrid from "../components/ProductGrid";
+import SellerOfferGrid from "../components/SellerOfferGrid";
 
 const ProductListing = () => {
   const [products, setProducts] = useState([]);
+  const [offers, setOffers] = useState([]);
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState(null);
   const [sort, setSort] = useState("latest");
   const [page, setPage] = useState(1);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [totalProducts, setTotalProducts] = useState(0);
+  const [totalResults, setTotalResults] = useState(0);
 
-  /* 🔄 Load products (browse + search) */
+  /* 🔄 Load browse or search results */
   useEffect(() => {
     const delay = setTimeout(() => {
-      loadProducts();
+      loadData();
     }, 400); // debounce
 
     return () => clearTimeout(delay);
   }, [search, category, sort, page]);
 
-  const loadProducts = async () => {
+  const loadData = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const data = await fetchProducts({
-        search: search.trim() || undefined,
-        category,
-        sort,
-        page,
-        limit: 8
-      });
+      // 🔍 SEARCH MODE → SELLER OFFERS
+      if (search.trim()) {
+        const data = await searchSellerOffers({
+          q: search.trim(),
+          category,
+          sort,
+          page,
+          limit: 8
+        });
 
-      setProducts(data?.products || []);
-      setTotalProducts(data?.totalProducts || 0);
+        setOffers(data.results || []);
+        setProducts([]); // clear products
+        setTotalResults(data.totalResults || 0);
+      }
+
+      // 📦 BROWSE MODE → PRODUCTS
+      else {
+        const data = await fetchProducts({
+          category,
+          sort,
+          page,
+          limit: 8
+        });
+
+        setProducts(data.products || []);
+        setOffers([]); // clear offers
+        setTotalResults(data.totalProducts || 0);
+      }
+
     } catch (err) {
-      console.error("❌ Product load error:", err);
-      setError("Failed to load products");
+      console.error("❌ Load error:", err);
+      setError("Failed to load data");
     } finally {
       setLoading(false);
     }
@@ -50,7 +74,9 @@ const ProductListing = () => {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-3xl font-semibold">Browse Products</h1>
+        <h1 className="text-3xl font-semibold">
+          {search ? "Search Results" : "Browse Products"}
+        </h1>
         <p className="text-gray-400 text-sm">
           Compare prices from multiple sellers
         </p>
@@ -62,7 +88,7 @@ const ProductListing = () => {
         <FilterSidebar
           setSearch={(val) => {
             setSearch(val);
-            setPage(1); // reset page on new search
+            setPage(1);
           }}
           setCategory={(val) => {
             setCategory(val);
@@ -87,23 +113,32 @@ const ProductListing = () => {
                 <option value="price_desc">Price ↓</option>
               </select>
             </div>
+
             <p className="text-sm text-gray-400">
-              {totalProducts} Results
+              {totalResults} Results
             </p>
           </div>
 
-          {/* Product Grid */}
-          <ProductGrid
-            products={products}
-            loading={loading}
-            error={error}
-          />
+          {/* ✅ CONDITIONAL GRID */}
+          {search ? (
+            <SellerOfferGrid
+              offers={offers}
+              loading={loading}
+              error={error}
+            />
+          ) : (
+            <ProductGrid
+              products={products}
+              loading={loading}
+              error={error}
+            />
+          )}
 
-          {/* Pagination */}
-          {!search && totalProducts > 8 && (
+          {/* Pagination (browse only for now) */}
+          {!search && totalResults > 8 && (
             <div className="flex justify-center gap-3 mt-10">
               {Array.from(
-                { length: Math.ceil(totalProducts / 8) },
+                { length: Math.ceil(totalResults / 8) },
                 (_, i) => i + 1
               ).map((p) => (
                 <button

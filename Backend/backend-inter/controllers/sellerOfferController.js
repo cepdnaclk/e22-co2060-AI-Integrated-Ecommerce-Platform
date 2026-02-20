@@ -225,3 +225,69 @@ export async function disableSellerOffer(req, res) {
     });
   }
 }
+
+// BUYER SEARCH – NO AUTH
+export async function searchSellerOffers(req, res) {
+  try {
+    const { q, category, sort = "price_asc", page = 1, limit = 8 } = req.query;
+
+    const pipeline = [];
+
+    // 🔗 Join Product
+    pipeline.push({
+      $lookup: {
+        from: "products",
+        localField: "productId",
+        foreignField: "_id",
+        as: "product"
+      }
+    });
+
+    pipeline.push({ $unwind: "$product" });
+
+    // 🔍 Search
+    if (q) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { "product.productName": { $regex: q, $options: "i" } },
+            { "product.description": { $regex: q, $options: "i" } }
+          ]
+        }
+      });
+    }
+
+    // 📂 Category
+    if (category && category !== "null") {
+      pipeline.push({ $match: { "product.category": category } });
+    }
+
+    // ✅ Only active offers
+    pipeline.push({ $match: { isActive: true } });
+
+    // ↕ Sort
+    if (sort === "price_desc") pipeline.push({ $sort: { price: -1 } });
+    else pipeline.push({ $sort: { price: 1 } });
+
+    // 📄 Pagination
+    pipeline.push(
+      { $skip: (page - 1) * Number(limit) },
+      { $limit: Number(limit) }
+    );
+
+    const results = await sellerOfferModel.aggregate(pipeline);
+
+    res.json({
+      results,
+      totalResults: results.length
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      results: [],
+      totalResults: 0,
+      message: "Seller offer search failed",
+      error: error.message
+    });
+  }
+}

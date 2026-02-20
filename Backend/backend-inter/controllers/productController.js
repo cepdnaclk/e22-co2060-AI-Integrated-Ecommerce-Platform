@@ -3,8 +3,9 @@ import sellerOfferModel from "../models/sellerOffer.js";
 import TopProduct from "../models/topProducts.js";
 
 /**
- * ✅ CREATE PRODUCT (ADMIN ONLY)
- * Product = global catalog item
+ * ======================================================
+ * CREATE PRODUCT (ADMIN)
+ * ======================================================
  */
 export async function createProduct(req, res) {
   try {
@@ -30,7 +31,9 @@ export async function createProduct(req, res) {
 }
 
 /**
- * ✅ UPDATE PRODUCT (ADMIN ONLY)
+ * ======================================================
+ * UPDATE PRODUCT (ADMIN)
+ * ======================================================
  */
 export async function updateProduct(req, res) {
   try {
@@ -57,8 +60,9 @@ export async function updateProduct(req, res) {
 }
 
 /**
- * ✅ DELETE PRODUCT (ADMIN ONLY)
- * Also removes seller offers + AI rankings
+ * ======================================================
+ * DELETE PRODUCT (ADMIN)
+ * ======================================================
  */
 export async function deleteProduct(req, res) {
   try {
@@ -69,10 +73,7 @@ export async function deleteProduct(req, res) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // remove related seller offers
     await sellerOfferModel.deleteMany({ productId });
-
-    // remove AI ranking
     await TopProduct.deleteMany({ productId });
 
     res.json({ message: "Product deleted successfully" });
@@ -85,8 +86,10 @@ export async function deleteProduct(req, res) {
 }
 
 /**
- * ✅ BROWSE PRODUCTS + SEARCH + FILTER
- * GET /api/products
+ * ======================================================
+ * GET ALL PRODUCTS (BROWSE + SEARCH + FILTER)
+ * FIXED VERSION
+ * ======================================================
  */
 export async function getAllProducts(req, res) {
   try {
@@ -95,25 +98,29 @@ export async function getAllProducts(req, res) {
       limit = 8,
       search,
       category,
-      sort
+      sort = "latest"
     } = req.query;
 
     const pipeline = [];
 
-    /* 🔍 TEXT SEARCH */
+    /* 🔍 SAFE SEARCH (NO $text BUGS) */
     if (search) {
-      pipeline.push(
-        { $match: { $text: { $search: search } } },
-        { $addFields: { score: { $meta: "textScore" } } }
-      );
+      pipeline.push({
+        $match: {
+          $or: [
+            { productName: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } }
+          ]
+        }
+      });
     }
 
-    /* CATEGORY FILTER */
-    if (category) {
+    /* 📂 CATEGORY FILTER (FIXED null ISSUE) */
+    if (category && category !== "null") {
       pipeline.push({ $match: { category } });
     }
 
-    /* JOIN SELLER OFFERS */
+    /* 🔗 JOIN SELLER OFFERS */
     pipeline.push({
       $lookup: {
         from: "selleroffers",
@@ -123,7 +130,7 @@ export async function getAllProducts(req, res) {
       }
     });
 
-    /* MARKETPLACE CALCULATIONS */
+    /* 📊 MARKETPLACE CALCULATIONS */
     pipeline.push({
       $addFields: {
         sellerCount: {
@@ -153,42 +160,51 @@ export async function getAllProducts(req, res) {
       }
     });
 
-    /* SORTING */
-    if (search) {
-      pipeline.push({ $sort: { score: -1 } });
-    } else if (sort === "price_asc") {
+    /* ↕ SORTING */
+    if (sort === "price_asc") {
       pipeline.push({ $sort: { minPrice: 1 } });
     } else if (sort === "price_desc") {
       pipeline.push({ $sort: { minPrice: -1 } });
-    } else if (sort === "latest") {
-      pipeline.push({ $sort: { createdAt: -1 } });
     } else {
       pipeline.push({ $sort: { createdAt: -1 } });
     }
 
-    /* PAGINATION */
+    /* 📄 PAGINATION */
     pipeline.push(
       { $skip: (page - 1) * Number(limit) },
       { $limit: Number(limit) }
     );
 
-    /* CLEAN RESPONSE */
+    /* 🧹 CLEAN RESPONSE */
     pipeline.push({ $project: { offers: 0 } });
 
+    /* 📦 FETCH PRODUCTS */
     const products = await productModel.aggregate(pipeline);
 
-    const totalProducts = await productModel.countDocuments(
-      search ? { $text: { $search: search } } : {}
+    /* 🔢 TOTAL COUNT (WITHOUT SKIP/LIMIT) */
+    const countPipeline = pipeline.filter(
+      stage => !("$skip" in stage) && !("$limit" in stage)
     );
 
+    const countResult = await productModel.aggregate([
+      ...countPipeline,
+      { $count: "total" }
+    ]);
+
+    const totalProducts = countResult[0]?.total || 0;
+
     res.json({
-      products,
+      products,                 // ✅ ALWAYS ARRAY
       totalProducts,
       currentPage: Number(page),
       totalPages: Math.ceil(totalProducts / limit)
     });
+
   } catch (error) {
+    console.error("❌ getAllProducts error:", error);
     res.status(500).json({
+      products: [],
+      totalProducts: 0,
       message: "Failed to fetch products",
       error: error.message
     });
@@ -196,8 +212,9 @@ export async function getAllProducts(req, res) {
 }
 
 /**
- * ✅ PRODUCT DETAILS + ALL SELLERS
- * GET /api/products/:id
+ * ======================================================
+ * PRODUCT DETAILS + SELLER OFFERS
+ * ======================================================
  */
 export async function getProductById(req, res) {
   try {
@@ -224,8 +241,9 @@ export async function getProductById(req, res) {
 }
 
 /**
- * ✅ TOP 3 PRODUCTS (AI)
- * Uses marketplace data now
+ * ======================================================
+ * TOP 3 PRODUCTS (AI)
+ * ======================================================
  */
 export async function getTopThreeProducts(req, res) {
   try {

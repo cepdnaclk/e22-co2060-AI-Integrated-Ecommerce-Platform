@@ -1,6 +1,10 @@
 import express from "express";
-import { addSellerOffer } from "../controllers/sellerOfferController.js";
+
 import authMiddleware, { authorizeRoles } from "../middleware/authMiddleware.js";
+import {
+  addSellerOffer,
+  searchSellerOffers
+} from "../controllers/sellerOfferController.js";
 
 const router = express.Router();
 
@@ -17,5 +21,8 @@ router.post(
   authorizeRoles("seller"),// ✅ named export
   addSellerOffer
 );
+
+// 🔍 BUYER SEARCH
+router.get("/search", searchSellerOffers);
 
 export default router;
