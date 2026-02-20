@@ -1,3 +1,11 @@
+HEAD
 google_creds.json
 .env
 service_accounnt.json
+
+.env
+credentials.json
+venv/
+__pycache__/
+*.csv
+ 0ed82df (New folder structure)
