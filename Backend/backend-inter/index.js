@@ -9,7 +9,9 @@ import aiRouter from "./router/aiRouter.js";
 import productRouter from "./router/productRouter.js";
 import sellerOfferRouter from "./router/sellerOfferRouter.js";
 import cartRouter from "./router/cartRouter.js";      // ✅ Cart
-import orderRouter from "./router/orderRouter.js";    // ✅ Order
+import orderRouter from "./router/orderRouter.js"; 
+import exportRouter from "./router/exportRouter.js";   // ✅ Order
+import sellerRouter from "./router/sellerRouter.js"; //seller router
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -64,6 +66,9 @@ app.use("/api/ai", aiRouter);
 // Product catalog (browse products)
 app.use("/api/products", productRouter);
 
+//seller profile
+app.use("/api/sellers", sellerRouter);
+
 // Seller offers (price, stock per seller)
 app.use("/api/seller-offers", sellerOfferRouter);
 
@@ -72,6 +77,9 @@ app.use("/api/cart", cartRouter);
 
 // 📦 Orders (checkout & order history)
 app.use("/api/orders", orderRouter);
+
+
+app.use("/api/export", exportRouter);
 
 // ================== TEST ROUTES ==================
 

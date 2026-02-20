@@ -5,7 +5,7 @@ import {
   updateSellerProfile,
   getSellerById
 } from "../controllers/sellerController.js";
-import { verifyToken, authorizeRoles } from "../middleware/authMiddleware.js";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -14,14 +14,11 @@ const router = express.Router();
  * SELLER REGISTRATION
  * POST /api/sellers/register
  * ======================================================
- * - User must be logged in
- * - User role must be "seller"
- * - Creates seller business profile
+ * - Any authenticated user can register as seller
  */
 router.post(
   "/register",
-  verifyToken,
-  authorizeRoles("seller"),
+  authMiddleware,
   registerSeller
 );
 
@@ -30,11 +27,11 @@ router.post(
  * GET LOGGED-IN SELLER PROFILE
  * GET /api/sellers/me
  * ======================================================
+ * - Only works if user has seller profile
  */
 router.get(
   "/me",
-  verifyToken,
-  authorizeRoles("seller"),
+  authMiddleware,
   getMySellerProfile
 );
 
@@ -46,18 +43,15 @@ router.get(
  */
 router.put(
   "/me",
-  verifyToken,
-  authorizeRoles("seller"),
+  authMiddleware,
   updateSellerProfile
 );
 
 /**
  * ======================================================
- * GET PUBLIC SELLER PROFILE (BUYER SIDE)
+ * GET PUBLIC SELLER PROFILE
  * GET /api/sellers/:id
  * ======================================================
- * - Public endpoint
- * - Used for seller profile pages
  */
 router.get("/:id", getSellerById);
 

@@ -5,6 +5,7 @@ import Home from "./pages/home.jsx";
 import Login from "./pages/login.jsx";
 import ProductListing from "./pages/ProductListing.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
+import SellerRegister from "./pages/SellerRegister";
 
 function App() {
   return (
@@ -21,6 +22,11 @@ function App() {
 
         {/* Product Details Page */}
         <Route path="/products/:id" element={<ProductDetails />} />
+
+          {/* Seller Registration Page */}
+        <Route path="/become-seller" element={<SellerRegister />} />
+
+        
       </Routes>
     </Router>
   );

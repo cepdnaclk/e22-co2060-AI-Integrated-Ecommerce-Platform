@@ -5,8 +5,7 @@ import Seller from "../models/seller.js";
  * 1️⃣ REGISTER SELLER (CREATE SELLER PROFILE)
  * POST /api/sellers/register
  * ======================================================
- * - User must be authenticated
- * - User must have role = "seller"
+ * - Any authenticated user can register as seller
  * - One seller profile per user
  */
 export async function registerSeller(req, res) {
@@ -21,12 +20,7 @@ export async function registerSeller(req, res) {
       });
     }
 
-    const {
-      shopName,
-      description,
-      address,
-      phone
-    } = req.body;
+    const { shopName, description, address, phone } = req.body;
 
     if (!shopName) {
       return res.status(400).json({
@@ -49,7 +43,6 @@ export async function registerSeller(req, res) {
     });
   } catch (error) {
     console.error("❌ Register seller error:", error);
-
     res.status(500).json({
       message: "Failed to create seller profile",
       error: error.message
@@ -62,6 +55,7 @@ export async function registerSeller(req, res) {
  * 2️⃣ GET LOGGED-IN SELLER PROFILE
  * GET /api/sellers/me
  * ======================================================
+ * - Only works if user has a seller profile
  */
 export async function getMySellerProfile(req, res) {
   try {
@@ -70,15 +64,14 @@ export async function getMySellerProfile(req, res) {
     const seller = await Seller.findOne({ userId });
 
     if (!seller) {
-      return res.status(404).json({
-        message: "Seller profile not found"
+      return res.status(403).json({
+        message: "You are not registered as a seller"
       });
     }
 
     res.json(seller);
   } catch (error) {
     console.error("❌ Get seller profile error:", error);
-
     res.status(500).json({
       message: "Failed to fetch seller profile",
       error: error.message
@@ -91,30 +84,34 @@ export async function getMySellerProfile(req, res) {
  * 3️⃣ UPDATE SELLER PROFILE
  * PUT /api/sellers/me
  * ======================================================
+ * - Only works if user has a seller profile
  */
 export async function updateSellerProfile(req, res) {
   try {
     const userId = req.user.id;
 
-    const updatedSeller = await Seller.findOneAndUpdate(
-      { userId },
-      req.body,
-      { new: true }
-    );
+    const seller = await Seller.findOne({ userId });
 
-    if (!updatedSeller) {
-      return res.status(404).json({
-        message: "Seller profile not found"
+    if (!seller) {
+      return res.status(403).json({
+        message: "You are not registered as a seller"
       });
     }
 
+    // ✏️ Update allowed fields
+    if (req.body.shopName !== undefined) seller.shopName = req.body.shopName;
+    if (req.body.description !== undefined) seller.description = req.body.description;
+    if (req.body.address !== undefined) seller.address = req.body.address;
+    if (req.body.phone !== undefined) seller.phone = req.body.phone;
+
+    await seller.save();
+
     res.json({
       message: "Seller profile updated successfully",
-      seller: updatedSeller
+      seller
     });
   } catch (error) {
     console.error("❌ Update seller profile error:", error);
-
     res.status(500).json({
       message: "Failed to update seller profile",
       error: error.message
@@ -124,10 +121,10 @@ export async function updateSellerProfile(req, res) {
 
 /**
  * ======================================================
- * 4️⃣ GET PUBLIC SELLER PROFILE (OPTIONAL, FUTURE)
+ * 4️⃣ GET PUBLIC SELLER PROFILE
  * GET /api/sellers/:id
  * ======================================================
- * - Used for buyer-facing seller pages
+ * - Buyer-facing seller profile
  */
 export async function getSellerById(req, res) {
   try {
@@ -142,7 +139,6 @@ export async function getSellerById(req, res) {
     res.json(seller);
   } catch (error) {
     console.error("❌ Get seller by id error:", error);
-
     res.status(500).json({
       message: "Failed to fetch seller",
       error: error.message
