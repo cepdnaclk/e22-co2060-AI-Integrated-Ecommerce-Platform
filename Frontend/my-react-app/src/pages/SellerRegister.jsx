@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerSeller } from "../services/sellerService";
-import "../components/successAnimation.css"; // 👈 add css file
+import "../components/successAnimation.css";
+import "./sellerRegister.css";
+
+const REDIRECT_DELAY = 5000; // ✅ 5 seconds
 
 const BecomeSeller = () => {
   const navigate = useNavigate();
@@ -29,7 +32,7 @@ const BecomeSeller = () => {
     try {
       await registerSeller(form);
 
-      // ✅ trigger success animation
+      // ✅ Show success animation
       setSuccess(true);
     } catch (err) {
       setError(err.message);
@@ -37,20 +40,18 @@ const BecomeSeller = () => {
     }
   };
 
-  // ✅ auto redirect after success
+  // ⏳ Redirect AFTER animation finishes
   useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        navigate("/seller/dashboard");
-      }, 2000);
+    if (!success) return;
 
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => {
+      navigate("/seller/dashboard");
+    }, REDIRECT_DELAY);
+
+    return () => clearTimeout(timer);
   }, [success, navigate]);
 
-  /* ===============================
-     SUCCESS SCREEN
-  =============================== */
+  /* ================= SUCCESS SCREEN ================= */
   if (success) {
     return (
       <div className="success-container">
@@ -59,70 +60,63 @@ const BecomeSeller = () => {
         </div>
 
         <h2 className="success-text">
-          Seller registration successful!
+          Seller registration successful 🎉
         </h2>
+
         <p className="redirect-text">
-          Redirecting to dashboard...
+          Redirecting to dashboard in a few seconds…
         </p>
       </div>
     );
   }
 
-  /* ===============================
-     FORM SCREEN
-  =============================== */
+  /* ================= FORM SCREEN ================= */
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-lg w-full max-w-md space-y-4"
-      >
-        <h2 className="text-2xl font-semibold">
-          Become a Seller
-        </h2>
+    <div className="seller-bg">
+      <div className="seller-glass-card">
+
+        <h2 className="seller-title">Become a Seller</h2>
+        <p className="seller-subtitle">
+          Start selling your products and grow your business
+        </p>
 
         {error && (
-          <p className="bg-red-100 text-red-600 p-2 rounded">
-            {error}
-          </p>
+          <div className="seller-error">{error}</div>
         )}
 
-        <input
-          name="shopName"
-          placeholder="Shop Name"
-          className="w-full border p-2 rounded"
-          onChange={handleChange}
-          required
-        />
+        <form onSubmit={handleSubmit} className="seller-form">
 
-        <input
-          name="description"
-          placeholder="Description"
-          className="w-full border p-2 rounded"
-          onChange={handleChange}
-        />
+          <input
+            name="shopName"
+            placeholder="Seller / Business Name"
+            onChange={handleChange}
+            required
+          />
 
-        <input
-          name="address"
-          placeholder="Address"
-          className="w-full border p-2 rounded"
-          onChange={handleChange}
-        />
+          <input
+            name="description"
+            placeholder="Description"
+            onChange={handleChange}
+          />
 
-        <input
-          name="phone"
-          placeholder="Phone"
-          className="w-full border p-2 rounded"
-          onChange={handleChange}
-        />
+          <input
+            name="address"
+            placeholder="Business Address"
+            onChange={handleChange}
+          />
 
-        <button
-          disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded"
-        >
-          {loading ? "Registering..." : "Register as Seller"}
-        </button>
-      </form>
+          <input
+            name="phone"
+            placeholder="Phone Number"
+            onChange={handleChange}
+          />
+
+          <button disabled={loading}>
+            {loading ? "Registering..." : "Create Seller Account"}
+          </button>
+
+        </form>
+      </div>
     </div>
   );
 };

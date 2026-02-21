@@ -5,7 +5,7 @@ const SuccessAnimation = ({ message, onDone }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDone(); // redirect callback
-    }, 2000);
+    }, 2200);
 
     return () => clearTimeout(timer);
   }, [onDone]);

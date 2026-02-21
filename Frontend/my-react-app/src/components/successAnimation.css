@@ -1,63 +1,115 @@
+/* ================================
+   SUCCESS SCREEN CONTAINER
+================================ */
 .success-container {
-  height: 100vh;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #1e40af, #020617);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: #f8fafc;
+  color: white;
+  animation: fadeIn 0.6s ease forwards;
 }
 
+/* ================================
+   CIRCLE + CHECK CONTAINER
+================================ */
 .checkmark-circle {
-  width: 90px;
-  height: 90px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
-  border: 5px solid #22c55e;
+  border: 6px solid #22c55e;
   position: relative;
-  animation: scaleIn 0.4s ease-in-out;
+  box-sizing: border-box;
+
+  /* Circle draw animation */
+  animation: drawCircle 1.2s ease-out forwards;
 }
 
+/* ================================
+   CHECK MARK
+================================ */
 .checkmark {
   position: absolute;
   width: 30px;
-  height: 15px;
-  border-left: 5px solid #22c55e;
-  border-bottom: 5px solid #22c55e;
-  transform: rotate(-45deg);
-  top: 35px;
-  left: 28px;
-  animation: drawCheck 0.5s ease forwards;
+  height: 60px;
+  border-right: 6px solid #22c55e;
+  border-bottom: 6px solid #22c55e;
+  left: 42px;
+  top: 22px;
+  transform: rotate(45deg);
+  transform-origin: center;
+  opacity: 0;
+
+  /* Check draw animation */
+  animation: drawCheck 0.8s ease-out forwards;
+  animation-delay: 1.2s;
 }
 
+/* ================================
+   TEXT
+================================ */
 .success-text {
-  margin-top: 20px;
-  font-size: 1.5rem;
+  margin-top: 24px;
+  font-size: 22px;
   font-weight: 600;
-  color: #16a34a;
+  animation: fadeUp 0.6s ease forwards;
+  animation-delay: 1.8s;
+  opacity: 0;
 }
 
 .redirect-text {
-  margin-top: 8px;
-  color: #6b7280;
+  margin-top: 6px;
+  font-size: 14px;
+  opacity: 0.75;
+  animation: fadeUp 0.6s ease forwards;
+  animation-delay: 2.2s;
+}
+
+/* ================================
+   ANIMATIONS
+================================ */
+@keyframes drawCircle {
+  0% {
+    stroke-dasharray: 0 360;
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    stroke-dasharray: 360 360;
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes drawCheck {
-  from {
-    width: 0;
-    height: 0;
+  0% {
+    opacity: 0;
+    transform: scale(0.5) rotate(45deg);
   }
-  to {
-    width: 30px;
-    height: 15px;
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(45deg);
   }
 }
 
-@keyframes scaleIn {
+@keyframes fadeUp {
   from {
-    transform: scale(0.6);
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
     opacity: 0;
   }
   to {
-    transform: scale(1);
     opacity: 1;
   }
 }
