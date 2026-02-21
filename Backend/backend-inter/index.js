@@ -9,9 +9,10 @@ import aiRouter from "./router/aiRouter.js";
 import productRouter from "./router/productRouter.js";
 import sellerOfferRouter from "./router/sellerOfferRouter.js";
 import cartRouter from "./router/cartRouter.js";      // ✅ Cart
-import orderRouter from "./router/orderRouter.js"; 
+import orderRouter from "./router/orderRouter.js";
 import exportRouter from "./router/exportRouter.js";   // ✅ Order
 import sellerRouter from "./router/sellerRouter.js"; //seller router
+import userRouter from "./router/userRouter.js"; // ✅ Users
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -71,6 +72,9 @@ app.use("/api/sellers", sellerRouter);
 
 // Seller offers (price, stock per seller)
 app.use("/api/seller-offers", sellerOfferRouter);
+
+// 👤 Users
+app.use("/api/users", userRouter);
 
 // 🛒 Cart (buyer side)
 app.use("/api/cart", cartRouter);

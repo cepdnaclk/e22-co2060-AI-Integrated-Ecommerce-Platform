@@ -1,4 +1,6 @@
 import Seller from "../models/seller.js";
+import User from "../models/user.js";
+import jwt from "jsonwebtoken";
 
 /**
  * ======================================================
@@ -36,6 +38,39 @@ export async function registerSeller(req, res) {
       address,
       phone
     });
+
+    // 🔄 Upgrade User Role to Seller
+    const user = await User.findById(userId);
+    if (user) {
+      user.role = "seller";
+
+      // ✅ Create Fresh JWT Token
+      const appToken = jwt.sign(
+        {
+          id: user._id,
+          email: user.email,
+          role: user.role, // Now "seller"
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1h" }
+      );
+
+      user.token = appToken;
+      await user.save();
+
+      return res.status(201).json({
+        message: "Seller profile created successfully",
+        seller,
+        token: appToken,
+        user: {
+          email: user.email,
+          role: user.role,
+          image: user.image,
+          firstName: user.firstName,
+          lastName: user.lastName
+        }
+      });
+    }
 
     res.status(201).json({
       message: "Seller profile created successfully",

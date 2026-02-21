@@ -30,7 +30,13 @@ const BecomeSeller = () => {
     setError("");
 
     try {
-      await registerSeller(form);
+      const response = await registerSeller(form);
+
+      // ✅ Update LocalStorage with new seller token
+      if (response.token && response.user) {
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user", JSON.stringify(response.user));
+      }
 
       // ✅ Show success animation
       setSuccess(true);

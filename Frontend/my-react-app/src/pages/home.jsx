@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SponsorBar from "../components/sponsorbar.jsx";
 import CountUp from "../components/CountUp.jsx";
@@ -20,6 +20,42 @@ const categories = [
 export default function Home() {
   const navigate = useNavigate();
   const [showCategories, setShowCategories] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isSeller, setIsSeller] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (err) {
+        console.error("Failed to parse user from localStorage", err);
+      }
+    }
+  }, []);
+
+  // ✅ Check on mount if current user has a registered seller account
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch("http://localhost:3000/api/sellers/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (res.ok) setIsSeller(true);
+      })
+      .catch(() => { }); // silently ignore if not a seller
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setIsSeller(false);
+    setShowProfileMenu(false);
+  };
 
   return (
     <div className="min-h-screen smooth-bg text-white">
@@ -128,18 +164,138 @@ export default function Home() {
           <button className="hover:text-blue-400 transition">About</button>
         </div>
 
-        {/* RIGHT: Auth Buttons */}
-        <div className="flex items-center font-thin gap-4">
-          <button
-            onClick={() => navigate("/login")}
-            className="hover:text-blue-400 transition"
-          >
-            Login
-          </button>
+        {/* RIGHT: Auth Buttons or Profile */}
+        <div className="flex items-center font-thin gap-4 z-50">
+          {user ? (
+            <div
+              className="relative flex items-center gap-3 cursor-pointer"
+              onMouseEnter={() => setShowProfileMenu(true)}
+              onMouseLeave={() => setShowProfileMenu(false)}
+            >
+              <span className="hover:text-blue-400 transition hidden md:block">
+                My Account
+              </span>
+              <img
+                src={user.image || `https://ui-avatars.com/api/?name=${user.name || user.firstName || "User"}&background=0D8ABC&color=fff`}
+                alt="Profile"
+                className="w-10 h-10 rounded-full border-2 border-white/30 object-cover bg-white"
+              />
 
-          <button className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
-            Sign Up
-          </button>
+              {/* Dropdown */}
+              {showProfileMenu && (
+                <div className="absolute right-0 top-full pt-3 z-50">
+                  <div
+                    className="
+                      w-48
+                      rounded-xl
+                      overflow-hidden
+                      backdrop-blur-lg
+                      bg-gradient-to-b
+                      from-[#0b1c2d]
+                      via-[#0f2a44]
+                      to-[#071421]
+                      border
+                      border-white/10
+                      shadow-2xl
+                    "
+                  >
+                    <div className="px-5 py-3 text-sm text-gray-200 border-b border-white/10">
+                      Welcome, <br />
+                      <span className="font-semibold text-white truncate block">{user.name || "User"}</span>
+                    </div>
+
+                    <div
+                      onClick={() => navigate("/profile")}
+                      className="
+                        px-5
+                        py-3
+                        cursor-pointer
+                        text-sm
+                        text-gray-200
+                        transition-all
+                        duration-300
+                        hover:text-blue-400
+                        hover:bg-white/5
+                      "
+                    >
+                      My Profile
+                    </div>
+
+                    {/* 👇 CONDITIONAL MY SELLER PROFILE (only if user has a seller account) */}
+                    {isSeller && (
+                      <div
+                        onClick={() => navigate("/seller/dashboard")}
+                        className="
+                          px-5
+                          py-3
+                          cursor-pointer
+                          text-sm
+                          text-green-300
+                          font-medium
+                          flex
+                          items-center
+                          gap-2
+                          transition-all
+                          duration-300
+                          hover:text-green-400
+                          hover:bg-white/5
+                        "
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+                          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                          <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+                          <path d="M2 7h20" />
+                          <path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" />
+                        </svg>
+                        My Seller Profile
+                      </div>
+                    )}
+
+                    <div
+                      onClick={handleLogout}
+                      className="
+                        px-5
+                        py-3
+                        cursor-pointer
+                        text-sm
+                        text-gray-200
+                        transition-all
+                        duration-300
+                        hover:text-red-400
+                        hover:bg-white/5
+                      "
+                    >
+                      Logout
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="hover:text-blue-400 transition"
+              >
+                Login
+              </button>
+
+              <button onClick={() => navigate("/become-seller")} className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
+                Sign Up
+              </button>
+            </>
+          )}
         </div>
       </div>
 

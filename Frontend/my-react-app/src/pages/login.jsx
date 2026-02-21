@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../index.css";
 
 import { auth } from "../firebase";
@@ -7,6 +8,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import SuccessAnimation from "../components/SuccessAnimation";
 
 const Login = ({ onClose }) => {
   const [email, setEmail] = useState("");
@@ -14,6 +16,8 @@ const Login = ({ onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const navigate = useNavigate();
 
   // 🔹 SEND FIREBASE TOKEN TO BACKEND
   const sendTokenToBackend = async (idToken) => {
@@ -42,6 +46,8 @@ const Login = ({ onClose }) => {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       if (onClose) onClose();
+
+      setIsSuccess(true);
 
       return data;
     } catch (err) {
@@ -94,9 +100,20 @@ const Login = ({ onClose }) => {
     }
   };
 
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-[#0d1424] via-[#072454] to-[#1945a5]">
+        <SuccessAnimation
+          message="Login Successful!"
+          onDone={() => navigate("/")}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-screen grid grid-cols-1 md:grid-cols-2 bg-blue-100">
-      
+
       {/* LEFT PANEL */}
       <div className="relative flex flex-col justify-center px-12 text-white bg-gradient-to-br from-[#0d1424] via-[#072454] to-[#1945a5]">
         <h2 className="text-4xl font-bold mb-6">WELCOME</h2>

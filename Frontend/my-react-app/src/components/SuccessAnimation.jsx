@@ -5,7 +5,7 @@ const SuccessAnimation = ({ message, onDone }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDone(); // redirect callback
-    }, 2200);
+    }, 3500); // Increased from 2200 to 3500 to allow the animation to finish and text to be read
 
     return () => clearTimeout(timer);
   }, [onDone]);
