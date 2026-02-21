@@ -9,6 +9,7 @@ import SellerRegister from "./pages/SellerRegister";
 import SellerDashboard from "./pages/SellerDashboard";
 import Profile from "./pages/Profile";
 import VerifySellerEmail from "./pages/VerifySellerEmail";
+import Chatbot from "./components/Chatbot";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
 
 
       </Routes>
+      <Chatbot />
     </Router>
   );
 }

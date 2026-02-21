@@ -13,6 +13,7 @@ import orderRouter from "./router/orderRouter.js";
 import exportRouter from "./router/exportRouter.js";   // ✅ Order
 import sellerRouter from "./router/sellerRouter.js"; //seller router
 import userRouter from "./router/userRouter.js"; // ✅ Users
+import chatRouter from "./router/chatRouter.js"; // ✅ AI Chatbot
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -57,6 +58,7 @@ app.use((req, res, next) => {
 });
 
 // ================== ROUTES ==================
+app.use("/api/chat", chatRouter);
 
 // Auth (login, register)
 app.use("/api/auth", authRouter);
