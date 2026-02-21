@@ -180,9 +180,14 @@ const Profile = () => {
                         <div className="avatar-ring" style={{ width: 116, height: 116, borderRadius: "50%", padding: 3, flexShrink: 0 }}>
                             <img src={avatarUrl} alt="Avatar" style={{ width: "100%", height: "100%", borderRadius: "50%", objectFit: "cover", border: "3px solid #0a192f" }} />
                         </div>
-                        <button onClick={openEdit} style={{ ...styles.btnBlue, padding: "7px 18px", fontSize: 13 }}>
+                        <button onClick={openEdit} style={{ ...styles.btnBlue, padding: "7px 18px", fontSize: 13, width: "100%" }}>
                             ✏️ Edit Profile
                         </button>
+                        {profile.role === "seller" && (
+                            <button onClick={() => navigate("/seller/dashboard")} style={{ ...styles.btnGray, padding: "7px 18px", fontSize: 13, width: "100%", marginTop: -4 }}>
+                                📊 Seller Dashboard
+                            </button>
+                        )}
                     </div>
 
                     {/* Info */}
@@ -477,6 +482,17 @@ const styles = {
         fontWeight: 600,
         fontSize: 14,
         padding: "10px 22px",
+    },
+    btnGray: {
+        background: "rgba(255,255,255,0.05)",
+        color: "#fff",
+        border: "1px solid rgba(255,255,255,0.1)",
+        borderRadius: 10,
+        cursor: "pointer",
+        fontWeight: 600,
+        fontSize: 14,
+        padding: "10px 22px",
+        transition: "background 0.2s"
     },
     loader: {
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "60vh",
