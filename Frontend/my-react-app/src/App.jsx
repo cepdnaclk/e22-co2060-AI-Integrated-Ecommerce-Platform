@@ -8,6 +8,7 @@ import ProductDetails from "./pages/ProductDetails.jsx";
 import SellerRegister from "./pages/SellerRegister";
 import SellerDashboard from "./pages/SellerDashboard";
 import Profile from "./pages/Profile";
+import VerifySellerEmail from "./pages/VerifySellerEmail";
 
 function App() {
   return (
@@ -32,6 +33,9 @@ function App() {
         <Route path="/become-seller" element={<SellerRegister />} />
 
         <Route path="/seller/dashboard" element={<SellerDashboard />} />
+
+        {/* Email Verification for Seller Registration */}
+        <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
 
 
       </Routes>

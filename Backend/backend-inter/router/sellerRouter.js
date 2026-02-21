@@ -1,9 +1,10 @@
 import express from "express";
 import {
   registerSeller,
+  verifySellerEmail,
   getMySellerProfile,
   updateSellerProfile,
-  getSellerById
+  getSellerById,
 } from "../controllers/sellerController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -11,29 +12,27 @@ const router = express.Router();
 
 /**
  * ======================================================
+ * EMAIL VERIFICATION — public, no auth needed
+ * GET /api/sellers/verify-email?token=xxx
+ * ======================================================
+ */
+router.get("/verify-email", verifySellerEmail);
+
+/**
+ * ======================================================
  * SELLER REGISTRATION
  * POST /api/sellers/register
  * ======================================================
- * - Any authenticated user can register as seller
  */
-router.post(
-  "/register",
-  authMiddleware,
-  registerSeller
-);
+router.post("/register", authMiddleware, registerSeller);
 
 /**
  * ======================================================
  * GET LOGGED-IN SELLER PROFILE
  * GET /api/sellers/me
  * ======================================================
- * - Only works if user has seller profile
  */
-router.get(
-  "/me",
-  authMiddleware,
-  getMySellerProfile
-);
+router.get("/me", authMiddleware, getMySellerProfile);
 
 /**
  * ======================================================
@@ -41,11 +40,7 @@ router.get(
  * PUT /api/sellers/me
  * ======================================================
  */
-router.put(
-  "/me",
-  authMiddleware,
-  updateSellerProfile
-);
+router.put("/me", authMiddleware, updateSellerProfile);
 
 /**
  * ======================================================
