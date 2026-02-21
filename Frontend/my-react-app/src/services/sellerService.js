@@ -16,9 +16,9 @@ export const registerSeller = async (sellerData) => {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(sellerData)
+    body: JSON.stringify(sellerData),
   });
 
   const data = await response.json();
@@ -27,7 +27,7 @@ export const registerSeller = async (sellerData) => {
     throw new Error(data.message || "Seller registration failed");
   }
 
-  return data;
+  return data; // { message, seller }
 };
 
 /**
@@ -41,8 +41,8 @@ export const getMySellerProfile = async () => {
 
   const response = await fetch(`${BASE_URL}/me`, {
     headers: {
-      Authorization: `Bearer ${token}`
-    }
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   const data = await response.json();

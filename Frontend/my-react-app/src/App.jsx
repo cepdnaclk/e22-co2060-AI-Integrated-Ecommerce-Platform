@@ -6,7 +6,7 @@ import Login from "./pages/login.jsx";
 import ProductListing from "./pages/ProductListing.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import SellerRegister from "./pages/SellerRegister";
-
+import SellerDashboard from "./pages/SellerDashboard";
 function App() {
   return (
     <Router>
@@ -25,6 +25,8 @@ function App() {
 
           {/* Seller Registration Page */}
         <Route path="/become-seller" element={<SellerRegister />} />
+
+        <Route path="/seller/dashboard" element={<SellerDashboard />} />
 
         
       </Routes>
