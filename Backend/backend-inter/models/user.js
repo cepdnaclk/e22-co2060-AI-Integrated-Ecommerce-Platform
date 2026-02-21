@@ -48,6 +48,12 @@ const userSchema = new mongoose.Schema(
       default: "/images/default-profile.png"
     },
 
+    phone: { type: String, default: "" },
+    dateOfBirth: { type: String, default: "" },
+    gender: { type: String, enum: ["male", "female", "other", ""], default: "" },
+    address: { type: String, default: "" },
+    bio: { type: String, default: "" },
+
     token: {
       type: String,
       default: null
