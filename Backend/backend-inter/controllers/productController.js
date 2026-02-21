@@ -1,6 +1,7 @@
 import productModel from "../models/products.js";
 import sellerOfferModel from "../models/sellerOffer.js";
 import TopProduct from "../models/topProducts.js";
+import ProductVariant from "../models/productVariant.js";
 
 /**
  * ======================================================
@@ -275,5 +276,59 @@ export async function getTopThreeProducts(req, res) {
       message: "Failed to fetch top products",
       error: error.message
     });
+  }
+}
+
+/**
+ * ======================================================
+ * GET VARIANTS FOR A PRODUCT
+ * ======================================================
+ * ROUTE: GET /api/products/:id/variants
+ */
+export async function getVariantsByProduct(req, res) {
+  try {
+    const variants = await ProductVariant.find(
+      { productId: req.params.id, isActive: true }
+    ).sort({ variantName: 1 });
+
+    res.json(variants);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch variants", error: error.message });
+  }
+}
+
+/**
+ * ======================================================
+ * CREATE VARIANT (ADMIN)
+ * ======================================================
+ * ROUTE: POST /api/products/:id/variants
+ * Body: { variantName, color, storage, size, attributes, image }
+ */
+export async function createVariant(req, res) {
+  try {
+    const { variantName, color, storage, size, attributes, image } = req.body;
+
+    const variant = new ProductVariant({
+      productId: req.params.id,
+      variantName,
+      color: color || "",
+      storage: storage || "",
+      size: size || "",
+      attributes: attributes || {},
+      image: image || "",
+    });
+    // pre-save hook will build searchText automatically
+    await variant.save();
+
+    // Enrich searchText with parent product name for richer indexing
+    const product = await productModel.findById(req.params.id).lean();
+    if (product) {
+      variant.searchText = `${product.productName} ${product.brand ?? ""} ${variant.searchText}`.toLowerCase();
+      await variant.save();
+    }
+
+    res.status(201).json({ message: "Variant created", variant });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create variant", error: error.message });
   }
 }

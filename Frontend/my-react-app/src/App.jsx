@@ -9,7 +9,11 @@ import SellerRegister from "./pages/SellerRegister";
 import SellerDashboard from "./pages/SellerDashboard";
 import Profile from "./pages/Profile";
 import VerifySellerEmail from "./pages/VerifySellerEmail";
+import CreateSellerOffer from "./pages/CreateSellerOffer";
+import MySellerOffers from "./pages/MySellerOffers";
 import Chatbot from "./components/Chatbot";
+import CreateProduct from "./pages/CreateProduct";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -35,9 +39,16 @@ function App() {
 
         <Route path="/seller/dashboard" element={<SellerDashboard />} />
 
+        {/* Seller Offer Management */}
+        <Route path="/seller/offers" element={<MySellerOffers />} />
+        <Route path="/seller/offers/new" element={<CreateSellerOffer />} />
+
         {/* Email Verification for Seller Registration */}
         <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
 
+        {/* Global Catalog Management (Admin/Seller) */}
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/products/new" element={<CreateProduct />} />
 
       </Routes>
       <Chatbot />

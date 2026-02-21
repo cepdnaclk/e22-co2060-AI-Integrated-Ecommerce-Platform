@@ -36,7 +36,7 @@ import Seller from "../models/seller.js";
  */
 export async function addSellerOffer(req, res) {
   try {
-    const { productId, price, stock, warranty } = req.body;
+    const { productId, variantId, price, stock, warranty, discountPercentage, deliveryOptions, image } = req.body;
 
     // 🔍 Find seller profile for logged-in user
     const seller = await Seller.findOne({ userId: req.user.id });
@@ -49,12 +49,16 @@ export async function addSellerOffer(req, res) {
 
     // 🏷️ Create new seller offer
     const offer = await sellerOfferModel.create({
-      productId,                 // Global product
-      sellerId: seller._id,       // Seller business ID
-      sellerName: seller.shopName,// Cached seller name
+      productId,                            // Global product
+      variantId: variantId || null,         // 🎨 Specific variant (optional)
+      sellerId: seller._id,                  // Seller business ID
+      sellerName: seller.shopName,           // Cached seller name
       price,
       stock,
-      warranty
+      warranty,
+      discountPercentage: discountPercentage || 0,
+      deliveryOptions: deliveryOptions || ["Standard"],
+      image: image || "",                    // 🖼️ Uploaded image URL
     });
 
     res.status(201).json({

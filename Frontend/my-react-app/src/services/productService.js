@@ -48,3 +48,55 @@ export const fetchProductDetails = async (productId) => {
     throw error;
   }
 };
+
+/**
+ * ✅ CREATE PRODUCT (ADMIN)
+ * POST /api/products
+ * payload: { productName, category, brand, description, image }
+ */
+export const createProduct = async (payload) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Failed to create product");
+    return data;
+  } catch (error) {
+    console.error("❌ createProduct error:", error);
+    throw error;
+  }
+};
+
+/**
+ * ✅ CREATE PRODUCT VARIANT (ADMIN)
+ * POST /api/products/:productId/variants
+ * payload: { variantName, color, storage, size, image, attributes }
+ */
+export const createProductVariant = async (productId, payload) => {
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${BASE_URL}/${productId}/variants`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || "Failed to create variant");
+    return data;
+  } catch (error) {
+    console.error("❌ createProductVariant error:", error);
+    throw error;
+  }
+};

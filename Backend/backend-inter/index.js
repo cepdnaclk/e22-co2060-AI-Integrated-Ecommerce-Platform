@@ -14,6 +14,7 @@ import exportRouter from "./router/exportRouter.js";   // ✅ Order
 import sellerRouter from "./router/sellerRouter.js"; //seller router
 import userRouter from "./router/userRouter.js"; // ✅ Users
 import chatRouter from "./router/chatRouter.js"; // ✅ AI Chatbot
+import searchRouter from "./router/searchRouter.js"; // ✅ Smart Search
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -74,6 +75,9 @@ app.use("/api/sellers", sellerRouter);
 
 // Seller offers (price, stock per seller)
 app.use("/api/seller-offers", sellerOfferRouter);
+
+// 🔍 Smart Search (Products + Variants + Offers)
+app.use("/api/search", searchRouter);
 
 // 👤 Users
 app.use("/api/users", userRouter);

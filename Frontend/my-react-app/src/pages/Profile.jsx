@@ -190,6 +190,7 @@ const Profile = () => {
                         )}
                     </div>
 
+
                     {/* Info */}
                     <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>

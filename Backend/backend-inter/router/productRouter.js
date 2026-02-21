@@ -5,7 +5,9 @@ import {
   deleteProduct,
   getTopThreeProducts,
   getAllProducts,
-  getProductById
+  getProductById,
+  getVariantsByProduct,
+  createVariant,
 } from "../controllers/productController.js";
 
 const router = express.Router();
@@ -49,8 +51,20 @@ router.delete("/:id", deleteProduct);
 /**
  * ✅ PRODUCT DETAILS + SELLER OFFERS
  * GET /api/products/:id
- * ⚠️ MUST BE LAST
+ * ⚠️ MUST BE LAST before variant routes
  */
 router.get("/:id", getProductById);
+
+/**
+ * ✅ LIST VARIANTS FOR A PRODUCT
+ * GET /api/products/:id/variants
+ */
+router.get("/:id/variants", getVariantsByProduct);
+
+/**
+ * ✅ CREATE VARIANT (ADMIN)
+ * POST /api/products/:id/variants
+ */
+router.post("/:id/variants", createVariant);
 
 export default router;
