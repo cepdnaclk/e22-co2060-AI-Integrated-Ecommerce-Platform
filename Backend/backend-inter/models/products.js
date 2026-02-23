@@ -5,6 +5,7 @@ const productSchema = new mongoose.Schema(
     productName: {
       type: String,
       required: true,
+      trim: true,
       index: true
     },
 
@@ -13,27 +14,56 @@ const productSchema = new mongoose.Schema(
       default: "/images/default-product.png"
     },
 
+    // ✅ Proper Category Reference (instead of String)
     category: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
       required: true,
       index: true
     },
 
     description: {
-      type: String
+      type: String,
+      trim: true
     },
 
     brand: {
-      type: String
+      type: String,
+      trim: true,
+      index: true
     },
 
     specs: {
       type: Object
     },
 
+
+    // ✅ Rating for ranking
+    rating: {
+      type: Number,
+      default: 0
+    },
+
+    reviewCount: {
+      type: Number,
+      default: 0
+    },
+
+    // ✅ Tags (help search boosting)
+    tags: {
+      type: [String],
+      default: []
+    },
+
     howManyProductsSold: {
       type: Number,
       default: 0
+    },
+
+    // 🔥 AI Embedding Field (VERY IMPORTANT)
+    embedding: {
+      type: [Number],
+      default: []
     }
   },
   {
@@ -41,13 +71,14 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-/* ✅ TEXT INDEX (FOR SEARCH) */
+/* ✅ TEXT INDEX (FOR BASIC SEARCH) */
 productSchema.index({
   productName: "text",
-  category: "text",
+  description: "text",
   brand: "text",
-  description: "text"
+  tags: "text"
 });
 
 const productModel = mongoose.model("Product", productSchema);
+
 export default productModel;
