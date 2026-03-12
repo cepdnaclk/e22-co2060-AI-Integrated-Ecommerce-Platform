@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 
 // ================== ROUTERS ==================
 import authRouter from "./router/authRouter.js";
+import adminAuthRouter from "./router/adminAuthRouter.js"; // ✅ Admin Auth
 import aiRouter from "./router/aiRouter.js";
 import productRouter from "./router/productRouter.js";
 import sellerOfferRouter from "./router/sellerOfferRouter.js";
@@ -15,6 +16,7 @@ import sellerRouter from "./router/sellerRouter.js"; //seller router
 import userRouter from "./router/userRouter.js"; // ✅ Users
 import chatRouter from "./router/chatRouter.js"; // ✅ AI Chatbot
 import searchRouter from "./router/searchRouter.js"; // ✅ Smart Search
+import inventoryRouter from "./router/inventoryRouter.js"; // ✅ Inventory Management
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -65,6 +67,9 @@ app.use("/api/chat", chatRouter);
 // Auth (login, register)
 app.use("/api/auth", authRouter);
 
+// 🔐 Admin Authentication (separate login for admins)
+app.use("/api/admin/auth", adminAuthRouter);
+
 // AI features
 app.use("/api/ai", aiRouter);
 
@@ -91,6 +96,9 @@ app.use("/api/orders", orderRouter);
 
 
 app.use("/api/export", exportRouter);
+
+// 📦 Admin Inventory Management
+app.use("/api/admin/inventory", inventoryRouter);
 
 // ================== TEST ROUTES ==================
 

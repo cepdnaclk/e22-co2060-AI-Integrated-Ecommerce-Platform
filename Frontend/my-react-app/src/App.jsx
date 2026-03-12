@@ -15,6 +15,9 @@ import Chatbot from "./components/Chatbot";
 import CartWidget from "./components/CartWidget";
 import CreateProduct from "./pages/CreateProduct";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminInventory from "./pages/AdminInventory";
+import AdminLogin from "./pages/AdminLogin";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
@@ -57,9 +60,25 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders" element={<OrderHistory />} />
 
-          {/* Global Catalog Management (Admin/Seller) */}
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/products/new" element={<CreateProduct />} />
+          {/* Admin Login - Separate from regular login */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* Admin Protected Routes - Requires admin authentication */}
+          <Route path="/admin/dashboard" element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/products/new" element={
+            <AdminProtectedRoute>
+              <CreateProduct />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/inventory" element={
+            <AdminProtectedRoute>
+              <AdminInventory />
+            </AdminProtectedRoute>
+          } />
 
         </Routes>
         <Chatbot />

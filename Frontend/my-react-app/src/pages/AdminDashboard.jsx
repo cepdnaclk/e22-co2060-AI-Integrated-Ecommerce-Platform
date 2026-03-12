@@ -1,9 +1,36 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ParticleCanvas from "../components/ParticleCanvas";
+import API_BASE_URL from "../config/api";
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
+    
+    // Get admin user info
+    const adminUser = JSON.parse(localStorage.getItem("adminUser") || localStorage.getItem("user") || "{}");
+
+    // Admin logout handler
+    const handleLogout = async () => {
+        try {
+            const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+            if (token) {
+                await fetch(`${API_BASE_URL}/api/admin/auth/logout`, {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
+        } catch (e) {
+            console.error("Logout error:", e);
+        }
+        
+        // Clear admin tokens
+        localStorage.removeItem("adminToken");
+        localStorage.removeItem("adminUser");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        
+        navigate("/admin/login");
+    };
 
     return (
         <div style={S.pg}>
@@ -33,10 +60,13 @@ export default function AdminDashboard() {
                             </h1>
                         </div>
                         <p style={{ color: "#94a3b8", fontSize: 15, margin: 0 }}>
-                            System management, user administration, and global catalog control.
+                            Welcome back, {adminUser.firstName || "Admin"}! System management and global catalog control.
                         </p>
                     </div>
-                    <button onClick={() => navigate("/")} style={S.btnGray}>← Back to Home</button>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                        <span style={{ color: "#a855f7", fontSize: 14 }}>🔒 {adminUser.email}</span>
+                        <button onClick={handleLogout} style={S.btnRed}>Logout</button>
+                    </div>
                 </div>
 
                 {/* Dashboard Grid */}
@@ -51,6 +81,18 @@ export default function AdminDashboard() {
                         </p>
                         <button onClick={() => navigate("/admin/products/new")} style={{ ...S.btnPurple, width: "100%" }}>
                             Manage Products →
+                        </button>
+                    </div>
+
+                    {/* Inventory Management Card */}
+                    <div className="ad-card" style={S.card}>
+                        <div style={{ fontSize: 32, marginBottom: 16 }}>📊</div>
+                        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Inventory Management</h2>
+                        <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5, marginBottom: 24, minHeight: 42 }}>
+                            Monitor stock levels, manage inventory, view alerts, and track stock movements.
+                        </p>
+                        <button onClick={() => navigate("/admin/inventory")} style={{ ...S.btnPurple, width: "100%" }}>
+                            Manage Inventory →
                         </button>
                     </div>
 
@@ -127,5 +169,16 @@ const S = {
         fontSize: 14,
         padding: "10px 20px",
         transition: "background 0.2s"
+    },
+    btnRed: {
+        background: "linear-gradient(to right, #dc2626, #ef4444)",
+        color: "#fff",
+        border: "none",
+        borderRadius: 10,
+        cursor: "pointer",
+        fontWeight: 600,
+        fontSize: 14,
+        padding: "10px 20px",
+        transition: "opacity 0.2s"
     },
 };
