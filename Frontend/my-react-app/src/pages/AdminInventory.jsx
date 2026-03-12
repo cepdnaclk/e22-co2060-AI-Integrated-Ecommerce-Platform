@@ -123,9 +123,12 @@ export default function AdminInventory() {
   };
 
   // ─── Effects ───
-  useEffect(() => { loadFilterOptions(); }, [loadFilterOptions]);
-  useEffect(() => { if (tab === "dashboard") loadDashboard(); }, [tab, loadDashboard]);
-  useEffect(() => { if (tab === "list") loadInventory(1); }, [tab, search, category, stockStatus, sort, sellerFilter, loadInventory]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { loadFilterOptions(); }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (tab === "dashboard") loadDashboard(); }, [tab]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (tab === "list") loadInventory(1); }, [tab, search, category, stockStatus, sort, sellerFilter]);
 
   // ─── Handlers ───
   const handleSearch = (e) => {
@@ -302,7 +305,7 @@ export default function AdminInventory() {
       {showDetailModal && (
         <Modal onClose={() => { setShowDetailModal(false); setItemDetail(null); }}>
           <h2 style={S.modalTitle}>📦 Inventory Item Detail</h2>
-          {!itemDetail ? <p style={{ color: "#94a3b8" }}>Loading...</p> : (
+          {itemDetail ? (
             <div>
               <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
                 <img
@@ -361,7 +364,7 @@ export default function AdminInventory() {
                 </div>
               )}
             </div>
-          )}
+          ) : <p style={{ color: "#94a3b8" }}>Loading...</p>}
         </Modal>
       )}
 
@@ -776,7 +779,8 @@ function AlertsTab({ apiFetch, showToast, openStockUpdate }) {
     setLoading(false);
   }, [apiFetch, threshold, showToast]);
 
-  useEffect(() => { load(1); }, [load]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(1); }, [threshold]);
 
   const urgencyColors = { critical: "#ef4444", high: "#f59e0b", medium: "#3b82f6" };
 
@@ -865,7 +869,8 @@ function HistoryTab({ apiFetch }) {
     setLoading(false);
   }, [apiFetch, typeFilter]);
 
-  useEffect(() => { load(1); }, [load]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(1); }, [typeFilter]);
 
   const typeColors = {
     restock: "#22c55e", sale: "#3b82f6", adjustment: "#f59e0b",
