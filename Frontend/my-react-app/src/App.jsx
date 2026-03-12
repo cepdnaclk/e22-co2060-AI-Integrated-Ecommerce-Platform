@@ -14,6 +14,9 @@ import MySellerOffers from "./pages/MySellerOffers";
 import Chatbot from "./components/Chatbot";
 import CreateProduct from "./pages/CreateProduct";
 import AdminDashboard from "./pages/AdminDashboard";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import OrderHistory from "./pages/OrderHistory";
 
 function App() {
   return (
@@ -45,6 +48,11 @@ function App() {
 
         {/* Email Verification for Seller Registration */}
         <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
+
+        {/* Cart, Checkout & Orders */}
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/orders" element={<OrderHistory />} />
 
         {/* Global Catalog Management (Admin/Seller) */}
         <Route path="/admin/dashboard" element={<AdminDashboard />} />

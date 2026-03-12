@@ -156,9 +156,10 @@ export async function updateSellerOffer(req, res) {
     }
 
     // ✏️ Update allowed fields only
-    if (req.body.price !== undefined) offer.price = req.body.price;
-    if (req.body.stock !== undefined) offer.stock = req.body.stock;
+    if (req.body.price    !== undefined) offer.price    = req.body.price;
+    if (req.body.stock    !== undefined) offer.stock    = req.body.stock;
     if (req.body.warranty !== undefined) offer.warranty = req.body.warranty;
+    if (req.body.isActive !== undefined) offer.isActive = req.body.isActive;
 
     await offer.save();
 

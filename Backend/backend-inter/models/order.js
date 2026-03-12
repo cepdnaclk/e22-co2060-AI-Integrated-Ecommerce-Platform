@@ -12,6 +12,20 @@ import mongoose from "mongoose";
  */
 
 /**
+ * Shipping Address Schema (Embedded)
+ */
+const shippingAddressSchema = new mongoose.Schema(
+  {
+    fullName: { type: String, required: true },
+    phone: { type: String, required: true },
+    street: { type: String, required: true },
+    city: { type: String, required: true },
+    postalCode: { type: String, required: true }
+  },
+  { _id: false }
+);
+
+/**
  * Order Item Schema
  */
 const orderItemSchema = new mongoose.Schema(
@@ -71,6 +85,12 @@ const orderSchema = new mongoose.Schema(
     totalAmount: {
       type: Number,
       required: true
+    },
+
+    // 📦 Shipping address
+    shippingAddress: {
+      type: shippingAddressSchema,
+      required: false
     },
 
     // 📌 Order status lifecycle

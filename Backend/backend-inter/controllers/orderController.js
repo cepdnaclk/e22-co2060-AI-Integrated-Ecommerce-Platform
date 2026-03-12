@@ -22,6 +22,8 @@ import Order from "../models/order.js";
  */
 export async function createOrder(req, res) {
   try {
+    const { shippingAddress } = req.body;
+
     // 1️⃣ Get user's cart
     const cart = await Cart.findOne({ userId: req.user.id });
 
@@ -68,7 +70,8 @@ export async function createOrder(req, res) {
           price: item.price,
           quantity: item.quantity
         })),
-        totalAmount
+        totalAmount,
+        ...(shippingAddress && { shippingAddress })
       });
 
       createdOrders.push(order);

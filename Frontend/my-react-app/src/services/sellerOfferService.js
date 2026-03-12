@@ -108,7 +108,7 @@ export const updateSellerOffer = async (token, id, payload) => {
 };
 
 // ──────────────────────────────────────
-// ⏸️ DISABLE SELLER OFFER
+// ⏸️ PAUSE SELLER OFFER (soft-disable)
 // ──────────────────────────────────────
 export const disableSellerOffer = async (token, id) => {
   const response = await fetch(`${BASE_URL}/${id}`, {
@@ -116,6 +116,23 @@ export const disableSellerOffer = async (token, id) => {
     headers: { Authorization: `Bearer ${token}` }
   });
   const data = await response.json();
-  if (!response.ok) throw new Error(data.message || "Failed to disable offer");
+  if (!response.ok) throw new Error(data.message || "Failed to pause offer");
+  return data;
+};
+
+// ──────────────────────────────────────
+// ▶️ RESUME (RE-ENABLE) SELLER OFFER
+// ──────────────────────────────────────
+export const enableSellerOffer = async (token, id) => {
+  const response = await fetch(`${BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ isActive: true })
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message || "Failed to resume offer");
   return data;
 };

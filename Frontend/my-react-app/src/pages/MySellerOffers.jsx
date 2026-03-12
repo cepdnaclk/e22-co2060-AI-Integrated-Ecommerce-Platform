@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { getMySellerOffers, updateSellerOffer, disableSellerOffer } from "../services/sellerOfferService";
+import { getMySellerOffers, updateSellerOffer, disableSellerOffer, enableSellerOffer } from "../services/sellerOfferService";
 
 /* ─── Shared style tokens matching SellerDashboard theme ─── */
 const S = {
@@ -98,6 +98,10 @@ export default function MySellerOffers() {
     const [disableTarget, setDisableTarget] = useState(null);
     const [disabling, setDisabling] = useState(false);
 
+    // Resume confirm
+    const [resumeTarget, setResumeTarget] = useState(null);
+    const [resuming, setResuming] = useState(false);
+
     const token = localStorage.getItem("token");
 
     const load = useCallback(async () => {
@@ -156,7 +160,7 @@ export default function MySellerOffers() {
         }
     };
 
-    /* ─── DISABLE ─── */
+    /* ─── DISABLE / PAUSE ─── */
     const handleDisable = async () => {
         if (!disableTarget) return;
         setDisabling(true);
@@ -166,11 +170,29 @@ export default function MySellerOffers() {
                 prev.map((o) => (o._id === disableTarget._id ? { ...o, isActive: false } : o))
             );
             setDisableTarget(null);
-            showToast("Offer paused. It will no longer appear to buyers.");
+            showToast("Offer paused — buyers can no longer see it.");
         } catch (err) {
             showToast(err.message, false);
         } finally {
             setDisabling(false);
+        }
+    };
+
+    /* ─── RESUME / RE-ENABLE ─── */
+    const handleResume = async () => {
+        if (!resumeTarget) return;
+        setResuming(true);
+        try {
+            await enableSellerOffer(token, resumeTarget._id);
+            setOffers((prev) =>
+                prev.map((o) => (o._id === resumeTarget._id ? { ...o, isActive: true } : o))
+            );
+            setResumeTarget(null);
+            showToast("Offer resumed — it is now visible to buyers! ✓");
+        } catch (err) {
+            showToast(err.message, false);
+        } finally {
+            setResuming(false);
         }
     };
 
@@ -188,6 +210,7 @@ export default function MySellerOffers() {
         .mso-filter-btn.active { background: rgba(5,130,202,0.18) !important; border-color: #0582ca !important; color: #4ac6ff !important; }
         .mso-edit-btn:hover { background: rgba(5,130,202,0.18) !important; border-color: #0582ca !important; color: #4ac6ff !important; }
         .mso-disable-btn:hover { background: rgba(239,68,68,0.18) !important; }
+        .mso-resume-btn:hover { background: rgba(34,197,94,0.2) !important; border-color: rgba(34,197,94,0.5) !important; color: #4ade80 !important; }
         .mso-input-focus:focus { border-color: #0582ca !important; }
         .mso-modal { animation: modalIn 0.2s ease forwards; }
       `}</style>
@@ -274,7 +297,7 @@ export default function MySellerOffers() {
                 </div>
             )}
 
-            {/* Disable confirm modal */}
+            {/* Pause / Disable confirm modal */}
             {disableTarget && (
                 <div style={S.overlay} onClick={() => setDisableTarget(null)}>
                     <div
@@ -290,7 +313,8 @@ export default function MySellerOffers() {
                         <h3 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700 }}>Pause this offer?</h3>
                         <p style={{ color: "#94a3b8", fontSize: 14, marginBottom: 28 }}>
                             <strong style={{ color: "#e2e8f0" }}>{disableTarget.productId?.productName}</strong>
-                            <br />This offer will no longer appear to buyers. You can contact support to re-enable it.
+                            <br />Buyers won't see this offer while it's paused.
+                            <br /><span style={{ color: "#4ac6ff" }}>You can reactivate it anytime.</span>
                         </p>
                         <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
                             <button style={S.btnGray} onClick={() => setDisableTarget(null)}>Cancel</button>
@@ -301,7 +325,47 @@ export default function MySellerOffers() {
                             >
                                 {disabling ? (
                                     <><span style={{ width: 14, height: 14, border: "2px solid rgba(248,113,113,0.3)", borderTop: "2px solid #f87171", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Pausing…</>
-                                ) : "Yes, Pause"}
+                                ) : "⏸️ Pause Offer"}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Resume confirm modal */}
+            {resumeTarget && (
+                <div style={S.overlay} onClick={() => setResumeTarget(null)}>
+                    <div
+                        className="mso-modal"
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            background: "linear-gradient(135deg, #0a1a0d, #091408)",
+                            border: "1px solid rgba(34,197,94,0.25)",
+                            borderRadius: 18, padding: "32px 36px", width: "100%", maxWidth: 420, textAlign: "center",
+                        }}
+                    >
+                        <div style={{ fontSize: 40, marginBottom: 16 }}>▶️</div>
+                        <h3 style={{ margin: "0 0 8px", fontSize: 18, fontWeight: 700 }}>Resume this offer?</h3>
+                        <p style={{ color: "#94a3b8", fontSize: 14, marginBottom: 28 }}>
+                            <strong style={{ color: "#e2e8f0" }}>{resumeTarget.productId?.productName}</strong>
+                            <br />This offer will become <span style={{ color: "#4ade80", fontWeight: 700 }}>visible to buyers</span> immediately.
+                        </p>
+                        <div style={{ display: "flex", gap: 12, justifyContent: "center" }}>
+                            <button style={S.btnGray} onClick={() => setResumeTarget(null)}>Cancel</button>
+                            <button
+                                style={{
+                                    background: "linear-gradient(to right,#16a34a,#22c55e)",
+                                    color: "#fff", border: "none", borderRadius: 10, cursor: "pointer",
+                                    fontWeight: 600, fontSize: 14, padding: "10px 24px", minWidth: 110,
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                    opacity: resuming ? 0.7 : 1,
+                                }}
+                                onClick={handleResume}
+                                disabled={resuming}
+                            >
+                                {resuming ? (
+                                    <><span style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> Resuming…</>
+                                ) : "▶️ Resume Offer"}
                             </button>
                         </div>
                     </div>
@@ -492,6 +556,8 @@ export default function MySellerOffers() {
                                         >
                                             ✏️ Edit
                                         </button>
+
+                                        {/* Pause (active offers only) */}
                                         {offer.isActive && (
                                             <button
                                                 className="mso-disable-btn"
@@ -499,6 +565,24 @@ export default function MySellerOffers() {
                                                 style={S.btnRed}
                                             >
                                                 ⏸️ Pause
+                                            </button>
+                                        )}
+
+                                        {/* Resume (paused offers only) */}
+                                        {!offer.isActive && (
+                                            <button
+                                                className="mso-resume-btn"
+                                                onClick={() => setResumeTarget(offer)}
+                                                style={{
+                                                    background: "rgba(34,197,94,0.1)",
+                                                    color: "#4ade80",
+                                                    border: "1px solid rgba(34,197,94,0.25)",
+                                                    borderRadius: 10, cursor: "pointer",
+                                                    fontWeight: 600, fontSize: 13,
+                                                    padding: "7px 16px", transition: "all 0.2s",
+                                                }}
+                                            >
+                                                ▶️ Resume
                                             </button>
                                         )}
                                     </div>
