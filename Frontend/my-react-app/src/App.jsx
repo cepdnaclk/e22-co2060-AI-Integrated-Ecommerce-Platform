@@ -12,56 +12,62 @@ import VerifySellerEmail from "./pages/VerifySellerEmail";
 import CreateSellerOffer from "./pages/CreateSellerOffer";
 import MySellerOffers from "./pages/MySellerOffers";
 import Chatbot from "./components/Chatbot";
+import CartWidget from "./components/CartWidget";
 import CreateProduct from "./pages/CreateProduct";
 import AdminDashboard from "./pages/AdminDashboard";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
+import { CartProvider } from "./context/CartContext";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        {/* Home Page */}
-        <Route path="/" element={<Home />} />
+    <CartProvider>
+      <Router>
+        <Routes>
+          {/* Home Page */}
+          <Route path="/" element={<Home />} />
 
-        {/* Login Page */}
-        <Route path="/login" element={<Login />} />
+          {/* Login Page */}
+          <Route path="/login" element={<Login />} />
 
-        {/* Browse Products Page */}
-        <Route path="/products" element={<ProductListing />} />
+          {/* Browse Products Page */}
+          <Route path="/products" element={<ProductListing />} />
 
-        {/* Product Details Page */}
-        <Route path="/products/:id" element={<ProductDetails />} />
+          {/* Product Details Page */}
+          <Route path="/products/:id" element={<ProductDetails />} />
 
-        {/* Profile Page */}
-        <Route path="/profile" element={<Profile />} />
+          {/* Profile Page */}
+          <Route path="/profile" element={<Profile />} />
 
-        {/* Seller Registration Page */}
-        <Route path="/become-seller" element={<SellerRegister />} />
+          {/* Seller Registration Page */}
+          <Route path="/become-seller" element={<SellerRegister />} />
 
-        <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          <Route path="/seller/dashboard" element={<SellerDashboard />} />
 
-        {/* Seller Offer Management */}
-        <Route path="/seller/offers" element={<MySellerOffers />} />
-        <Route path="/seller/offers/new" element={<CreateSellerOffer />} />
+          {/* Seller Offer Management */}
+          <Route path="/seller/offers" element={<MySellerOffers />} />
+          <Route path="/seller/offers/new" element={<CreateSellerOffer />} />
 
-        {/* Email Verification for Seller Registration */}
-        <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
+          {/* Email Verification for Seller Registration */}
+          <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
 
-        {/* Cart, Checkout & Orders */}
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<CheckoutPage />} />
-        <Route path="/orders" element={<OrderHistory />} />
+          {/* Cart, Checkout & Orders */}
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrderHistory />} />
 
-        {/* Global Catalog Management (Admin/Seller) */}
-        <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        <Route path="/admin/products/new" element={<CreateProduct />} />
+          {/* Global Catalog Management (Admin/Seller) */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/products/new" element={<CreateProduct />} />
 
-      </Routes>
-      <Chatbot />
-    </Router>
+        </Routes>
+        <Chatbot />
+        <CartWidget />
+      </Router>
+    </CartProvider>
   );
 }
 
 export default App;
+

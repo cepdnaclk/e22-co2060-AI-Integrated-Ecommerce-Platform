@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchProductDetails } from "../services/productService";
-import { addToCart } from "../services/cartService";
+import { useCart } from "../context/CartContext";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -17,6 +17,9 @@ const ProductDetails = () => {
   const [quantities, setQuantities] = useState({});
 
   const token = localStorage.getItem("token");
+
+  // Cart context — addItem auto-refreshes global count
+  const { addItem } = useCart();
 
   useEffect(() => {
     loadProduct();
@@ -59,7 +62,7 @@ const ProductDetails = () => {
     }
     setAddingId(offerId);
     try {
-      await addToCart(token, offerId, qty);
+      await addItem(offerId, qty);  // uses CartContext — badge updates instantly
       showToast(`✓ ${qty > 1 ? qty + "× " : ""}Added to cart!`);
     } catch (err) {
       showToast(err.message || "Failed to add to cart", false);
@@ -67,6 +70,7 @@ const ProductDetails = () => {
       setAddingId(null);
     }
   };
+
 
   /* ── Loading ── */
   if (loading) {
