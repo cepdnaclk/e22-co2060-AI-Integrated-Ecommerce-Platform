@@ -15,6 +15,8 @@ const ProductDetails = () => {
   const [toast, setToast] = useState(null);
   // Map: offerId -> quantity
   const [quantities, setQuantities] = useState({});
+  // Map: offerId -> selected variantId (for offers with multiple variants)
+  const [selectedVariants, setSelectedVariants] = useState({});
 
   const token = localStorage.getItem("token");
 
@@ -33,8 +35,16 @@ const ProductDetails = () => {
       // Initialise all quantities to 1
       if (response?.offers) {
         const init = {};
-        response.offers.forEach((o) => { init[o._id] = 1; });
+        const initVariants = {};
+        response.offers.forEach((o) => {
+          init[o._id] = 1;
+          // Pre-select the first variant if offer has variants
+          if (o.variantIds && o.variantIds.length > 0) {
+            initVariants[o._id] = o.variantIds[0]._id;
+          }
+        });
         setQuantities(init);
+        setSelectedVariants(initVariants);
       }
     } catch (err) {
       console.error("❌ Product details error:", err);
@@ -55,14 +65,14 @@ const ProductDetails = () => {
     setQuantities((prev) => ({ ...prev, [offerId]: clamped }));
   };
 
-  const handleAddToCart = async (offerId, qty) => {
+  const handleAddToCart = async (offerId, qty, variantId) => {
     if (!token) {
       navigate("/login");
       return;
     }
     setAddingId(offerId);
     try {
-      await addItem(offerId, qty);  // uses CartContext — badge updates instantly
+      await addItem(offerId, qty, variantId);  // uses CartContext — badge updates instantly
       showToast(`✓ ${qty > 1 ? qty + "× " : ""}Added to cart!`);
     } catch (err) {
       showToast(err.message || "Failed to add to cart", false);
@@ -215,6 +225,8 @@ const ProductDetails = () => {
                   : null;
                 const effectivePrice = discounted ?? offer.price;
                 const outOfStock = offer.stock === 0;
+                const offerVariants = offer.variantIds || [];
+                const chosenVariantId = selectedVariants[offer._id] || null;
 
                 return (
                   <div
@@ -267,6 +279,51 @@ const ProductDetails = () => {
                       </div>
                     </div>
 
+                    {/* Variant Picker – shown when offer has multiple variants */}
+                    {offerVariants.length > 0 && (
+                      <div style={{ marginTop: 14, borderTop: "1px solid rgba(255,255,255,0.06)", paddingTop: 14 }}>
+                        <p style={{ fontSize: 12, color: "#94a3b8", fontWeight: 600, marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                          Choose Variant
+                        </p>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                          {offerVariants.map((v) => {
+                            const vid = v._id;
+                            const isChosen = chosenVariantId === vid;
+                            return (
+                              <button
+                                key={vid}
+                                type="button"
+                                onClick={() => setSelectedVariants((prev) => ({ ...prev, [offer._id]: vid }))}
+                                style={{
+                                  background: isChosen ? "rgba(5,130,202,0.18)" : "rgba(255,255,255,0.04)",
+                                  border: `1.5px solid ${isChosen ? "#0582ca" : "rgba(255,255,255,0.12)"}`,
+                                  borderRadius: 8, padding: "6px 14px",
+                                  cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+                                  transition: "all 0.15s",
+                                }}
+                              >
+                                {v.image && (
+                                  <img src={v.image} alt={v.variantName}
+                                    style={{ width: 22, height: 22, borderRadius: 4, objectFit: "cover" }} />
+                                )}
+                                <span style={{ fontSize: 13, fontWeight: isChosen ? 700 : 500, color: isChosen ? "#4ac6ff" : "#cbd5e1" }}>
+                                  {v.variantName}
+                                </span>
+                                {(v.color || v.storage) && (
+                                  <span style={{ fontSize: 11, color: "#475569" }}>
+                                    {[v.color, v.storage].filter(Boolean).join(" · ")}
+                                  </span>
+                                )}
+                                {isChosen && (
+                                  <span style={{ fontSize: 10, color: "#4ac6ff", fontWeight: 700 }}>✓</span>
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+
                     {/* Bottom row: quantity stepper + add to cart */}
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 14, gap: 16, flexWrap: "wrap" }}>
                       {/* Quantity Stepper */}
@@ -307,8 +364,8 @@ const ProductDetails = () => {
                         )}
                         <button
                           className="pd-add-btn"
-                          onClick={() => handleAddToCart(offer._id, qty)}
-                          disabled={isAdding || outOfStock}
+                          onClick={() => handleAddToCart(offer._id, qty, chosenVariantId)}
+                          disabled={isAdding || outOfStock || (offerVariants.length > 0 && !chosenVariantId)}
                           style={{
                             background: outOfStock ? "rgba(255,255,255,0.05)" : "linear-gradient(to right,#006494,#0582ca)",
                             color: outOfStock ? "#64748b" : "#fff",

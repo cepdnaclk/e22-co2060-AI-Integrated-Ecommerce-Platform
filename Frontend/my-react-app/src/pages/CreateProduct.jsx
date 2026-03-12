@@ -1,6 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createProduct, createProductVariant } from "../services/productService";
+import ProductNameAutocomplete from "../components/ProductNameAutocomplete";
+import API_BASE_URL from "../config/api";
 
 /* ─── Style tokens (dark blue glassmorphism, matching CreateSellerOffer) ─── */
 const S = {
@@ -87,6 +89,7 @@ export default function CreateProduct() {
     ]);
 
     const [loading, setLoading] = useState(false);
+    const [aiLoading, setAiLoading] = useState(false);
     const [toast, setToast] = useState(null);
 
     const showToast = (msg, success = true) => {
@@ -97,6 +100,50 @@ export default function CreateProduct() {
     const handleProductChange = (e) => {
         const { name, value } = e.target;
         setProduct((prev) => ({ ...prev, [name]: value }));
+    };
+
+    // Called when the admin selects a suggestion — auto-fills all product fields
+    const handleProductNameSelect = async (selectedName) => {
+        setProduct((prev) => ({ ...prev, productName: selectedName }));
+        setAiLoading(true);
+        showToast("✦ AI is fetching product details…", true);
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/ai/product-details`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ product_name: selectedName }),
+            });
+            if (!res.ok) throw new Error("AI fetch failed");
+            const data = await res.json();
+
+            setProduct((prev) => ({
+                ...prev,
+                productName: data.name || selectedName,
+                brand: data.brand || "",
+                category: data.category || "",
+                description: data.description || "",
+                image: (data.images && data.images[0]) || "",
+            }));
+
+            if (Array.isArray(data.variants) && data.variants.length > 0) {
+                setVariants(
+                    data.variants.map((v, i) => ({
+                        id: Date.now() + i,
+                        variantName: v.variantName || "",
+                        color: v.color || "",
+                        storage: v.storage || "",
+                        size: v.size || "",
+                        image: v.image || "",
+                    }))
+                );
+            }
+
+            showToast("✅ Product details auto-filled by AI!", true);
+        } catch {
+            showToast("AI auto-fill failed. Please fill in the fields manually.", false);
+        } finally {
+            setAiLoading(false);
+        }
     };
 
     const handleVariantChange = (id, field, value) => {
@@ -176,8 +223,10 @@ export default function CreateProduct() {
         @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
         @keyframes toastIn { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
         .cp-card { animation: fadeIn .5s ease forwards; }
         .cp-input:focus { border-color: #0582ca !important; }
+        .cp-input:disabled { opacity: 0.5; cursor: not-allowed; }
       `}</style>
 
             {/* Toast */}
@@ -207,6 +256,26 @@ export default function CreateProduct() {
                     <button type="button" onClick={() => navigate(-1)} style={S.btnGray}>← Back</button>
                 </div>
 
+                {/* AI Loading Overlay */}
+                {aiLoading && (
+                    <div style={{
+                        position: "fixed", inset: 0, zIndex: 9998,
+                        background: "rgba(5,11,46,0.75)", backdropFilter: "blur(6px)",
+                        display: "flex", flexDirection: "column",
+                        alignItems: "center", justifyContent: "center", gap: 16,
+                    }}>
+                        <div style={{
+                            width: 48, height: 48,
+                            border: "3px solid rgba(5,130,202,0.2)",
+                            borderTopColor: "#0582ca", borderRadius: "50%",
+                            animation: "spin 0.8s linear infinite",
+                        }} />
+                        <p style={{ color: "#94a3b8", fontWeight: 600, fontSize: 15, animation: "pulse 1.5s ease-in-out infinite" }}>
+                            ✦ AI is fetching product details…
+                        </p>
+                    </div>
+                )}
+
                 {/* Main Card */}
                 <div className="cp-card" style={S.card}>
                     <form onSubmit={handleSubmit}>
@@ -215,11 +284,29 @@ export default function CreateProduct() {
                         <h2 style={{ fontSize: 18, color: "#fff", borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: 10, marginBottom: 20 }}>
                             1. Base Product Information
                         </h2>
+                        {/* AI auto-fill hint banner */}
+                        <div style={{
+                            background: "rgba(5,130,202,0.08)",
+                            border: "1px solid rgba(5,130,202,0.2)",
+                            borderRadius: 10, padding: "10px 16px",
+                            marginBottom: 20, display: "flex", alignItems: "center", gap: 10,
+                        }}>
+                            <span style={{ fontSize: 16 }}>✦</span>
+                            <p style={{ margin: 0, fontSize: 13, color: "#94a3b8" }}>
+                                <strong style={{ color: "#38bdf8" }}>AI Auto-Fill</strong> — Start typing a product name to get AI-powered suggestions.
+                                Selecting a suggestion will automatically populate all form fields.
+                            </p>
+                        </div>
+
                         <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 20 }}>
-                            <div>
-                                <label style={S.label}>Product Name *</label>
-                                <input required className="cp-input" style={S.input} name="productName" value={product.productName} onChange={handleProductChange} placeholder="e.g. Apple iPhone 15 Pro Max" />
-                            </div>
+                            <ProductNameAutocomplete
+                                value={product.productName}
+                                onChange={(val) => setProduct((prev) => ({ ...prev, productName: val }))}
+                                onSelect={handleProductNameSelect}
+                                inputStyle={S.input}
+                                labelStyle={S.label}
+                                disabled={aiLoading}
+                            />
                             <div>
                                 <label style={S.label}>Category *</label>
                                 <select required className="cp-input" style={S.input} name="category" value={product.category} onChange={handleProductChange}>

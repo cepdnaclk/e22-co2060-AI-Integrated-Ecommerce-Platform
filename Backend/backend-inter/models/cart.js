@@ -47,6 +47,13 @@ const cartItemSchema = new mongoose.Schema(
       min: 0
     },
 
+    // 🎨 Selected variant (if the offer covers multiple variants)
+    variantId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "ProductVariant",
+      default: null,
+    },
+
     // 📦 Quantity selected by buyer
     quantity: {
       type: Number,

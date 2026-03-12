@@ -16,11 +16,10 @@ const sellerOfferSchema = new mongoose.Schema(
       required: true,
     },
 
-    /* 🎨 Optional product variant (e.g. Black 256GB) */
-    variantId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "ProductVariant",
-      default: null,
+    /* 🎨 Variants offered by this seller (multi-select, e.g. Black 128GB, Blue 256GB) */
+    variantIds: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "ProductVariant" }],
+      default: [],
     },
 
     /* 🏷️ Cached seller name */

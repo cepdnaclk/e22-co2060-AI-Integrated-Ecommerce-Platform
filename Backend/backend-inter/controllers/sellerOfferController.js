@@ -36,7 +36,7 @@ import Seller from "../models/seller.js";
  */
 export async function addSellerOffer(req, res) {
   try {
-    const { productId, variantId, price, stock, warranty, discountPercentage, deliveryOptions, image } = req.body;
+    const { productId, variantIds, price, stock, warranty, discountPercentage, deliveryOptions, image } = req.body;
 
     // 🔍 Find seller profile for logged-in user
     const seller = await Seller.findOne({ userId: req.user.id });
@@ -49,16 +49,16 @@ export async function addSellerOffer(req, res) {
 
     // 🏷️ Create new seller offer
     const offer = await sellerOfferModel.create({
-      productId,                            // Global product
-      variantId: variantId || null,         // 🎨 Specific variant (optional)
-      sellerId: seller._id,                  // Seller business ID
-      sellerName: seller.shopName,           // Cached seller name
+      productId,
+      variantIds: Array.isArray(variantIds) ? variantIds : [],  // 🎨 Multi-variant selection
+      sellerId: seller._id,
+      sellerName: seller.shopName,
       price,
       stock,
       warranty,
       discountPercentage: discountPercentage || 0,
       deliveryOptions: deliveryOptions || ["Standard"],
-      image: image || "",                    // 🖼️ Uploaded image URL
+      image: image || "",
     });
 
     res.status(201).json({
@@ -102,6 +102,7 @@ export async function getMySellerOffers(req, res) {
     const offers = await sellerOfferModel
       .find({ sellerId: seller._id })
       .populate("productId", "productName image category")
+      .populate("variantIds", "variantName color storage size image")
       .sort({ createdAt: -1 });
 
     res.json(offers);

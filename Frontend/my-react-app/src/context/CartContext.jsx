@@ -53,9 +53,9 @@ export function CartProvider({ children }) {
     useEffect(() => { refreshCart(); }, [refreshCart]);
 
     /* ── Add item ── */
-    const addItem = useCallback(async (sellerOfferId, quantity = 1) => {
+    const addItem = useCallback(async (sellerOfferId, quantity = 1, variantId = null) => {
         if (!token) return;
-        await addToCart(token, sellerOfferId, quantity);
+        await addToCart(token, sellerOfferId, quantity, variantId);
         await refreshCart();   // re-sync so badge reflects real backend data
     }, [token, refreshCart]);
 

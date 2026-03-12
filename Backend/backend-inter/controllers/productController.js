@@ -227,6 +227,7 @@ export async function getProductById(req, res) {
 
     const offers = await sellerOfferModel
       .find({ productId: req.params.id, isActive: true })
+      .populate("variantIds", "variantName color storage size image")
       .select("-__v");
 
     res.json({

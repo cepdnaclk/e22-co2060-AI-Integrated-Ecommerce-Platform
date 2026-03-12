@@ -27,7 +27,7 @@ import sellerOfferModel from "../models/sellerOffer.js";
  */
 export async function addToCart(req, res) {
   try {
-    const { sellerOfferId, quantity = 1 } = req.body;
+    const { sellerOfferId, quantity = 1, variantId = null } = req.body;
 
     // 1️⃣ Get seller offer
     const offer = await sellerOfferModel.findById(sellerOfferId);
@@ -48,9 +48,12 @@ export async function addToCart(req, res) {
       });
     }
 
-    // 3️⃣ Check if item already exists in cart
+    // 3️⃣ Check if same offer+variant already exists in cart
+    const variantKey = variantId ? variantId.toString() : "none";
     const existingItem = cart.items.find(
-      (item) => item.sellerOfferId.toString() === sellerOfferId
+      (item) =>
+        item.sellerOfferId.toString() === sellerOfferId &&
+        (item.variantId ? item.variantId.toString() : "none") === variantKey
     );
 
     if (existingItem) {
@@ -61,6 +64,7 @@ export async function addToCart(req, res) {
         sellerOfferId: offer._id,
         sellerId: offer.sellerId,
         price: offer.price, // 🔒 price locked here
+        variantId: variantId || null,
         quantity
       });
     }
@@ -183,7 +187,8 @@ export async function getCart(req, res) {
   try {
     const cart = await Cart.findOne({ userId: req.user.id })
       .populate("items.productId", "productName image")
-      .populate("items.sellerId", "shopName");
+      .populate("items.sellerId", "shopName")
+      .populate("items.variantId", "variantName color storage size image");
 
     if (!cart) {
       return res.json({

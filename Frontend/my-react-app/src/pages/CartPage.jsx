@@ -248,6 +248,7 @@ export default function CartPage() {
               {items.map((item) => {
                 const product = item.productId || {};
                 const seller = item.sellerId || {};
+                const variant = item.variantId || null;
                 const offerId = item.sellerOfferId?.toString();
                 const isUpdating = updating === offerId;
                 const lineTotal = item.price * item.quantity;
@@ -291,6 +292,12 @@ export default function CartPage() {
                         {seller.shopName && (
                           <p style={{ fontSize: 12, color: "#64748b", marginBottom: 4 }}>
                             🏪 {seller.shopName}
+                          </p>
+                        )}
+
+                        {variant && (
+                          <p style={{ fontSize: 12, color: "#4ac6ff", marginBottom: 4, fontWeight: 600 }}>
+                            🎨 {variant.variantName}{(variant.color || variant.storage) ? ` · ${[variant.color, variant.storage].filter(Boolean).join(" ")}` : ""}
                           </p>
                         )}
 

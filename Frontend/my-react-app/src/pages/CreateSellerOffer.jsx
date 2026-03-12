@@ -79,7 +79,7 @@ export default function CreateSellerOffer() {
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState("");
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [selectedVariant, setSelectedVariant] = useState(null); // ✅ added variant state
+    const [selectedVariantIds, setSelectedVariantIds] = useState(new Set()); // ✅ multi-select
     const [variants, setVariants] = useState([]); // ✅ variants for the selected product
     const [showDropdown, setShowDropdown] = useState(false);
     const [form, setForm] = useState({
@@ -110,7 +110,7 @@ export default function CreateSellerOffer() {
     useEffect(() => {
         if (!selectedProduct) {
             setVariants([]);
-            setSelectedVariant(null);
+            setSelectedVariantIds(new Set());
             return;
         }
         fetch(`${API_BASE_URL}/api/products/${selectedProduct._id}/variants`)
@@ -226,7 +226,7 @@ export default function CreateSellerOffer() {
 
             await createSellerOffer(token, {
                 productId: selectedProduct._id,
-                variantId: selectedVariant ? selectedVariant._id : null,
+                variantIds: Array.from(selectedVariantIds),
                 price: Number(form.price),
                 stock: Number(form.stock),
                 warranty: form.warranty || "No warranty",
@@ -316,7 +316,7 @@ export default function CreateSellerOffer() {
                                 {selectedProduct && (
                                     <button
                                         type="button"
-                                        onClick={() => { setSelectedProduct(null); setSearch(""); }}
+                                        onClick={() => { setSelectedProduct(null); setSearch(""); setSelectedVariantIds(new Set()); }}
                                         style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "#94a3b8", cursor: "pointer", fontSize: 18 }}
                                     >✕</button>
                                 )}
@@ -378,38 +378,69 @@ export default function CreateSellerOffer() {
                             )}
                         </div>
 
-                        {/* ── Variant Selector (Appears only if Product has variants) ── */}
+                        {/* ── Variant Selector (multi-select – appears only if product has variants) ── */}
                         {selectedProduct && variants.length > 0 && (
                             <div style={{ marginBottom: 24, animation: "fadeIn 0.3s ease" }}>
-                                <label style={S.label}>Product Variant <span style={{ color: "#475569", textTransform: "none", fontWeight: 400 }}>(optional)</span></label>
+                                <label style={S.label}>
+                                    Product Variants{" "}
+                                    <span style={{ color: "#475569", textTransform: "none", fontWeight: 400 }}>
+                                        (optional – select all you offer)
+                                    </span>
+                                </label>
                                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
-                                    {variants.map((v) => (
-                                        <button
-                                            key={v._id}
-                                            type="button"
-                                            onClick={() => setSelectedVariant(selectedVariant?._id === v._id ? null : v)}
-                                            style={{
-                                                background: selectedVariant?._id === v._id ? "rgba(5,130,202,0.15)" : "rgba(255,255,255,0.03)",
-                                                border: `1px solid ${selectedVariant?._id === v._id ? "#0582ca" : "rgba(255,255,255,0.1)"}`,
-                                                borderRadius: 10, padding: "10px 14px", textAlign: "left", cursor: "pointer",
-                                                display: "flex", gap: 10, alignItems: "center", transition: "all 0.2s"
-                                            }}
-                                        >
-                                            {v.image && (
-                                                <img src={v.image} alt={v.variantName} style={{ width: 32, height: 32, borderRadius: 6, objectFit: "cover" }} />
-                                            )}
-                                            <div style={{ flex: 1 }}>
-                                                <div style={{ fontWeight: 600, fontSize: 13, color: selectedVariant?._id === v._id ? "#4ac6ff" : "#e2e8f0" }}>{v.variantName}</div>
-                                                {(v.color || v.storage) && (
-                                                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>{v.color} {v.storage}</div>
+                                    {variants.map((v) => {
+                                        const isSelected = selectedVariantIds.has(v._id);
+                                        return (
+                                            <button
+                                                key={v._id}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedVariantIds((prev) => {
+                                                        const next = new Set(prev);
+                                                        if (next.has(v._id)) next.delete(v._id);
+                                                        else next.add(v._id);
+                                                        return next;
+                                                    });
+                                                }}
+                                                style={{
+                                                    background: isSelected ? "rgba(5,130,202,0.15)" : "rgba(255,255,255,0.03)",
+                                                    border: `1px solid ${isSelected ? "#0582ca" : "rgba(255,255,255,0.1)"}`,
+                                                    borderRadius: 10, padding: "10px 14px", textAlign: "left",
+                                                    cursor: "pointer", display: "flex", gap: 10, alignItems: "center",
+                                                    transition: "all 0.2s",
+                                                }}
+                                            >
+                                                {v.image && (
+                                                    <img src={v.image} alt={v.variantName} style={{ width: 32, height: 32, borderRadius: 6, objectFit: "cover" }} />
                                                 )}
-                                            </div>
-                                            {selectedVariant?._id === v._id && (
-                                                <div style={{ fontSize: 11, color: "#4ac6ff", fontWeight: 600 }}>✓</div>
-                                            )}
-                                        </button>
-                                    ))}
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontWeight: 600, fontSize: 13, color: isSelected ? "#4ac6ff" : "#e2e8f0" }}>
+                                                        {v.variantName}
+                                                    </div>
+                                                    {(v.color || v.storage) && (
+                                                        <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>
+                                                            {[v.color, v.storage].filter(Boolean).join(" · ")}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                                <div style={{
+                                                    width: 18, height: 18, borderRadius: 4, flexShrink: 0,
+                                                    border: `2px solid ${isSelected ? "#0582ca" : "rgba(255,255,255,0.2)"}`,
+                                                    background: isSelected ? "#0582ca" : "transparent",
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                    fontSize: 11, color: "#fff", transition: "all 0.15s",
+                                                }}>
+                                                    {isSelected && "✓"}
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
+                                {selectedVariantIds.size > 0 && (
+                                    <div style={{ marginTop: 8, fontSize: 12, color: "#4ac6ff" }}>
+                                        {selectedVariantIds.size} variant{selectedVariantIds.size > 1 ? "s" : ""} selected
+                                    </div>
+                                )}
                             </div>
                         )}
 

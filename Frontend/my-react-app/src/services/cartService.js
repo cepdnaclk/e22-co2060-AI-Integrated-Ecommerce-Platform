@@ -21,14 +21,14 @@ export const getCart = async (token) => {
 // ─────────────────────────────────────
 // ➕ ADD TO CART
 // ─────────────────────────────────────
-export const addToCart = async (token, sellerOfferId, quantity = 1) => {
+export const addToCart = async (token, sellerOfferId, quantity = 1, variantId = null) => {
     const res = await fetch(`${BASE_URL}/add`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ sellerOfferId, quantity }),
+        body: JSON.stringify({ sellerOfferId, quantity, ...(variantId ? { variantId } : {}) }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to add to cart");
