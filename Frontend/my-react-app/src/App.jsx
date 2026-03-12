@@ -16,6 +16,7 @@ import CartWidget from "./components/CartWidget";
 import CreateProduct from "./pages/CreateProduct";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminInventory from "./pages/AdminInventory";
+import AdminProducts from "./pages/AdminProducts";
 import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import CartPage from "./pages/CartPage";
@@ -72,6 +73,11 @@ function App() {
           <Route path="/admin/products/new" element={
             <AdminProtectedRoute>
               <CreateProduct />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/products" element={
+            <AdminProtectedRoute>
+              <AdminProducts />
             </AdminProtectedRoute>
           } />
           <Route path="/admin/inventory" element={

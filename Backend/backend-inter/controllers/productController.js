@@ -300,9 +300,98 @@ export async function getVariantsByProduct(req, res) {
 
 /**
  * ======================================================
+ * GET ALL PRODUCTS FOR ADMIN (with counts, full detail)
+ * ======================================================
+ * ROUTE: GET /api/admin/products
+ */
+export async function getAdminAllProducts(req, res) {
+  try {
+    const { page = 1, limit = 20, search, category } = req.query;
+
+    const filter = {};
+    if (search) {
+      filter.$or = [
+        { productName: { $regex: search, $options: "i" } },
+        { brand: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+    if (category && category !== "all") {
+      filter.category = category;
+    }
+
+    const skip = (Number(page) - 1) * Number(limit);
+
+    const [products, total] = await Promise.all([
+      productModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(Number(limit)).lean(),
+      productModel.countDocuments(filter),
+    ]);
+
+    // Enrich with variant counts
+    const enriched = await Promise.all(
+      products.map(async (p) => {
+        const variantCount = await ProductVariant.countDocuments({ productId: p._id });
+        return { ...p, variantCount };
+      })
+    );
+
+    res.json({
+      products: enriched,
+      total,
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / Number(limit)),
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching products", error: error.message });
+  }
+}
+
+/**
+ * ======================================================
+ * UPDATE VARIANT (ADMIN)
+ * ======================================================
+ * ROUTE: PUT /api/admin/products/:id/variants/:variantId
+ */
+export async function updateVariant(req, res) {
+  try {
+    const { variantId } = req.params;
+    const updated = await ProductVariant.findByIdAndUpdate(variantId, req.body, { new: true, runValidators: true });
+    if (!updated) return res.status(404).json({ message: "Variant not found" });
+    res.json({ message: "Variant updated successfully", variant: updated });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to update variant", error: error.message });
+  }
+}
+
+/**
+ * ======================================================
+ * DELETE VARIANT (ADMIN)
+ * ======================================================
+ * ROUTE: DELETE /api/admin/products/:id/variants/:variantId
+ */
+export async function deleteVariant(req, res) {
+  try {
+    const { variantId } = req.params;
+    const deleted = await ProductVariant.findByIdAndDelete(variantId);
+    if (!deleted) return res.status(404).json({ message: "Variant not found" });
+
+    // Remove variant references from seller offers
+    await sellerOfferModel.updateMany(
+      { variantIds: variantId },
+      { $pull: { variantIds: variantId } }
+    );
+
+    res.json({ message: "Variant deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to delete variant", error: error.message });
+  }
+}
+
+/**
+ * ======================================================
  * CREATE VARIANT (ADMIN)
  * ======================================================
- * ROUTE: POST /api/products/:id/variants
+ * ROUTE: POST /api/admin/products/:id/variants  (also POST /api/products/:id/variants)
  * Body: { variantName, color, storage, size, attributes, image }
  */
 export async function createVariant(req, res) {

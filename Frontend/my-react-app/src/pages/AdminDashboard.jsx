@@ -72,16 +72,20 @@ export default function AdminDashboard() {
                 {/* Dashboard Grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 24 }}>
 
-                    {/* Catalog Management Card */}
                     <div className="ad-card" style={S.card}>
                         <div style={{ fontSize: 32, marginBottom: 16 }}>📦</div>
                         <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Global Catalog</h2>
                         <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5, marginBottom: 24, minHeight: 42 }}>
-                            Create new master products and define hardware variants (color, storage, sizes).
+                            Create, edit, and delete master products and manage hardware variants (color, storage, sizes).
                         </p>
-                        <button onClick={() => navigate("/admin/products/new")} style={{ ...S.btnPurple, width: "100%" }}>
-                            Manage Products →
-                        </button>
+                        <div style={{ display: "flex", gap: 10 }}>
+                            <button onClick={() => navigate("/admin/products")} style={{ ...S.btnPurple, flex: 1 }}>
+                                Manage Products →
+                            </button>
+                            <button onClick={() => navigate("/admin/products/new")} style={{ ...S.btnGray, padding: "12px 14px" }} title="Create new product">
+                                +
+                            </button>
+                        </div>
                     </div>
 
                     {/* Inventory Management Card */}

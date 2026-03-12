@@ -17,6 +17,7 @@ import userRouter from "./router/userRouter.js"; // ✅ Users
 import chatRouter from "./router/chatRouter.js"; // ✅ AI Chatbot
 import searchRouter from "./router/searchRouter.js"; // ✅ Smart Search
 import inventoryRouter from "./router/inventoryRouter.js"; // ✅ Inventory Management
+import adminProductRouter from "./router/adminProductRouter.js"; // ✅ Admin Product Management
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -99,6 +100,9 @@ app.use("/api/export", exportRouter);
 
 // 📦 Admin Inventory Management
 app.use("/api/admin/inventory", inventoryRouter);
+
+// 📦 Admin Product Management (CRUD with auth)
+app.use("/api/admin/products", adminProductRouter);
 
 // ================== TEST ROUTES ==================
 
