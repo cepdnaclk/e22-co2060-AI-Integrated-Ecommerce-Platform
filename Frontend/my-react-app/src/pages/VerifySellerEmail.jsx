@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import API_BASE_URL from "../config/api";
 
 /**
  * This page is opened when the user clicks the verification link in the email.
@@ -14,7 +15,7 @@ const VerifySellerEmail = () => {
         if (!token) return;
 
         // Call the backend to do the actual verification
-        fetch(`http://localhost:3000/api/sellers/verify-email?token=${token}`)
+        fetch(`${API_BASE_URL}/api/sellers/verify-email?token=${token}`)
             .then(() => {
                 // Try to close this tab after a short delay
                 setTimeout(() => window.close(), 1800);

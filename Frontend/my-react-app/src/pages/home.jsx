@@ -5,6 +5,7 @@ import CountUp from "../components/CountUp.jsx";
 import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
 import SeasonalCarShowcase from "../components/seasonalCar.jsx";
+import API_BASE_URL from "../config/api";
 
 /* ✅ CATEGORY LIST */
 const categories = [
@@ -40,7 +41,7 @@ export default function Home() {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    fetch("http://localhost:3000/api/sellers/me", {
+    fetch(`${API_BASE_URL}/api/sellers/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {

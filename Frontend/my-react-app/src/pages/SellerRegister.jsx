@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerSeller } from "../services/sellerService";
+import API_BASE_URL from "../config/api";
 import "./sellerRegister.css";
 
 const BecomeSeller = () => {
@@ -46,7 +47,7 @@ const BecomeSeller = () => {
 
     pollRef.current = setInterval(async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/sellers/me", {
+        const res = await fetch(`${API_BASE_URL}/api/sellers/me`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 

@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:3000/api/orders";
+import API_BASE_URL from "../config/api";
+
+const BASE_URL = `${API_BASE_URL}/api/orders`;
 
 // ─────────────────────────────────────
 // 📦 PLACE ORDER (CHECKOUT)

@@ -1,5 +1,7 @@
 // src/services/productService.js
-const BASE_URL = "http://localhost:3000/api/products";
+import API_BASE_URL from "../config/api";
+
+const BASE_URL = `${API_BASE_URL}/api/products`;
 
 export const fetchProducts = async (params = {}) => {
   try {
@@ -35,7 +37,7 @@ export const fetchProducts = async (params = {}) => {
 export const fetchProductDetails = async (productId) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/products/${productId}`
+      `${API_BASE_URL}/api/products/${productId}`
     );
 
     if (!response.ok) {

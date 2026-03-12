@@ -1,4 +1,6 @@
-const API_URL = "http://localhost:3000/api/users";
+import API_BASE_URL from "../config/api";
+
+const API_URL = `${API_BASE_URL}/api/users`;
 
 export const fetchUserProfile = async () => {
     const token = localStorage.getItem("token");

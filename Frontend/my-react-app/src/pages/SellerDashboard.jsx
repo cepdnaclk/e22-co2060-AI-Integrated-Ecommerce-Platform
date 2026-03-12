@@ -4,7 +4,9 @@ import { useNavigate, Link } from "react-router-dom";
 import { getMySellerProfile } from "../services/sellerService";
 import "./sellerDashboard.css";
 
-const API = "http://localhost:3000/api/sellers/dashboard/stats";
+import API_BASE_URL from "../config/api";
+
+const API = `${API_BASE_URL}/api/sellers/dashboard/stats`;
 
 const SellerDashboard = () => {
   const navigate = useNavigate();

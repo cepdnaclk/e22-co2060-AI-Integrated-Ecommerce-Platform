@@ -1,7 +1,8 @@
 // src/services/sellerService.js
 import { getAuthToken } from "../utils/auth";
+import API_BASE_URL from "../config/api";
 
-const BASE_URL = "http://localhost:3000/api/sellers";
+const BASE_URL = `${API_BASE_URL}/api/sellers`;
 
 /**
  * ================================

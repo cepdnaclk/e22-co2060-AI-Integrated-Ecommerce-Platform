@@ -4,6 +4,7 @@ import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
 import { createSellerOffer } from "../services/sellerOfferService";
 import { fetchProducts } from "../services/productService";
+import API_BASE_URL from "../config/api";
 
 /* ─── Style tokens (dark blue glassmorphism, matching SellerDashboard) ─── */
 const S = {
@@ -112,7 +113,7 @@ export default function CreateSellerOffer() {
             setSelectedVariant(null);
             return;
         }
-        fetch(`http://localhost:3000/api/products/${selectedProduct._id}/variants`)
+        fetch(`${API_BASE_URL}/api/products/${selectedProduct._id}/variants`)
             .then(res => res.json())
             .then(data => setVariants(data || []))
             .catch(err => console.error("Failed to load variants", err));

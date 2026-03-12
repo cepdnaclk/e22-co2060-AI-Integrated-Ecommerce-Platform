@@ -2,8 +2,9 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import ParticleCanvas from "../components/ParticleCanvas";
 import { getMyOrders } from "../services/orderService";
+import API_BASE_URL from "../config/api";
 
-const API = "http://localhost:3000/api/users/profile";
+const API = `${API_BASE_URL}/api/users/profile`;
 
 /* ─── Status helpers ─── */
 const STATUS_COLORS = {

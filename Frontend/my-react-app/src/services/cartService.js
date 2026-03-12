@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:3000/api/cart";
+import API_BASE_URL from "../config/api";
+
+const BASE_URL = `${API_BASE_URL}/api/cart`;
 
 // ─────────────────────────────────────
 // 🛒 GET CART

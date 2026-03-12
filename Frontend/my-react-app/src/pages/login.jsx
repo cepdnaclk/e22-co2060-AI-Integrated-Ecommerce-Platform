@@ -9,6 +9,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import SuccessAnimation from "../components/SuccessAnimation";
+import API_BASE_URL from "../config/api";
 
 const Login = ({ onClose }) => {
   const [email, setEmail] = useState("");
@@ -23,7 +24,7 @@ const Login = ({ onClose }) => {
   const sendTokenToBackend = async (idToken) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/login",
+        `${API_BASE_URL}/api/auth/login`,
         {
           method: "POST",
           headers: {
