@@ -100,6 +100,18 @@ export default function AdminDashboard() {
                         </button>
                     </div>
 
+                    {/* Face Recognition Management Card */}
+                    <div className="ad-card" style={S.card}>
+                        <div style={{ fontSize: 32, marginBottom: 16 }}>🔐</div>
+                        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Face Recognition</h2>
+                        <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5, marginBottom: 24, minHeight: 42 }}>
+                            Register and manage face authentication for all admin users. Scan faces for secure login.
+                        </p>
+                        <button onClick={() => navigate("/admin/face-management")} style={{ ...S.btnPurple, width: "100%" }}>
+                            Manage Faces →
+                        </button>
+                    </div>
+
                     {/* User Management Card (Placeholder) */}
                     <div className="ad-card" style={{ ...S.card, opacity: 0.7 }}>
                         <div style={{ fontSize: 32, marginBottom: 16 }}>👥</div>

@@ -10,6 +10,8 @@ import {
   getInventoryHistory,
   getCategoryStockSummary,
   getSellerStockSummary,
+  toggleSellerStatus,
+  updateSellerVerification,
   toggleOfferStatus,
   getFilterOptions,
   exportInventory,
@@ -35,8 +37,10 @@ router.get("/history", getInventoryHistory);
 // Category-wise summary
 router.get("/categories", getCategoryStockSummary);
 
-// Seller-wise summary
+// Seller management
 router.get("/sellers", getSellerStockSummary);
+router.put("/sellers/:id/toggle", toggleSellerStatus);
+router.put("/sellers/:id/verify", updateSellerVerification);
 
 // Export inventory data
 router.get("/export", exportInventory);

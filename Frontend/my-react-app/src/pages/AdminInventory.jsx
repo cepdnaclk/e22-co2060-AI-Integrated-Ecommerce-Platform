@@ -298,7 +298,7 @@ export default function AdminInventory() {
         {tab === "alerts" && <AlertsTab apiFetch={apiFetch} showToast={showToast} openStockUpdate={openStockUpdate} />}
         {tab === "history" && <HistoryTab apiFetch={apiFetch} />}
         {tab === "categories" && <CategoriesTab apiFetch={apiFetch} />}
-        {tab === "sellers" && <SellersTab apiFetch={apiFetch} />}
+        {tab === "sellers" && <SellersTab apiFetch={apiFetch} showToast={showToast} />}
       </div>
 
       {/* ─── Detail Modal ─── */}
@@ -652,6 +652,8 @@ function InventoryListTab({
                 <th style={S.th}>Seller</th>
                 <th style={S.th}>Price</th>
                 <th style={S.th}>Stock</th>
+                <th style={S.th}>Items Sold</th>
+                <th style={S.th}>Revenue</th>
                 <th style={S.th}>Status</th>
                 <th style={S.th}>Actions</th>
               </tr>
@@ -691,6 +693,13 @@ function InventoryListTab({
                   </td>
                   <td style={S.td}>
                     <StockBadge stock={item.stock} />
+                  </td>
+                  <td style={S.td}>
+                    <span style={{ color: "#06b6d4", fontWeight: 600 }}>{(item.itemsSold || 0).toLocaleString()}</span>
+                    <div style={{ color: "#64748b", fontSize: 11 }}>units</div>
+                  </td>
+                  <td style={S.td}>
+                    <span style={{ color: "#10b981", fontWeight: 600 }}>${(item.revenue || 0).toLocaleString()}</span>
                   </td>
                   <td style={S.td}>
                     <span style={{
@@ -1048,83 +1057,250 @@ function CategoriesTab({ apiFetch }) {
 }
 
 // ─── SELLERS TAB ───
-function SellersTab({ apiFetch }) {
+function SellersTab({ apiFetch, showToast }) {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [expandedId, setExpandedId] = useState(null);
+  const [actionLoading, setActionLoading] = useState({});
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const res = await apiFetch("/api/admin/inventory/sellers");
-        if (res) setData(res);
-      } catch { /* silent */ }
-      setLoading(false);
-    })();
-  }, [apiFetch]);
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({ search, status: statusFilter });
+      const res = await apiFetch(`/api/admin/inventory/sellers?${params}`);
+      if (res) setData(res);
+    } catch (e) { showToast(e.message, "error"); }
+    setLoading(false);
+  }, [apiFetch, search, statusFilter, showToast]);
 
-  if (loading) return <div style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>Loading...</div>;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { load(); }, [search, statusFilter]);
+
+  const handleToggle = async (seller) => {
+    setActionLoading(p => ({ ...p, [seller._id]: true }));
+    try {
+      const res = await apiFetch(`/api/admin/inventory/sellers/${seller._id}/toggle`, { method: "PUT" });
+      showToast(res.message);
+      setData(prev => prev.map(s => s._id === seller._id ? { ...s, isActive: res.isActive } : s));
+    } catch (e) { showToast(e.message, "error"); }
+    setActionLoading(p => ({ ...p, [seller._id]: false }));
+  };
+
+  const handleVerify = async (seller, verificationStatus) => {
+    setActionLoading(p => ({ ...p, [`v_${seller._id}`]: true }));
+    try {
+      const res = await apiFetch(`/api/admin/inventory/sellers/${seller._id}/verify`, {
+        method: "PUT",
+        body: JSON.stringify({ verificationStatus }),
+      });
+      showToast(res.message);
+      setData(prev => prev.map(s => s._id === seller._id ? { ...s, verificationStatus } : s));
+    } catch (e) { showToast(e.message, "error"); }
+    setActionLoading(p => ({ ...p, [`v_${seller._id}`]: false }));
+  };
+
+  const verifyColors = { approved: "#22c55e", pending: "#f59e0b", rejected: "#ef4444" };
 
   return (
     <div>
-      <h3 style={{ color: "#fff", marginBottom: 20 }}>🏪 Seller-wise Stock Summary</h3>
-      {data.length === 0 ? (
-        <div style={{ ...S.chartCard, textAlign: "center", padding: 40 }}>
-          <p style={{ color: "#64748b" }}>No seller data available</p>
+      {/* Header + Filters */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
+        <h3 style={{ color: "#fff", margin: 0 }}>🏪 Seller Management</h3>
+        <span style={{ color: "#64748b", fontSize: 14 }}>({data.length} sellers)</span>
+        <div style={{ marginLeft: "auto", display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <input
+            type="text"
+            placeholder="Search shop name..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ ...S.input, width: 200 }}
+          />
+          <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={S.select}>
+            <option value="">All Sellers</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive / Suspended</option>
+            <option value="approved">Verified</option>
+            <option value="pending">Pending Approval</option>
+            <option value="rejected">Rejected</option>
+          </select>
         </div>
-      ) : (
-        <div style={{ overflowX: "auto" }}>
-          <table style={S.table}>
-            <thead>
-              <tr>
-                <th style={S.th}>Seller</th>
-                <th style={S.th}>Offers</th>
-                <th style={S.th}>Total Stock</th>
-                <th style={S.th}>Inventory Value</th>
-                <th style={S.th}>Low Stock</th>
-                <th style={S.th}>Out of Stock</th>
-                <th style={S.th}>Health</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((seller, i) => {
-                const healthPct = seller.offerCount > 0 ? Math.round(((seller.offerCount - seller.lowStockCount - seller.outOfStockCount) / seller.offerCount) * 100) : 0;
-                return (
-                  <tr key={i} style={S.tr}>
-                    <td style={S.td}>
-                      <span style={{ color: "#fff", fontWeight: 500 }}>{seller.shopName || "Unknown"}</span>
-                    </td>
-                    <td style={{ ...S.td, color: "#94a3b8" }}>{seller.offerCount}</td>
-                    <td style={S.td}>
-                      <span style={{ color: "#a855f7", fontWeight: 600 }}>{seller.totalStock.toLocaleString()}</span>
-                    </td>
-                    <td style={S.td}>
-                      <span style={{ color: "#22c55e", fontWeight: 600 }}>${Math.round(seller.totalValue).toLocaleString()}</span>
-                    </td>
-                    <td style={S.td}>
-                      <span style={{ color: seller.lowStockCount > 0 ? "#f59e0b" : "#64748b" }}>{seller.lowStockCount}</span>
-                    </td>
-                    <td style={S.td}>
-                      <span style={{ color: seller.outOfStockCount > 0 ? "#ef4444" : "#64748b" }}>{seller.outOfStockCount}</span>
-                    </td>
-                    <td style={S.td}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div style={{ width: 60, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.1)" }}>
-                          <div style={{
-                            width: `${healthPct}%`, height: "100%", borderRadius: 3,
-                            background: healthPct >= 70 ? "#22c55e" : healthPct >= 40 ? "#f59e0b" : "#ef4444",
-                          }} />
-                        </div>
-                        <span style={{ color: "#94a3b8", fontSize: 12 }}>{healthPct}%</span>
+      </div>
+
+      {loading ? <div style={{ textAlign: "center", padding: 40, color: "#94a3b8" }}>Loading...</div>
+        : data.length === 0 ? (
+          <div style={{ ...S.chartCard, textAlign: "center", padding: 40 }}>
+            <p style={{ color: "#64748b" }}>No sellers found</p>
+          </div>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {data.map(seller => {
+              const healthPct = seller.offerCount > 0
+                ? Math.round(((seller.offerCount - seller.lowStockCount - seller.outOfStockCount) / seller.offerCount) * 100)
+                : 0;
+              const isExpanded = expandedId === seller._id;
+              return (
+                <div key={seller._id} style={{
+                  ...S.chartCard, padding: 0, overflow: "hidden",
+                  border: seller.isActive ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(239,68,68,0.2)",
+                }}>
+                  {/* Row */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "16px 20px", flexWrap: "wrap" }}>
+                    {/* Avatar / Icon */}
+                    <div style={{
+                      width: 44, height: 44, borderRadius: 10,
+                      background: seller.isActive ? "rgba(168,85,247,0.2)" : "rgba(100,116,139,0.2)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 20, flexShrink: 0,
+                    }}>
+                      🏪
+                    </div>
+
+                    {/* Seller info */}
+                    <div style={{ flex: "1 1 180px", minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                        <span style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>{seller.shopName}</span>
+                        <span style={{
+                          padding: "2px 8px", borderRadius: 5, fontSize: 11, fontWeight: 600,
+                          background: `${verifyColors[seller.verificationStatus] || "#64748b"}20`,
+                          color: verifyColors[seller.verificationStatus] || "#64748b",
+                        }}>{seller.verificationStatus}</span>
+                        <span style={{
+                          padding: "2px 8px", borderRadius: 5, fontSize: 11, fontWeight: 600,
+                          background: seller.isActive ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
+                          color: seller.isActive ? "#22c55e" : "#ef4444",
+                        }}>{seller.isActive ? "Active" : "Suspended"}</span>
                       </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+                      <div style={{ color: "#64748b", fontSize: 12, marginTop: 2 }}>
+                        {seller.ownerName && <span>{seller.ownerName} · </span>}
+                        {seller.email}
+                      </div>
+                    </div>
+
+                    {/* Stats */}
+                    <div style={{ display: "flex", gap: 24, flexWrap: "wrap", flex: "2 1 400px" }}>
+                      <Stat label="Offers" value={seller.offerCount} color="#94a3b8" />
+                      <Stat label="Stock" value={seller.totalStock.toLocaleString()} color="#a855f7" />
+                      <Stat label="Value" value={`$${Math.round(seller.totalValue).toLocaleString()}`} color="#22c55e" />
+                      <Stat label="Orders" value={seller.totalOrders} color="#3b82f6" />
+                      <Stat label="Revenue" value={`$${Math.round(seller.totalRevenue).toLocaleString()}`} color="#10b981" />
+                      <Stat label="Rating" value={seller.rating > 0 ? `⭐ ${seller.rating.toFixed(1)}` : "—"} color="#f59e0b" />
+                    </div>
+
+                    {/* Actions */}
+                    <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                      <button
+                        onClick={() => setExpandedId(isExpanded ? null : seller._id)}
+                        style={S.actionBtn}
+                        title={isExpanded ? "Collapse" : "View Details"}
+                      >
+                        {isExpanded ? "▲" : "▼"}
+                      </button>
+                      <button
+                        onClick={() => handleToggle(seller)}
+                        disabled={!!actionLoading[seller._id]}
+                        style={{
+                          ...S.btnPurpleSm,
+                          background: seller.isActive ? "rgba(239,68,68,0.15)" : "rgba(34,197,94,0.15)",
+                          color: seller.isActive ? "#ef4444" : "#22c55e",
+                          border: `1px solid ${seller.isActive ? "rgba(239,68,68,0.3)" : "rgba(34,197,94,0.3)"}`,
+                        }}
+                        title={seller.isActive ? "Suspend Seller" : "Enable Seller"}
+                      >
+                        {actionLoading[seller._id] ? "..." : seller.isActive ? "🚫 Suspend" : "✅ Enable"}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Expanded Details */}
+                  {isExpanded && (
+                    <div style={{ borderTop: "1px solid rgba(255,255,255,0.06)", padding: "20px 24px", background: "rgba(0,0,0,0.2)" }}>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 24 }}>
+                        {/* Contact Info */}
+                        <div>
+                          <h4 style={{ color: "#c084fc", margin: "0 0 12px", fontSize: 13, textTransform: "uppercase", letterSpacing: 1 }}>Contact & Details</h4>
+                          <InfoRow label="Email" value={seller.email} />
+                          <InfoRow label="Owner" value={seller.ownerName || "—"} />
+                          <InfoRow label="Phone" value={seller.phone || seller.userPhone || "—"} />
+                          <InfoRow label="Address" value={seller.address || "—"} />
+                          <InfoRow label="Joined" value={new Date(seller.createdAt).toLocaleDateString()} />
+                          {seller.description && <InfoRow label="Description" value={seller.description} />}
+                        </div>
+
+                        {/* Inventory Stats */}
+                        <div>
+                          <h4 style={{ color: "#c084fc", margin: "0 0 12px", fontSize: 13, textTransform: "uppercase", letterSpacing: 1 }}>Inventory</h4>
+                          <InfoRow label="Total Offers" value={seller.offerCount} />
+                          <InfoRow label="Active Offers" value={seller.activeOffers} />
+                          <InfoRow label="Total Stock" value={seller.totalStock.toLocaleString()} />
+                          <InfoRow label="Inventory Value" value={`$${Math.round(seller.totalValue).toLocaleString()}`} />
+                          <InfoRow label="Low Stock Items" value={<span style={{ color: seller.lowStockCount > 0 ? "#f59e0b" : "#64748b" }}>{seller.lowStockCount}</span>} />
+                          <InfoRow label="Out of Stock" value={<span style={{ color: seller.outOfStockCount > 0 ? "#ef4444" : "#64748b" }}>{seller.outOfStockCount}</span>} />
+                          <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 8 }}>
+                            <span style={{ color: "#64748b", fontSize: 13, width: 110 }}>Health:</span>
+                            <div style={{ flex: 1, height: 6, borderRadius: 3, background: "rgba(255,255,255,0.1)" }}>
+                              <div style={{ width: `${healthPct}%`, height: "100%", borderRadius: 3, background: healthPct >= 70 ? "#22c55e" : healthPct >= 40 ? "#f59e0b" : "#ef4444" }} />
+                            </div>
+                            <span style={{ color: "#94a3b8", fontSize: 12 }}>{healthPct}%</span>
+                          </div>
+                        </div>
+
+                        {/* Sales Stats */}
+                        <div>
+                          <h4 style={{ color: "#c084fc", margin: "0 0 12px", fontSize: 13, textTransform: "uppercase", letterSpacing: 1 }}>Sales</h4>
+                          <InfoRow label="Total Orders" value={seller.totalOrders} />
+                          <InfoRow label="Items Sold" value={seller.itemsSold.toLocaleString()} />
+                          <InfoRow label="Total Revenue" value={`$${Math.round(seller.totalRevenue).toLocaleString()}`} />
+                          <InfoRow label="Rating" value={seller.rating > 0 ? `${seller.rating.toFixed(1)} / 5 (${seller.totalReviews} reviews)` : "No reviews yet"} />
+                        </div>
+                      </div>
+
+                      {/* Verification Actions */}
+                      <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", paddingTop: 16, borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+                        <span style={{ color: "#94a3b8", fontSize: 13 }}>Verification:</span>
+                        {["approved", "pending", "rejected"].map(v => (
+                          <button
+                            key={v}
+                            onClick={() => handleVerify(seller, v)}
+                            disabled={seller.verificationStatus === v || !!actionLoading[`v_${seller._id}`]}
+                            style={{
+                              padding: "6px 16px", borderRadius: 8, border: "none", cursor: seller.verificationStatus === v ? "default" : "pointer",
+                              fontSize: 13, fontWeight: 500,
+                              background: seller.verificationStatus === v ? `${verifyColors[v]}30` : "rgba(255,255,255,0.06)",
+                              color: seller.verificationStatus === v ? verifyColors[v] : "#94a3b8",
+                              opacity: seller.verificationStatus === v ? 1 : 0.8,
+                            }}
+                          >
+                            {v === "approved" ? "✅ Approve" : v === "rejected" ? "❌ Reject" : "⏳ Set Pending"}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+    </div>
+  );
+}
+
+function Stat({ label, value, color }) {
+  return (
+    <div style={{ textAlign: "center", minWidth: 60 }}>
+      <div style={{ color, fontWeight: 700, fontSize: 15 }}>{value}</div>
+      <div style={{ color: "#64748b", fontSize: 11 }}>{label}</div>
+    </div>
+  );
+}
+
+function InfoRow({ label, value }) {
+  return (
+    <div style={{ display: "flex", gap: 8, marginBottom: 6 }}>
+      <span style={{ color: "#64748b", fontSize: 13, minWidth: 110 }}>{label}:</span>
+      <span style={{ color: "#cbd5e1", fontSize: 13 }}>{value}</span>
     </div>
   );
 }

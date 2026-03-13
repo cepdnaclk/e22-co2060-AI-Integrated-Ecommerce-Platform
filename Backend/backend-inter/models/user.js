@@ -57,6 +57,12 @@ const userSchema = new mongoose.Schema(
     token: {
       type: String,
       default: null
+    },
+
+    // Face recognition embedding (admin only, nullable)
+    faceEmbedding: {
+      type: [Number],
+      default: null,
     }
   },
   { timestamps: true }

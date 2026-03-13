@@ -1,3 +1,10 @@
 node_modules/
 .env
 serviceAccountKey.json
+venv/
+.venv/
+__pycache__/
+*.pyc
+
+AI-ML/venv/
+AI-ML/__pycache__/

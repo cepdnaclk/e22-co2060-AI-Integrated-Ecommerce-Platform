@@ -283,6 +283,42 @@ export async function getAllInventory(req, res) {
     pipeline.push({ $skip: (Number(page) - 1) * Number(limit) });
     pipeline.push({ $limit: Number(limit) });
 
+    // Lookup orders to compute items sold and revenue per offer
+    pipeline.push({
+      $lookup: {
+        from: "orders",
+        let: { offerId: "$_id" },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  { $ne: ["$status", "cancelled"] },
+                  { $in: ["$$offerId", "$items.sellerOfferId"] },
+                ],
+              },
+            },
+          },
+          { $unwind: "$items" },
+          { $match: { $expr: { $eq: ["$items.sellerOfferId", "$$offerId"] } } },
+          {
+            $group: {
+              _id: null,
+              itemsSold: { $sum: "$items.quantity" },
+              revenue: { $sum: { $multiply: ["$items.quantity", "$items.price"] } },
+            },
+          },
+        ],
+        as: "salesData",
+      },
+    });
+    pipeline.push({
+      $addFields: {
+        itemsSold: { $ifNull: [{ $arrayElemAt: ["$salesData.itemsSold", 0] }, 0] },
+        revenue: { $ifNull: [{ $arrayElemAt: ["$salesData.revenue", 0] }, 0] },
+      },
+    });
+
     // Shape response
     pipeline.push({
       $project: {
@@ -316,6 +352,8 @@ export async function getAllInventory(req, res) {
         image: 1,
         createdAt: 1,
         updatedAt: 1,
+        itemsSold: 1,
+        revenue: 1,
       },
     });
 
@@ -665,44 +703,141 @@ export async function getCategoryStockSummary(req, res) {
 }
 
 // ──────────────────────────────────────────────
-// 9. SELLER-WISE STOCK SUMMARY
+// 9. SELLER-WISE STOCK SUMMARY (with full details)
 // GET /api/admin/inventory/sellers
 // ──────────────────────────────────────────────
 export async function getSellerStockSummary(req, res) {
   try {
-    const summary = await sellerOfferModel.aggregate([
-      { $match: { isActive: true } },
-      {
-        $lookup: {
-          from: "sellers",
-          localField: "sellerId",
-          foreignField: "_id",
-          as: "sellerInfo",
-        },
-      },
-      { $unwind: { path: "$sellerInfo", preserveNullAndEmptyArrays: true } },
+    const { search = "", status = "" } = req.query;
+
+    // Get all sellers (not just those with active offers)
+    const sellerMatch = {};
+    if (status === "active") sellerMatch.isActive = true;
+    else if (status === "inactive") sellerMatch.isActive = false;
+    if (status === "pending") { sellerMatch.verificationStatus = "pending"; delete sellerMatch.isActive; }
+    if (status === "approved") { sellerMatch.verificationStatus = "approved"; delete sellerMatch.isActive; }
+    if (status === "rejected") { sellerMatch.verificationStatus = "rejected"; delete sellerMatch.isActive; }
+    if (search) sellerMatch.shopName = { $regex: search, $options: "i" };
+
+    const sellers = await Seller.find(sellerMatch)
+      .populate("userId", "email firstName lastName phone")
+      .sort({ createdAt: -1 });
+
+    const sellerIds = sellers.map(s => s._id);
+
+    // Inventory stats per seller (all offers, not just active)
+    const inventoryStats = await sellerOfferModel.aggregate([
+      { $match: { sellerId: { $in: sellerIds } } },
       {
         $group: {
           _id: "$sellerId",
-          shopName: { $first: "$sellerInfo.shopName" },
           totalStock: { $sum: "$stock" },
           totalValue: { $sum: { $multiply: ["$stock", "$price"] } },
           offerCount: { $sum: 1 },
-          lowStockCount: {
-            $sum: { $cond: [{ $lte: ["$stock", 10] }, 1, 0] },
-          },
-          outOfStockCount: {
-            $sum: { $cond: [{ $eq: ["$stock", 0] }, 1, 0] },
-          },
+          activeOffers: { $sum: { $cond: ["$isActive", 1, 0] } },
+          lowStockCount: { $sum: { $cond: [{ $and: [{ $gt: ["$stock", 0] }, { $lte: ["$stock", 10] }] }, 1, 0] } },
+          outOfStockCount: { $sum: { $cond: [{ $eq: ["$stock", 0] }, 1, 0] } },
         },
       },
-      { $sort: { totalStock: -1 } },
     ]);
 
-    res.json(summary);
+    // Revenue per seller (from non-cancelled orders)
+    const revenueStats = await Order.aggregate([
+      { $match: { status: { $ne: "cancelled" }, sellerId: { $in: sellerIds } } },
+      {
+        $group: {
+          _id: "$sellerId",
+          totalRevenue: { $sum: "$totalAmount" },
+          totalOrders: { $sum: 1 },
+          itemsSold: { $sum: { $sum: "$items.quantity" } },
+        },
+      },
+    ]);
+
+    const invMap = Object.fromEntries(inventoryStats.map(s => [s._id.toString(), s]));
+    const revMap = Object.fromEntries(revenueStats.map(s => [s._id.toString(), s]));
+
+    const result = sellers.map(s => {
+      const inv = invMap[s._id.toString()] || {};
+      const rev = revMap[s._id.toString()] || {};
+      return {
+        _id: s._id,
+        shopName: s.shopName,
+        description: s.description,
+        rating: s.rating,
+        totalReviews: s.totalReviews,
+        verificationStatus: s.verificationStatus,
+        address: s.address,
+        phone: s.phone,
+        isActive: s.isActive,
+        createdAt: s.createdAt,
+        email: s.userId?.email,
+        ownerName: s.userId ? `${s.userId.firstName || ""} ${s.userId.lastName || ""}`.trim() : "",
+        userPhone: s.userId?.phone,
+        // Inventory
+        offerCount: inv.offerCount || 0,
+        activeOffers: inv.activeOffers || 0,
+        totalStock: inv.totalStock || 0,
+        totalValue: inv.totalValue || 0,
+        lowStockCount: inv.lowStockCount || 0,
+        outOfStockCount: inv.outOfStockCount || 0,
+        // Sales
+        totalRevenue: rev.totalRevenue || 0,
+        totalOrders: rev.totalOrders || 0,
+        itemsSold: rev.itemsSold || 0,
+      };
+    });
+
+    res.json(result);
   } catch (error) {
     console.error("❌ Seller stock summary error:", error);
     res.status(500).json({ message: "Failed to fetch seller summary", error: error.message });
+  }
+}
+
+// ──────────────────────────────────────────────
+// 9b. TOGGLE SELLER ACTIVE STATUS (ENABLE / DISABLE)
+// PUT /api/admin/inventory/sellers/:id/toggle
+// ──────────────────────────────────────────────
+export async function toggleSellerStatus(req, res) {
+  try {
+    const seller = await Seller.findById(req.params.id);
+    if (!seller) return res.status(404).json({ message: "Seller not found" });
+
+    seller.isActive = !seller.isActive;
+    await seller.save();
+
+    res.json({
+      message: `Seller ${seller.isActive ? "enabled" : "disabled"} successfully`,
+      isActive: seller.isActive,
+    });
+  } catch (error) {
+    console.error("❌ Toggle seller status error:", error);
+    res.status(500).json({ message: "Failed to toggle seller status", error: error.message });
+  }
+}
+
+// ──────────────────────────────────────────────
+// 9c. UPDATE SELLER VERIFICATION STATUS
+// PUT /api/admin/inventory/sellers/:id/verify
+// ──────────────────────────────────────────────
+export async function updateSellerVerification(req, res) {
+  try {
+    const { verificationStatus } = req.body;
+    if (!["pending", "approved", "rejected"].includes(verificationStatus)) {
+      return res.status(400).json({ message: "Invalid verificationStatus" });
+    }
+    const seller = await Seller.findByIdAndUpdate(
+      req.params.id,
+      { verificationStatus },
+      { new: true }
+    );
+    if (!seller) return res.status(404).json({ message: "Seller not found" });
+
+    res.json({ message: `Seller verification set to ${verificationStatus}`, seller });
+  } catch (error) {
+    console.error("❌ Update seller verification error:", error);
+    res.status(500).json({ message: "Failed to update verification", error: error.message });
   }
 }
 
