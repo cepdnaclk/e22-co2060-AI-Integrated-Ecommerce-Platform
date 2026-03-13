@@ -39,7 +39,7 @@ export function isFaceEnabled() {
  */
 export async function generateEmbedding(base64Image) {
   if (!isFaceEnabled()) {
-    return { success: true, skipped: true, embedding: null };
+    throw new Error("Face recognition service is not enabled");
   }
 
   try {
@@ -58,15 +58,19 @@ export async function generateEmbedding(base64Image) {
 /**
  * Verify a live face against a stored embedding.
  * Returns { verified, similarity, threshold, skipped? }
+ * 
+ * SECURITY: Never auto-pass. If service is disabled or no embedding
+ * stored, return verified: false so the controller can decide.
  */
 export async function verifyFace(base64Image, storedEmbedding, adminId) {
   if (!isFaceEnabled()) {
-    return { verified: true, skipped: true };
+    // Face service disabled — caller must handle this
+    return { verified: false, skipped: true, reason: "face_service_disabled" };
   }
 
   if (!storedEmbedding || storedEmbedding.length === 0) {
-    // Admin has no face enrolled — skip face check gracefully
-    return { verified: true, skipped: true, reason: "no_embedding" };
+    // No stored embedding — cannot verify
+    return { verified: false, skipped: false, reason: "no_embedding" };
   }
 
   try {

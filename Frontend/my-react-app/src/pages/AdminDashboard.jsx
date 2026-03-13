@@ -8,6 +8,7 @@ export default function AdminDashboard() {
     
     // Get admin user info
     const adminUser = JSON.parse(localStorage.getItem("adminUser") || localStorage.getItem("user") || "{}");
+    const isCEO = adminUser.role === "ceo";
 
     // Admin logout handler
     const handleLogout = async () => {
@@ -64,7 +65,21 @@ export default function AdminDashboard() {
                         </p>
                     </div>
                     <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                        <span style={{ color: "#a855f7", fontSize: 14 }}>🔒 {adminUser.email}</span>
+                        <span style={{ color: "#a855f7", fontSize: 14 }}>
+                            {isCEO ? "👑" : "🔒"} {adminUser.email}
+                            <span style={{
+                                marginLeft: 8,
+                                padding: "2px 8px",
+                                borderRadius: 10,
+                                fontSize: 11,
+                                fontWeight: 700,
+                                background: isCEO ? "rgba(234,179,8,0.15)" : "rgba(168,85,247,0.15)",
+                                color: isCEO ? "#facc15" : "#c084fc",
+                                border: isCEO ? "1px solid rgba(234,179,8,0.3)" : "1px solid rgba(168,85,247,0.3)",
+                            }}>
+                                {isCEO ? "CEO" : "ADMIN"}
+                            </span>
+                        </span>
                         <button onClick={handleLogout} style={S.btnRed}>Logout</button>
                     </div>
                 </div>
@@ -100,7 +115,8 @@ export default function AdminDashboard() {
                         </button>
                     </div>
 
-                    {/* Face Recognition Management Card */}
+                    {/* Face Recognition Management Card — CEO only */}
+                    {isCEO && (
                     <div className="ad-card" style={S.card}>
                         <div style={{ fontSize: 32, marginBottom: 16 }}>🔐</div>
                         <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Face Recognition</h2>
@@ -111,6 +127,7 @@ export default function AdminDashboard() {
                             Manage Faces →
                         </button>
                     </div>
+                    )}
 
                     {/* User Management Card (Placeholder) */}
                     <div className="ad-card" style={{ ...S.card, opacity: 0.7 }}>

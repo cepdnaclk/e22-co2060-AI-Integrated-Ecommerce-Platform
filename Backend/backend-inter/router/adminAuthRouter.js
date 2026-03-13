@@ -1,5 +1,6 @@
 import { Router } from "express";
 import verifyToken, { authorizeRoles } from "../middleware/authMiddleware.js";
+import { requireCEO } from "../middleware/requireCEO.js";
 import {
   adminLogin,
   adminVerifyFace,
@@ -14,6 +15,7 @@ import {
   listAdmins,
   registerAdminFaceById,
   removeAdminFaceById,
+  removeAdmin,
 } from "../controllers/adminAuthController.js";
 
 const router = Router();
@@ -24,6 +26,9 @@ const router = Router();
  * Separate authentication system for admin users
  * Face recognition endpoints are modular — they work
  * only when FACE_RECOGNITION_ENABLED=true in .env
+ *
+ * CEO-only routes: create admin, register/remove face,
+ * remove admin account.
  * ======================================================
  */
 
@@ -32,22 +37,27 @@ router.post("/login", adminLogin);
 router.post("/verify-face", adminVerifyFace);
 router.post("/enroll-face", adminEnrollFace);
 
-// ── Protected routes (admin only) ──
-router.get("/verify", verifyToken, authorizeRoles("admin"), verifyAdminToken);
-router.post("/logout", verifyToken, authorizeRoles("admin"), adminLogout);
-router.post("/create", verifyToken, authorizeRoles("admin"), createAdmin);
+// ── Protected routes (admin or CEO) ──
+router.get("/verify", verifyToken, authorizeRoles("admin", "ceo"), verifyAdminToken);
+router.post("/logout", verifyToken, authorizeRoles("admin", "ceo"), adminLogout);
 
-// ── Face management (admin only) ──
-router.post("/register-face", verifyToken, authorizeRoles("admin"), registerAdminFace);
-router.delete("/remove-face", verifyToken, authorizeRoles("admin"), removeAdminFace);
-router.get("/face-status", verifyToken, authorizeRoles("admin"), getFaceStatus);
+// ── CEO-only: Admin management ──
+router.post("/create", verifyToken, requireCEO, createAdmin);
+router.delete("/remove-admin/:adminId", verifyToken, requireCEO, removeAdmin);
 
-// ── Admin team management (admin only) ──
-router.get("/admins", verifyToken, authorizeRoles("admin"), listAdmins);
-router.post("/register-face/:adminId", verifyToken, authorizeRoles("admin"), registerAdminFaceById);
-router.delete("/remove-face/:adminId", verifyToken, authorizeRoles("admin"), removeAdminFaceById);
+// ── Face management (own face — CEO only; admins can only check status) ──
+router.post("/register-face", verifyToken, requireCEO, registerAdminFace);
+router.delete("/remove-face", verifyToken, requireCEO, removeAdminFace);
+router.get("/face-status", verifyToken, authorizeRoles("admin", "ceo"), getFaceStatus);
 
-// ── Audit logs (admin only) ──
-router.get("/login-logs", verifyToken, authorizeRoles("admin"), getLoginLogs);
+// ── Admin team listing (admin or CEO can view) ──
+router.get("/admins", verifyToken, authorizeRoles("admin", "ceo"), listAdmins);
+
+// ── CEO-only: Manage other admins' faces ──
+router.post("/register-face/:adminId", verifyToken, requireCEO, registerAdminFaceById);
+router.delete("/remove-face/:adminId", verifyToken, requireCEO, removeAdminFaceById);
+
+// ── Audit logs (CEO only) ──
+router.get("/login-logs", verifyToken, requireCEO, getLoginLogs);
 
 export default router;

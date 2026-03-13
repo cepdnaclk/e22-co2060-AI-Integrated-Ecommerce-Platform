@@ -32,7 +32,12 @@ export default function AdminProtectedRoute({ children }) {
 
         if (res.ok) {
           const data = await res.json();
-          if (data.success && data.user?.role === "admin") {
+          if (data.success && (data.user?.role === "admin" || data.user?.role === "ceo")) {
+            // Store role for UI rendering
+            const existing = JSON.parse(localStorage.getItem("adminUser") || "{}");
+            if (data.user.role !== existing.role) {
+              localStorage.setItem("adminUser", JSON.stringify({ ...existing, ...data.user }));
+            }
             setAuthState("authorized");
           } else {
             setAuthState("unauthorized");

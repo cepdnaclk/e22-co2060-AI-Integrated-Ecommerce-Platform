@@ -1,6 +1,6 @@
 """
 Face Recognition Engine — DeepFace SFace wrapper
-Optimized for low-RAM VPS (< 400 MB target)
+Uses opencv detector for proper face detection & alignment.
 """
 
 import numpy as np
@@ -14,6 +14,9 @@ logger = logging.getLogger("face_engine")
 
 # Lazy-loaded model reference
 _model = None
+
+# Use opencv for real face detection & alignment (lightweight, accurate)
+DETECTOR_BACKEND = "opencv"
 
 
 def _get_model():
@@ -40,13 +43,12 @@ def _get_model():
 
 
 def _decode_base64_image(b64_string: str) -> np.ndarray:
-    """Decode a base64 image string to a 160x160 BGR numpy array."""
+    """Decode a base64 image string to a BGR numpy array (original size)."""
     if "," in b64_string:
         b64_string = b64_string.split(",", 1)[1]
 
     raw = base64.b64decode(b64_string)
     pil_img = Image.open(BytesIO(raw)).convert("RGB")
-    pil_img = pil_img.resize((160, 160), Image.LANCZOS)
     arr = np.array(pil_img)
     return cv2.cvtColor(arr, cv2.COLOR_RGB2BGR)
 
@@ -59,8 +61,8 @@ def generate_embedding(b64_image: str) -> list:
     results = model.represent(
         img_path=img,
         model_name="SFace",
-        enforce_detection=False,
-        detector_backend="skip",
+        enforce_detection=True,
+        detector_backend=DETECTOR_BACKEND,
     )
 
     if not results or len(results) == 0:

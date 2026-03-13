@@ -1,7 +1,8 @@
 /**
  * ======================================================
- * ADMIN USER SETUP SCRIPT
- * Run this script to create an admin user for the system
+ * CEO ACCOUNT SETUP SCRIPT
+ * Run this script to create the CEO (super admin) user.
+ * Only ONE CEO account should exist in the system.
  * 
  * Usage: node scripts/createAdmin.js
  * ======================================================
@@ -13,17 +14,17 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const ADMIN_EMAIL = "admin@icomputers.com";
-const ADMIN_PASSWORD = "Admin@123";  // Change this!
-const ADMIN_FIRST_NAME = "System";
-const ADMIN_LAST_NAME = "Admin";
+const CEO_EMAIL = "admin@icomputers.com";
+const CEO_PASSWORD = "Admin@123";  // Change this!
+const CEO_FIRST_NAME = "System";
+const CEO_LAST_NAME = "CEO";
 
 const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   firstName: { type: String, required: true },
   lastName: { type: String, default: "" },
   password: { type: String, required: true },
-  role: { type: String, enum: ["customer", "seller", "admin"], default: "customer" },
+  role: { type: String, enum: ["customer", "seller", "admin", "ceo"], default: "customer" },
   isBlocked: { type: Boolean, default: false },
   isEmailVerified: { type: Boolean, default: false },
   image: { type: String, default: "/images/default-profile.png" },
@@ -32,12 +33,13 @@ const userSchema = new mongoose.Schema({
   gender: { type: String, default: "" },
   address: { type: String, default: "" },
   bio: { type: String, default: "" },
-  token: { type: String, default: null }
+  token: { type: String, default: null },
+  faceEmbedding: { type: [Number], default: null },
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 
-async function createAdmin() {
+async function createCEO() {
   try {
     const mongoURI = process.env.MONGO_URI || 
       "mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/?appName=Cluster0";
@@ -46,56 +48,59 @@ async function createAdmin() {
     await mongoose.connect(mongoURI);
     console.log("✅ Connected to MongoDB");
 
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({ email: ADMIN_EMAIL });
+    // Check if CEO already exists
+    const existingCEO = await User.findOne({ role: "ceo" });
     
-    if (existingAdmin) {
-      if (existingAdmin.role === "admin") {
-        console.log("ℹ️  Admin user already exists:", ADMIN_EMAIL);
-        
-        // Update password if needed
-        const salt = await bcrypt.genSalt(12);
-        const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, salt);
-        await User.updateOne(
-          { email: ADMIN_EMAIL },
-          { $set: { password: hashedPassword } }
-        );
-        console.log("✅ Admin password updated");
-      } else {
-        // Upgrade existing user to admin
-        const salt = await bcrypt.genSalt(12);
-        const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, salt);
-        await User.updateOne(
-          { email: ADMIN_EMAIL },
-          { $set: { role: "admin", password: hashedPassword, isEmailVerified: true } }
-        );
-        console.log("✅ User upgraded to admin:", ADMIN_EMAIL);
-      }
-    } else {
-      // Create new admin
+    if (existingCEO) {
+      console.log("ℹ️  CEO account already exists:", existingCEO.email);
+      
+      // Update password if needed
       const salt = await bcrypt.genSalt(12);
-      const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, salt);
+      const hashedPassword = await bcrypt.hash(CEO_PASSWORD, salt);
+      await User.updateOne(
+        { _id: existingCEO._id },
+        { $set: { password: hashedPassword } }
+      );
+      console.log("✅ CEO password updated");
+    } else {
+      // Check if email exists with different role — upgrade to CEO
+      const existingUser = await User.findOne({ email: CEO_EMAIL });
+      
+      if (existingUser) {
+        const salt = await bcrypt.genSalt(12);
+        const hashedPassword = await bcrypt.hash(CEO_PASSWORD, salt);
+        await User.updateOne(
+          { email: CEO_EMAIL },
+          { $set: { role: "ceo", password: hashedPassword, isEmailVerified: true } }
+        );
+        console.log("✅ Existing user upgraded to CEO:", CEO_EMAIL);
+      } else {
+        // Create new CEO
+        const salt = await bcrypt.genSalt(12);
+        const hashedPassword = await bcrypt.hash(CEO_PASSWORD, salt);
 
-      await User.create({
-        email: ADMIN_EMAIL,
-        password: hashedPassword,
-        firstName: ADMIN_FIRST_NAME,
-        lastName: ADMIN_LAST_NAME,
-        role: "admin",
-        isEmailVerified: true,
-        isBlocked: false
-      });
+        await User.create({
+          email: CEO_EMAIL,
+          password: hashedPassword,
+          firstName: CEO_FIRST_NAME,
+          lastName: CEO_LAST_NAME,
+          role: "ceo",
+          isEmailVerified: true,
+          isBlocked: false
+        });
 
-      console.log("✅ Admin user created successfully!");
+        console.log("✅ CEO account created successfully!");
+      }
     }
 
     console.log("\n========================================");
-    console.log("📧 Admin Email:", ADMIN_EMAIL);
-    console.log("🔐 Admin Password:", ADMIN_PASSWORD);
+    console.log("👑 CEO Email:", CEO_EMAIL);
+    console.log("🔐 CEO Password:", CEO_PASSWORD);
     console.log("🌐 Admin Login URL: http://localhost:5173/admin/login");
     console.log("========================================\n");
 
     console.log("⚠️  IMPORTANT: Change the default password after first login!");
+    console.log("ℹ️  The CEO can create admin accounts from the Face Management page.");
 
   } catch (error) {
     console.error("❌ Error:", error.message);
@@ -106,4 +111,4 @@ async function createAdmin() {
   }
 }
 
-createAdmin();
+createCEO();

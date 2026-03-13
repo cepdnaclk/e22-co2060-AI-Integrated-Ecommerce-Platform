@@ -11,14 +11,22 @@ import {
 /**
  * ======================================================
  * ADMIN AUTHENTICATION CONTROLLER
- * Separate login system for admin users ONLY
- * Regular users cannot access this login endpoint
- *
- * Face Recognition is OPTIONAL — controlled by the
- * FACE_RECOGNITION_ENABLED env flag. All face logic
- * is isolated in services/faceService.js.
+ * Separate login system for admin/CEO users ONLY.
+ * 
+ * SECURITY MODEL:
+ * - Face verification is ALWAYS required for login.
+ * - Each user's face is compared against THEIR OWN stored embedding.
+ * - Cross-check: live face is also compared against ALL other admins
+ *   to prevent impersonation using stolen credentials.
+ * - CEO can self-enroll face on first login.
+ * - Regular admins must have face registered by CEO before they can login.
+ * - If face service is down/disabled, only CEO can login (without face).
+ *   Regular admins are blocked entirely.
  * ======================================================
  */
+
+// Minimum similarity threshold — cannot be overridden by env to a lower value
+const MIN_FACE_THRESHOLD = 0.60;
 
 // In-memory brute-force limiter (per IP)
 const _loginAttempts = new Map();
@@ -57,20 +65,20 @@ function _getClientIp(req) {
 /**
  * POST /api/admin/auth/login
  * Step 1 of login: email + password verification.
- * If face recognition is disabled → full login.
- * If face recognition is enabled → returns pendingFaceVerify token.
+ * Face verification is ALWAYS the second step.
+ * If face service is disabled, only CEO can proceed (without face).
  */
 export async function adminLogin(req, res) {
   const ip = _getClientIp(req);
 
   try {
-    // Rate-limit check
-    if (!_checkRateLimit(ip)) {
-      return res.status(429).json({
-        success: false,
-        message: "Too many login attempts. Try again in 15 minutes.",
-      });
-    }
+    // Rate-limit check (disabled for development)
+    // if (!_checkRateLimit(ip)) {
+    //   return res.status(429).json({
+    //     success: false,
+    //     message: "Too many login attempts. Try again in 15 minutes.",
+    //   });
+    // }
 
     const { email, password } = req.body;
 
@@ -88,7 +96,7 @@ export async function adminLogin(req, res) {
       return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
-    if (user.role !== "admin") {
+    if (user.role !== "admin" && user.role !== "ceo") {
       return res.status(403).json({
         success: false,
         message: "Access denied. Admin privileges required.",
@@ -116,88 +124,94 @@ export async function adminLogin(req, res) {
       return res.status(401).json({ success: false, message: "Invalid credentials" });
     }
 
-    // ── Face recognition gate ──
-    const faceEnabled = isFaceEnabled();
+    // ── Face verification is ALWAYS required ──
+    const faceServiceUp = isFaceEnabled();
     const hasFaceEnrolled =
       user.faceEmbedding && Array.isArray(user.faceEmbedding) && user.faceEmbedding.length > 0;
 
-    if (faceEnabled) {
-      // Issue short-lived "pending" token for the face step
-      const pendingToken = jwt.sign(
-        { id: user._id, email: user.email, role: user.role, pendingFace: true },
-        process.env.JWT_SECRET,
-        { expiresIn: "5m" }
-      );
-
-      if (hasFaceEnrolled) {
-        // Admin has face → verify it
-        return res.status(200).json({
-          success: true,
-          requireFaceVerification: true,
-          requireFaceEnrollment: false,
-          pendingToken,
-          message: "Password verified. Face verification required.",
-          user: {
-            id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            image: user.image,
-          },
-        });
-      } else {
-        // Admin has NO face → must enroll before first login
-        return res.status(200).json({
-          success: true,
-          requireFaceVerification: false,
-          requireFaceEnrollment: true,
-          pendingToken,
-          message: "Password verified. Please register your face to continue.",
-          user: {
-            id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            image: user.image,
-          },
-        });
-      }
-    }
-
-    // No face required — issue full session
-    const token = jwt.sign(
-      { id: user._id, email: user.email, role: user.role, isAdmin: true },
+    // Pending token for face step
+    const pendingToken = jwt.sign(
+      { id: user._id, email: user.email, role: user.role, pendingFace: true },
       process.env.JWT_SECRET,
-      { expiresIn: "8h" }
+      { expiresIn: "5m" }
     );
 
-    user.token = token;
-    await user.save();
-    _clearAttempts(ip);
+    if (faceServiceUp && hasFaceEnrolled) {
+      // Face service running + face enrolled → verify face
+      return res.status(200).json({
+        success: true,
+        requireFaceVerification: true,
+        requireFaceEnrollment: false,
+        pendingToken,
+        message: "Password verified. Face verification required.",
+        user: { id: user._id, email: user.email, firstName: user.firstName, image: user.image },
+      });
+    }
 
-    await AdminLoginLog.create({
-      adminId: user._id,
-      email: user.email,
-      ipAddress: ip,
-      device: req.headers["user-agent"] || "unknown",
-      success: true,
-      faceVerified: false,
-      faceSkipped: true,
-    });
+    if (faceServiceUp && !hasFaceEnrolled && user.role === "ceo") {
+      // Face service running + CEO has no face → allow self-enrollment
+      return res.status(200).json({
+        success: true,
+        requireFaceVerification: false,
+        requireFaceEnrollment: true,
+        pendingToken,
+        message: "Password verified. Please register your face to continue.",
+        user: { id: user._id, email: user.email, firstName: user.firstName, image: user.image },
+      });
+    }
 
-    return res.status(200).json({
-      success: true,
-      requireFaceVerification: false,
-      message: "Admin login successful",
-      token,
-      faceRecognitionEnabled: faceEnabled,
-      user: {
-        id: user._id,
+    if (faceServiceUp && !hasFaceEnrolled && user.role === "admin") {
+      // Face service running + admin has no face → blocked
+      return res.status(403).json({
+        success: false,
+        message: "Face not registered. Please contact the CEO to register your face before logging in.",
+      });
+    }
+
+    // ── Face service is DOWN / DISABLED ──
+    if (!faceServiceUp && user.role === "ceo") {
+      // CEO can login without face when service is down (emergency access)
+      const token = jwt.sign(
+        { id: user._id, email: user.email, role: user.role, isAdmin: true },
+        process.env.JWT_SECRET,
+        { expiresIn: "8h" }
+      );
+      user.token = token;
+      await user.save();
+      _clearAttempts(ip);
+
+      await AdminLoginLog.create({
+        adminId: user._id,
         email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        image: user.image,
-      },
+        ipAddress: ip,
+        device: req.headers["user-agent"] || "unknown",
+        success: true,
+        faceVerified: false,
+        faceSkipped: true,
+      });
+
+      return res.status(200).json({
+        success: true,
+        requireFaceVerification: false,
+        message: "CEO login successful (face service offline).",
+        token,
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          role: user.role,
+          image: user.image,
+        },
+      });
+    }
+
+    // Face service is down + regular admin → blocked entirely
+    return res.status(503).json({
+      success: false,
+      message: "Face verification service is unavailable. Admin login requires face verification. Please try again later.",
     });
+
   } catch (error) {
     console.error("Admin login error:", error);
     return res.status(500).json({ success: false, message: "Server error during login" });
@@ -206,8 +220,9 @@ export async function adminLogin(req, res) {
 
 /**
  * POST /api/admin/auth/verify-face
- * Step 2 of login (only when face recognition enabled).
- * Expects: { pendingToken, faceImage (base64) }
+ * Step 2 of login: verify live face against stored embedding.
+ * The pending token binds the face check to a specific user ID,
+ * so no one can substitute another user's face.
  */
 export async function adminVerifyFace(req, res) {
   const ip = _getClientIp(req);
@@ -240,19 +255,39 @@ export async function adminVerifyFace(req, res) {
       });
     }
 
+    // Guard: face service must be running
+    if (!isFaceEnabled()) {
+      return res.status(503).json({
+        success: false,
+        message: "Face verification service is unavailable. Please try again later.",
+      });
+    }
+
+    // Load the user bound to the pending token
     const user = await userModel.findById(decoded.id);
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "ceo")) {
       return res.status(403).json({ success: false, message: "Invalid admin" });
     }
 
-    // Call face recognition service
+    // Verify: the captured face must match THIS user's stored embedding
+    if (!user.faceEmbedding || !Array.isArray(user.faceEmbedding) || user.faceEmbedding.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No face data registered for this account.",
+      });
+    }
+
     const faceResult = await verifyFace(
       faceImage,
       user.faceEmbedding,
       user._id.toString()
     );
 
-    if (!faceResult.verified) {
+    // Enforce minimum threshold even if face service uses a lower one
+    const similarityTooLow =
+      !faceResult.verified || (faceResult.similarity || 0) < MIN_FACE_THRESHOLD;
+
+    if (similarityTooLow) {
       _recordAttempt(ip);
       await AdminLoginLog.create({
         adminId: user._id,
@@ -261,16 +296,54 @@ export async function adminVerifyFace(req, res) {
         device: req.headers["user-agent"] || "unknown",
         success: false,
         faceVerified: false,
-        failureReason: `face_mismatch (similarity: ${faceResult.similarity || 0})`,
+        failureReason: `face_mismatch (similarity: ${faceResult.similarity || 0}, required: ${MIN_FACE_THRESHOLD})`,
       });
       return res.status(401).json({
         success: false,
-        message: "Face verification failed. Please try again.",
+        message: "Face verification failed. Your face does not match the registered face for this account.",
         similarity: faceResult.similarity,
       });
     }
 
-    // Face verified — issue full session token
+    // ── Cross-check: ensure face doesn't belong to a different admin ──
+    const otherAdmins = await userModel.find({
+      _id: { $ne: user._id },
+      role: { $in: ["admin", "ceo"] },
+      faceEmbedding: { $exists: true, $ne: [] },
+    }).select("_id email firstName faceEmbedding");
+
+    for (const otherAdmin of otherAdmins) {
+      try {
+        const crossCheck = await verifyFace(
+          faceImage,
+          otherAdmin.faceEmbedding,
+          otherAdmin._id.toString()
+        );
+        if (crossCheck.verified && crossCheck.similarity >= faceResult.similarity) {
+          _recordAttempt(ip);
+          await AdminLoginLog.create({
+            adminId: user._id,
+            email: user.email,
+            ipAddress: ip,
+            device: req.headers["user-agent"] || "unknown",
+            success: false,
+            faceVerified: false,
+            failureReason: `cross_check_failed: face matches admin ${otherAdmin.email} (similarity: ${crossCheck.similarity})`,
+          });
+          console.warn(
+            `⚠️ SECURITY: Login blocked — face presented for ${user.email} matches ${otherAdmin.email} with similarity ${crossCheck.similarity}`
+          );
+          return res.status(401).json({
+            success: false,
+            message: "Face verification failed. The face does not uniquely match this account.",
+          });
+        }
+      } catch (crossErr) {
+        console.error(`Cross-check error for admin ${otherAdmin.email}:`, crossErr.message);
+      }
+    }
+
+    // Face verified & cross-check passed — issue full session token
     const token = jwt.sign(
       { id: user._id, email: user.email, role: user.role, isAdmin: true },
       process.env.JWT_SECRET,
@@ -315,8 +388,9 @@ export async function adminVerifyFace(req, res) {
 
 /**
  * POST /api/admin/auth/enroll-face
- * First-time face enrollment during login.
- * Uses pendingToken (not full auth) so admin can enroll before getting a session.
+ * First-time face enrollment during login (CEO only).
+ * Regular admins must have their face registered by the CEO.
+ * Uses pendingToken (not full auth) so CEO can enroll before getting a session.
  * Saves the embedding and issues a full JWT.
  */
 export async function adminEnrollFace(req, res) {
@@ -346,12 +420,18 @@ export async function adminEnrollFace(req, res) {
       return res.status(400).json({ success: false, message: "Invalid pending token" });
     }
 
-    const user = await userModel.findById(decoded.id);
-    if (!user || user.role !== "admin") {
-      return res.status(403).json({ success: false, message: "Invalid admin" });
+    // Only CEO can self-enroll during login
+    if (decoded.role !== "ceo") {
+      return res.status(403).json({
+        success: false,
+        message: "Self-enrollment not allowed. Contact the CEO to register your face.",
+      });
     }
 
-    // Generate embedding via Python service
+    const user = await userModel.findById(decoded.id);
+    if (!user || user.role !== "ceo") {
+      return res.status(403).json({ success: false, message: "Invalid admin" });
+    }
     const result = await generateEmbedding(faceImage);
 
     if (!result.success || !result.embedding) {
@@ -503,8 +583,8 @@ export async function getFaceStatus(req, res) {
 export async function listAdmins(req, res) {
   try {
     const admins = await userModel
-      .find({ role: "admin" })
-      .select("email firstName lastName image faceEmbedding createdAt isBlocked")
+      .find({ role: { $in: ["admin", "ceo"] } })
+      .select("email firstName lastName image faceEmbedding role createdAt isBlocked")
       .sort({ createdAt: 1 });
 
     const adminList = admins.map((a) => ({
@@ -513,6 +593,7 @@ export async function listAdmins(req, res) {
       firstName: a.firstName,
       lastName: a.lastName,
       image: a.image,
+      role: a.role,
       isBlocked: a.isBlocked || false,
       faceEnrolled:
         a.faceEmbedding && Array.isArray(a.faceEmbedding) && a.faceEmbedding.length > 0,
@@ -548,7 +629,7 @@ export async function registerAdminFaceById(req, res) {
     }
 
     const targetAdmin = await userModel.findById(adminId);
-    if (!targetAdmin || targetAdmin.role !== "admin") {
+    if (!targetAdmin || (targetAdmin.role !== "admin" && targetAdmin.role !== "ceo")) {
       return res.status(404).json({ success: false, message: "Admin not found" });
     }
 
@@ -583,10 +664,9 @@ export async function removeAdminFaceById(req, res) {
     const { adminId } = req.params;
 
     const targetAdmin = await userModel.findById(adminId);
-    if (!targetAdmin || targetAdmin.role !== "admin") {
+    if (!targetAdmin || (targetAdmin.role !== "admin" && targetAdmin.role !== "ceo")) {
       return res.status(404).json({ success: false, message: "Admin not found" });
     }
-
     targetAdmin.faceEmbedding = null;
     await targetAdmin.save();
 
@@ -633,7 +713,8 @@ export async function getLoginLogs(req, res) {
 
 /**
  * POST /api/admin/auth/register
- * Create a new admin account (requires existing admin auth)
+ * Create a new admin account (requires CEO auth)
+ * Only creates accounts with role "admin" — CEO cannot be created via API.
  */
 export async function createAdmin(req, res) {
   try {
@@ -646,6 +727,7 @@ export async function createAdmin(req, res) {
       });
     }
 
+    // Prevent privilege escalation — only "admin" role can be created
     const existingUser = await userModel.findOne({ email: email.toLowerCase().trim() });
     if (existingUser) {
       return res.status(409).json({
@@ -701,7 +783,7 @@ export async function verifyAdminToken(req, res) {
 
     const user = await userModel.findById(req.user.id).select("-password -token -faceEmbedding");
 
-    if (!user || user.role !== "admin") {
+    if (!user || (user.role !== "admin" && user.role !== "ceo")) {
       return res.status(403).json({
         success: false,
         message: "Invalid admin session",
@@ -747,6 +829,51 @@ export async function adminLogout(req, res) {
     return res.status(500).json({
       success: false,
       message: "Server error during logout",
+    });
+  }
+}
+
+/**
+ * DELETE /api/admin/auth/remove-admin/:adminId
+ * Remove an admin account (CEO only).
+ * Cannot remove CEO accounts.
+ */
+export async function removeAdmin(req, res) {
+  try {
+    const { adminId } = req.params;
+
+    const targetAdmin = await userModel.findById(adminId);
+    if (!targetAdmin || (targetAdmin.role !== "admin" && targetAdmin.role !== "ceo")) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    // Prevent removing CEO accounts
+    if (targetAdmin.role === "ceo") {
+      return res.status(403).json({
+        success: false,
+        message: "Cannot remove CEO account",
+      });
+    }
+
+    // Prevent self-removal
+    if (targetAdmin._id.toString() === req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Cannot remove your own account",
+      });
+    }
+
+    await userModel.findByIdAndDelete(adminId);
+
+    return res.status(200).json({
+      success: true,
+      message: `Admin ${targetAdmin.firstName || targetAdmin.email} removed successfully`,
+    });
+  } catch (error) {
+    console.error("Remove admin error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to remove admin",
     });
   }
 }
