@@ -14,7 +14,7 @@ import {
 const router = Router();
 
 // All routes require admin authentication
-router.use(verifyToken, authorizeRoles("admin"));
+router.use(verifyToken, authorizeRoles("admin", "ceo"));
 
 // ── Product CRUD ──────────────────────────────────────
 // GET  /api/admin/products          → list all products (admin view)

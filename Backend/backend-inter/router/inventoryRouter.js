@@ -20,7 +20,7 @@ import {
 const router = Router();
 
 // All routes require admin authentication
-router.use(verifyToken, authorizeRoles("admin"));
+router.use(verifyToken, authorizeRoles("admin", "ceo"));
 
 // Dashboard overview
 router.get("/dashboard", getInventoryDashboard);
