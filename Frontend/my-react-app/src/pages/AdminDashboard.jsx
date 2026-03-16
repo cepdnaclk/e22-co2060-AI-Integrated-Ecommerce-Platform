@@ -103,6 +103,18 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
+                    {/* Order Management Card */}
+                    <div className="ad-card" style={S.card}>
+                        <div style={{ fontSize: 32, marginBottom: 16 }}>📋</div>
+                        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Order Management</h2>
+                        <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5, marginBottom: 24, minHeight: 42 }}>
+                            View all platform orders, track delivery status, and manage order lifecycle.
+                        </p>
+                        <button onClick={() => navigate("/admin/orders")} style={{ ...S.btnPurple, width: "100%" }}>
+                            Manage Orders →
+                        </button>
+                    </div>
+
                     {/* Inventory Management Card */}
                     <div className="ad-card" style={S.card}>
                         <div style={{ fontSize: 32, marginBottom: 16 }}>📊</div>

@@ -18,6 +18,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminInventory from "./pages/AdminInventory";
 import AdminFaceManagement from "./pages/AdminFaceManagement";
 import AdminProducts from "./pages/AdminProducts";
+import AdminOrders from "./pages/AdminOrders";
 import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import CartPage from "./pages/CartPage";
@@ -79,6 +80,11 @@ function App() {
           <Route path="/admin/products" element={
             <AdminProtectedRoute>
               <AdminProducts />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/orders" element={
+            <AdminProtectedRoute>
+              <AdminOrders />
             </AdminProtectedRoute>
           } />
           <Route path="/admin/inventory" element={
