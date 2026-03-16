@@ -21,7 +21,7 @@ export async function getUserProfile(req, res) {
  */
 export async function updateUserProfile(req, res) {
     try {
-        const allowedFields = ["firstName", "lastName", "phone", "dateOfBirth", "gender", "address", "bio", "image"];
+        const allowedFields = ["firstName", "lastName", "phone", "dateOfBirth", "gender", "address", "addressLocation", "bio", "image"];
         const updates = {};
         for (const field of allowedFields) {
             if (req.body[field] !== undefined) updates[field] = req.body[field];

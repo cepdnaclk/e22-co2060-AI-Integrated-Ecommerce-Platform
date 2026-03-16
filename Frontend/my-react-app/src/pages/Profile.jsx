@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import ParticleCanvas from "../components/ParticleCanvas";
+import GoogleMapAddressPicker from "../components/GoogleMapAddressPicker";
 import { getMyOrders } from "../services/orderService";
 import API_BASE_URL from "../config/api";
 
@@ -97,6 +98,7 @@ const Profile = () => {
             dateOfBirth: profile?.dateOfBirth || "",
             gender:    profile?.gender    || "",
             address:   profile?.address   || "",
+            addressLocation: profile?.addressLocation || { lat: null, lng: null, placeId: "", verified: false },
             bio:       profile?.bio       || "",
         });
         setSaveMsg("");
@@ -253,7 +255,7 @@ const Profile = () => {
                         <div style={{ display:"flex", gap:24, marginTop:14, flexWrap:"wrap" }}>
                             {profile.phone && <div style={{ display:"flex", alignItems:"center", gap:6, color:"#94a3b8", fontSize:13 }}>📞 {profile.phone}</div>}
                             <div style={{ display:"flex", alignItems:"center", gap:6, color:"#94a3b8", fontSize:13 }}>✉️ {profile.email}</div>
-                            {profile.address && <div style={{ display:"flex", alignItems:"center", gap:6, color:"#94a3b8", fontSize:13 }}>📍 {profile.address}</div>}
+                            {profile.address && <div style={{ display:"flex", alignItems:"center", gap:6, color:"#94a3b8", fontSize:13 }}>📍 {profile.address}{profile.addressLocation?.verified && <span style={{ color:"#4ade80", fontSize:11, marginLeft:4 }}>✓ Verified</span>}</div>}
                         </div>
 
                         {/* ── Live Stats Row ── */}
@@ -348,7 +350,7 @@ const Profile = () => {
                                     <span className="pval" style={{ textTransform:"capitalize" }}>{val || "—"}</span>
                                 </div>
                             ))}
-                            <div className="prow" style={{ gridColumn:"1/-1" }}><span className="plabel">Address</span><span className="pval">{profile.address || "—"}</span></div>
+                            <div className="prow" style={{ gridColumn:"1/-1" }}><span className="plabel">Address</span><span className="pval">{profile.address || "—"}{profile.addressLocation?.verified && <span style={{ color:"#4ade80", fontSize:11, marginLeft:8 }}>✓ Verified</span>}</span></div>
                             <div className="prow" style={{ gridColumn:"1/-1" }}><span className="plabel">Bio</span><span className="pval">{profile.bio || "—"}</span></div>
                             <div className="prow"><span className="plabel">Account Status</span><span className="pval" style={{ color: profile.isBlocked ? "#f87171" : "#4ade80" }}>{profile.isBlocked ? "Blocked" : "Active"}</span></div>
                             <div className="prow"><span className="plabel">Member Since</span><span className="pval">{profile.createdAt ? new Date(profile.createdAt).toLocaleDateString("en-US", { year:"numeric", month:"long", day:"numeric" }) : "—"}</span></div>
@@ -567,8 +569,20 @@ const Profile = () => {
                                     </div>
                                 ))}
                                 <div style={{ gridColumn:"1/-1", padding:"14px 16px", background:"rgba(255,255,255,0.03)", borderRadius:10, border:"1px solid rgba(255,255,255,0.07)" }}>
-                                    <div style={{ fontSize:11, color:"#64748b", textTransform:"uppercase", letterSpacing:".05em", marginBottom:6 }}>Address</div>
-                                    <div style={{ fontSize:15, color:"#e2e8f0" }}>{profile.address || "Not provided"}</div>
+                                    <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+                                        <div style={{ fontSize:11, color:"#64748b", textTransform:"uppercase", letterSpacing:".05em" }}>Address</div>
+                                        {profile.addressLocation?.verified && (
+                                            <span style={{ fontSize:10, color:"#4ade80", background:"rgba(34,197,94,0.12)", padding:"2px 8px", borderRadius:10, border:"1px solid rgba(34,197,94,0.25)" }}>✓ Verified</span>
+                                        )}
+                                    </div>
+                                    <div style={{ fontSize:15, color:"#e2e8f0", marginBottom: profile.addressLocation?.lat ? 12 : 0 }}>{profile.address || "Not provided"}</div>
+                                    {profile.addressLocation?.lat && profile.addressLocation?.lng && (
+                                        <GoogleMapAddressPicker
+                                            address={profile.address}
+                                            addressLocation={profile.addressLocation}
+                                            readOnly={true}
+                                        />
+                                    )}
                                 </div>
                                 <div style={{ gridColumn:"1/-1", padding:"14px 16px", background:"rgba(255,255,255,0.03)", borderRadius:10, border:"1px solid rgba(255,255,255,0.07)" }}>
                                     <div style={{ fontSize:11, color:"#64748b", textTransform:"uppercase", letterSpacing:".05em", marginBottom:6 }}>Bio</div>
@@ -647,7 +661,13 @@ const Profile = () => {
                             </div>
                             <div style={{ gridColumn:"1/-1" }}>
                                 <label className="plabel" style={{ display:"block", marginBottom:6 }}>Address</label>
-                                <input type="text" className="pfield" value={editForm.address || ""} onChange={(e) => setEditForm({ ...editForm, address: e.target.value })} placeholder="Street, City, Country" />
+                                <GoogleMapAddressPicker
+                                    address={editForm.address}
+                                    addressLocation={editForm.addressLocation}
+                                    onAddressChange={({ address, addressLocation }) => {
+                                        setEditForm({ ...editForm, address, addressLocation });
+                                    }}
+                                />
                             </div>
                             <div style={{ gridColumn:"1/-1" }}>
                                 <label className="plabel" style={{ display:"block", marginBottom:6 }}>Bio</label>
@@ -723,7 +743,7 @@ const styles = {
         background: "linear-gradient(135deg, #0d1b2e, #0f2a44)",
         border: "1px solid rgba(255,255,255,0.1)",
         borderRadius: 20, padding: 32,
-        width: "100%", maxWidth: 560,
+        width: "100%", maxWidth: 640,
         maxHeight: "90vh", overflowY: "auto",
         boxShadow: "0 25px 80px rgba(0,0,0,0.5)",
     },

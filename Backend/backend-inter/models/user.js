@@ -52,6 +52,12 @@ const userSchema = new mongoose.Schema(
     dateOfBirth: { type: String, default: "" },
     gender: { type: String, enum: ["male", "female", "other", ""], default: "" },
     address: { type: String, default: "" },
+    addressLocation: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
+      placeId: { type: String, default: "" },
+      verified: { type: Boolean, default: false },
+    },
     bio: { type: String, default: "" },
 
     token: {
