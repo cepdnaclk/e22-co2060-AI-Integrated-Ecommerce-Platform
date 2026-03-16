@@ -20,7 +20,11 @@ const shippingAddressSchema = new mongoose.Schema(
     phone: { type: String, required: true },
     street: { type: String, required: true },
     city: { type: String, required: true },
-    postalCode: { type: String, required: true }
+    postalCode: { type: String, required: true },
+    lat: { type: Number, default: null },
+    lng: { type: Number, default: null },
+    placeId: { type: String, default: "" },
+    verified: { type: Boolean, default: false }
   },
   { _id: false }
 );

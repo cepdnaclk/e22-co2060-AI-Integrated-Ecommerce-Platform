@@ -137,3 +137,45 @@ User types in search box
 - Default center is set to Sri Lanka (`7.8731, 80.7718`) — adjust `DEFAULT_CENTER` in `GoogleMapAddressPicker.jsx` as needed
 - If the user types an address manually without selecting from autocomplete, it is saved as unverified (`verified: false`)
 - The Google Maps API key should **never** be committed to version control — it's in `.env` which is gitignored
+
+## Checkout Shipping Address Integration
+
+### How It Works
+
+The checkout page (`CheckoutPage.jsx`) follows the standard e-commerce pattern:
+
+1. **Default Address** — When the user reaches checkout, their saved profile address is pre-selected as the shipping address
+2. **Ship to Different Address** — A radio-style toggle lets them enter a completely new address using the Google Map picker
+3. **Order Summary** — The right-side panel shows a live "Delivering To" preview of the selected address
+
+### Address Options at Checkout
+
+| Option | Description |
+|--------|-------------|
+| 🏠 **Default Address** | Pre-filled from user profile. Shows verified badge + mini-map if the address was verified via Google Maps. Only asks for city + postal code to complete. |
+| 📍 **Ship to Different Address** | Full Google Map address picker with autocomplete, map click, and draggable marker. Plus manual fields for name, phone, city, postal code. |
+
+### Data Stored with Each Order
+
+The `shippingAddress` in the order model now includes optional geolocation fields:
+
+```js
+shippingAddress: {
+  fullName: String,    // required
+  phone: String,       // required
+  street: String,      // required
+  city: String,        // required
+  postalCode: String,  // required
+  lat: Number,         // optional — from Google Maps
+  lng: Number,         // optional — from Google Maps
+  placeId: String,     // optional — Google Place ID
+  verified: Boolean    // true if selected via map
+}
+```
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `Frontend/.../pages/CheckoutPage.jsx` | Added profile address fetch, address source toggle, Google Map picker integration |
+| `Backend/.../models/order.js` | Added `lat`, `lng`, `placeId`, `verified` to `shippingAddressSchema` |

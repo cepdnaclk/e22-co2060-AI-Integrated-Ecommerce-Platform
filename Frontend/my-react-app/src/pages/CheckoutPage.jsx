@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getCart } from "../services/cartService";
 import { placeOrder } from "../services/orderService";
+import GoogleMapAddressPicker from "../components/GoogleMapAddressPicker";
+import API_BASE_URL from "../config/api";
 
 /* ─── Breadcrumb Step Bar ─── */
 function StepBar({ step }) {
@@ -94,6 +96,19 @@ export default function CheckoutPage() {
     const [success, setSuccess] = useState(false);
     const [toast, setToast] = useState(null);
 
+    // Address source: "profile" = use saved address, "custom" = enter new one
+    const [addressSource, setAddressSource] = useState("profile");
+    const [profileAddress, setProfileAddress] = useState(null);
+    const [profileLoading, setProfileLoading] = useState(true);
+
+    // Phone source: "profile" = use saved number, "other" = enter new one
+    const [phoneSource, setPhoneSource] = useState("profile");
+    const [otherPhone, setOtherPhone] = useState("");
+
+    // Google Map location data for custom address
+    const [mapLocation, setMapLocation] = useState({ lat: null, lng: null, placeId: "", verified: false });
+    const [mapAddress, setMapAddress] = useState("");
+
     const token = localStorage.getItem("token");
 
     const showToast = (msg, ok = true) => {
@@ -108,18 +123,102 @@ export default function CheckoutPage() {
         setLoading(false);
     }, [token]);
 
-    useEffect(() => { load(); }, [load]);
+    // Fetch user profile to get saved address
+    const fetchProfile = useCallback(async () => {
+        setProfileLoading(true);
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/users/profile`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            if (!res.ok) throw new Error("Failed");
+            const data = await res.json();
+
+            const hasAddress = data.address && data.address.trim();
+            setProfileAddress({
+                fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
+                phone: data.phone || "",
+                address: data.address || "",
+                addressLocation: data.addressLocation || null,
+            });
+
+            // Pre-fill form with profile data
+            if (hasAddress) {
+                setForm({
+                    fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
+                    phone: data.phone || "",
+                    street: data.address || "",
+                    city: "",
+                    postalCode: "",
+                });
+                setAddressSource("profile");
+            } else {
+                setForm(prev => ({
+                    ...prev,
+                    fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
+                    phone: data.phone || "",
+                }));
+                setAddressSource("custom");
+            }
+            setPhoneSource(data.phone ? "profile" : "other");
+        } catch {
+            setAddressSource("custom");
+        } finally {
+            setProfileLoading(false);
+        }
+    }, [token]);
+
+    useEffect(() => { load(); fetchProfile(); }, [load, fetchProfile]);
 
     const set = (k, v) => {
         setForm((p) => ({ ...p, [k]: v }));
         if (errors[k]) setErrors((e) => { const n = { ...e }; delete n[k]; return n; });
     };
 
+    // Switch address source
+    const switchToProfile = () => {
+        if (!profileAddress) return;
+        setAddressSource("profile");
+        setForm({
+            fullName: profileAddress.fullName,
+            phone: profileAddress.phone,
+            street: profileAddress.address,
+            city: "",
+            postalCode: "",
+        });
+        setMapAddress("");
+        setMapLocation({ lat: null, lng: null, placeId: "", verified: false });
+        setErrors({});
+    };
+
+    const switchToCustom = () => {
+        setAddressSource("custom");
+        setForm(EMPTY_ADDR);
+        setMapAddress("");
+        setMapLocation({ lat: null, lng: null, placeId: "", verified: false });
+        setErrors({});
+    };
+
+    // Handle Google Map address selection for custom address
+    const handleMapAddressChange = ({ address, addressLocation }) => {
+        setMapAddress(address);
+        setMapLocation(addressLocation);
+        set("street", address);
+    };
+
     const validate = () => {
         const e = {};
         if (!form.fullName.trim()) e.fullName = "Required";
-        if (!form.phone.trim()) e.phone = "Required";
-        if (!form.street.trim()) e.street = "Required";
+
+        // Phone validation based on source
+        const activePhone = phoneSource === "profile" ? (profileAddress?.phone || "") : otherPhone;
+        if (!activePhone.trim()) e.phone = "Required";
+
+        if (addressSource === "profile") {
+            // For profile address, street is the saved address
+            if (!form.street.trim() && !profileAddress?.address) e.street = "No saved address";
+        } else {
+            if (!form.street.trim()) e.street = "Required";
+        }
         if (!form.city.trim()) e.city = "Required";
         if (!form.postalCode.trim()) e.postalCode = "Required";
         setErrors(e);
@@ -130,7 +229,21 @@ export default function CheckoutPage() {
         if (!validate()) return;
         setPlacing(true);
         try {
-            await placeOrder(token, form);
+            const activePhone = phoneSource === "profile" ? (profileAddress?.phone || "") : otherPhone;
+            const shippingData = { ...form, phone: activePhone };
+            // Attach location data if available
+            if (addressSource === "profile" && profileAddress?.addressLocation?.verified) {
+                shippingData.lat = profileAddress.addressLocation.lat;
+                shippingData.lng = profileAddress.addressLocation.lng;
+                shippingData.placeId = profileAddress.addressLocation.placeId;
+                shippingData.verified = true;
+            } else if (addressSource === "custom" && mapLocation?.verified) {
+                shippingData.lat = mapLocation.lat;
+                shippingData.lng = mapLocation.lng;
+                shippingData.placeId = mapLocation.placeId;
+                shippingData.verified = true;
+            }
+            await placeOrder(token, shippingData);
             setSuccess(true);
             setTimeout(() => navigate("/orders"), 3500);
         } catch (err) {
@@ -142,6 +255,9 @@ export default function CheckoutPage() {
 
     const items = cart?.cart?.items || [];
     const totalPrice = items.reduce((s, i) => s + i.price * i.quantity, 0);
+
+    const hasProfileAddr = profileAddress?.address?.trim();
+    const profileVerified = profileAddress?.addressLocation?.verified;
 
     // ─── Success Screen ───
     if (success) {
@@ -171,9 +287,12 @@ export default function CheckoutPage() {
         @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
-        .co-wrap{animation:fadeIn 0.4s ease forwards;max-width:900px;margin:0 auto;}
+        .co-wrap{animation:fadeIn 0.4s ease forwards;max-width:960px;margin:0 auto;}
         .co-input:focus{border-color:#0582ca!important;box-shadow:0 0 0 3px rgba(5,130,202,0.15)!important;}
         .co-btn:hover{opacity:0.85;}
+        .addr-option{cursor:pointer;border:2px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px 18px;transition:all 0.2s;background:rgba(255,255,255,0.02);}
+        .addr-option:hover{border-color:rgba(255,255,255,0.15);background:rgba(255,255,255,0.04);}
+        .addr-option.active{border-color:#0582ca;background:rgba(5,130,202,0.08);}
       `}</style>
 
             {/* Toast */}
@@ -209,7 +328,7 @@ export default function CheckoutPage() {
                     }}>← Back to Cart</Link>
                 </div>
 
-                {loading ? (
+                {loading || profileLoading ? (
                     <div style={{ textAlign: "center", padding: "60px 0" }}>
                         <div style={{ width: 36, height: 36, border: "3px solid rgba(255,255,255,0.1)", borderTop: "3px solid #4ac6ff", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }} />
                         <p style={{ color: "#64748b", fontSize: 14 }}>Loading…</p>
@@ -218,75 +337,308 @@ export default function CheckoutPage() {
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
 
                         {/* Left: Shipping Form */}
-                        <div style={S.card}>
-                            <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 24, display: "flex", alignItems: "center", gap: 8 }}>
-                                📦 Shipping Address
-                            </h2>
+                        <div>
+                            {/* ── Address Selection ── */}
+                            <div style={S.card}>
+                                <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+                                    📦 Shipping Address
+                                </h2>
+                                <p style={{ color: "#64748b", fontSize: 13, marginBottom: 20 }}>
+                                    Choose where to deliver your order
+                                </p>
 
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
-                                <div>
-                                    <label style={S.label}>Full Name *</label>
-                                    <input
-                                        className="co-input"
-                                        style={{ ...S.input, borderColor: errors.fullName ? "#f87171" : "rgba(255,255,255,0.12)" }}
-                                        value={form.fullName}
-                                        onChange={(e) => set("fullName", e.target.value)}
-                                        placeholder="John Doe"
-                                    />
-                                    {errors.fullName && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.fullName}</p>}
+                                {/* Address options */}
+                                <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 20 }}>
+
+                                    {/* Option 1: Profile Address */}
+                                    {hasProfileAddr && (
+                                        <div
+                                            className={`addr-option ${addressSource === "profile" ? "active" : ""}`}
+                                            onClick={switchToProfile}
+                                        >
+                                            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                                                {/* Radio circle */}
+                                                <div style={{
+                                                    width: 20, height: 20, borderRadius: "50%", flexShrink: 0, marginTop: 2,
+                                                    border: addressSource === "profile" ? "2px solid #0582ca" : "2px solid rgba(255,255,255,0.2)",
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                    transition: "all 0.2s",
+                                                }}>
+                                                    {addressSource === "profile" && (
+                                                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0582ca" }} />
+                                                    )}
+                                                </div>
+
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                                                        <span style={{ fontSize: 14, fontWeight: 700, color: "#e2e8f0" }}>
+                                                            🏠 Default Address
+                                                        </span>
+                                                        {profileVerified && (
+                                                            <span style={{
+                                                                fontSize: 10, fontWeight: 700, textTransform: "uppercase",
+                                                                color: "#4ade80", background: "rgba(34,197,94,0.12)",
+                                                                border: "1px solid rgba(34,197,94,0.25)",
+                                                                borderRadius: 20, padding: "2px 8px",
+                                                            }}>
+                                                                ✓ Verified
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <div style={{ fontSize: 13, color: "#94a3b8", lineHeight: 1.5 }}>
+                                                        <div style={{ fontWeight: 600, color: "#cbd5e1" }}>{profileAddress.fullName}</div>
+                                                        <div>{profileAddress.address}</div>
+                                                        {profileAddress.phone && <div>📞 {profileAddress.phone}</div>}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Mini map preview for verified profile address */}
+                                            {addressSource === "profile" && profileVerified && profileAddress?.addressLocation?.lat && (
+                                                <div style={{ marginTop: 12, marginLeft: 32 }}>
+                                                    <GoogleMapAddressPicker
+                                                        address={profileAddress.address}
+                                                        addressLocation={profileAddress.addressLocation}
+                                                        readOnly={true}
+                                                    />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Option 2: Different Address */}
+                                    <div
+                                        className={`addr-option ${addressSource === "custom" ? "active" : ""}`}
+                                        onClick={() => { if (addressSource !== "custom") switchToCustom(); }}
+                                    >
+                                        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+                                            {/* Radio circle */}
+                                            <div style={{
+                                                width: 20, height: 20, borderRadius: "50%", flexShrink: 0, marginTop: 2,
+                                                border: addressSource === "custom" ? "2px solid #0582ca" : "2px solid rgba(255,255,255,0.2)",
+                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                transition: "all 0.2s",
+                                            }}>
+                                                {addressSource === "custom" && (
+                                                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0582ca" }} />
+                                                )}
+                                            </div>
+                                            <div style={{ flex: 1 }}>
+                                                <span style={{ fontSize: 14, fontWeight: 700, color: "#e2e8f0" }}>
+                                                    📍 Ship to a Different Address
+                                                </span>
+                                                {!hasProfileAddr && (
+                                                    <p style={{ fontSize: 12, color: "#64748b", marginTop: 4, marginBottom: 0 }}>
+                                                        No saved address found — enter your shipping address below
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label style={S.label}>Phone Number *</label>
-                                    <input
-                                        className="co-input"
-                                        style={{ ...S.input, borderColor: errors.phone ? "#f87171" : "rgba(255,255,255,0.12)" }}
-                                        value={form.phone}
-                                        onChange={(e) => set("phone", e.target.value)}
-                                        placeholder="+94 77 000 0000"
-                                    />
-                                    {errors.phone && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.phone}</p>}
-                                </div>
+
+                                {/* ── Custom Address Form (shown when "custom" selected) ── */}
+                                {addressSource === "custom" && (
+                                    <div style={{ animation: "fadeIn 0.3s ease forwards" }}>
+                                        {/* Google Map Address Picker */}
+                                        <div style={{ marginBottom: 20 }}>
+                                            <label style={{ ...S.label, marginBottom: 10 }}>Search & Select Location on Map</label>
+                                            <GoogleMapAddressPicker
+                                                address={mapAddress}
+                                                addressLocation={mapLocation}
+                                                onAddressChange={handleMapAddressChange}
+                                            />
+                                        </div>
+
+                                        {/* Name + Phone */}
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                                            <div>
+                                                <label style={S.label}>Full Name *</label>
+                                                <input
+                                                    className="co-input"
+                                                    style={{ ...S.input, borderColor: errors.fullName ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                    value={form.fullName}
+                                                    onChange={(e) => set("fullName", e.target.value)}
+                                                    placeholder="John Doe"
+                                                />
+                                                {errors.fullName && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.fullName}</p>}
+                                            </div>
+                                            <div>
+                                                <label style={S.label}>Phone Number *</label>
+                                                <input
+                                                    className="co-input"
+                                                    style={{ ...S.input, borderColor: errors.phone ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                    value={form.phone}
+                                                    onChange={(e) => set("phone", e.target.value)}
+                                                    placeholder="+94 77 000 0000"
+                                                />
+                                                {errors.phone && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.phone}</p>}
+                                            </div>
+                                        </div>
+
+                                        {/* Street Address */}
+                                        <div style={{ marginBottom: 16 }}>
+                                            <label style={S.label}>Street Address *</label>
+                                            <input
+                                                className="co-input"
+                                                style={{ ...S.input, borderColor: errors.street ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                value={form.street}
+                                                onChange={(e) => set("street", e.target.value)}
+                                                placeholder="123 Main Street, Apt 4B"
+                                            />
+                                            {errors.street && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.street}</p>}
+                                            {mapLocation?.verified && (
+                                                <p style={{ fontSize: 11, color: "#4ade80", marginTop: 4 }}>✓ Auto-filled from map selection</p>
+                                            )}
+                                        </div>
+
+                                        {/* City + Postal */}
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                            <div>
+                                                <label style={S.label}>City *</label>
+                                                <input
+                                                    className="co-input"
+                                                    style={{ ...S.input, borderColor: errors.city ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                    value={form.city}
+                                                    onChange={(e) => set("city", e.target.value)}
+                                                    placeholder="Colombo"
+                                                />
+                                                {errors.city && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.city}</p>}
+                                            </div>
+                                            <div>
+                                                <label style={S.label}>Postal Code *</label>
+                                                <input
+                                                    className="co-input"
+                                                    style={{ ...S.input, borderColor: errors.postalCode ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                    value={form.postalCode}
+                                                    onChange={(e) => set("postalCode", e.target.value)}
+                                                    placeholder="10001"
+                                                />
+                                                {errors.postalCode && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.postalCode}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* ── Profile address extra fields (city + postal still needed) ── */}
+                                {addressSource === "profile" && hasProfileAddr && (
+                                    <div style={{ animation: "fadeIn 0.3s ease forwards" }}>
+                                        <div style={{ height: 1, background: "rgba(255,255,255,0.06)", margin: "4px 0 16px" }} />
+                                        <p style={{ fontSize: 12, color: "#64748b", marginBottom: 12 }}>
+                                            Complete the remaining details for delivery:
+                                        </p>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                            <div>
+                                                <label style={S.label}>City *</label>
+                                                <input
+                                                    className="co-input"
+                                                    style={{ ...S.input, borderColor: errors.city ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                    value={form.city}
+                                                    onChange={(e) => set("city", e.target.value)}
+                                                    placeholder="Colombo"
+                                                />
+                                                {errors.city && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.city}</p>}
+                                            </div>
+                                            <div>
+                                                <label style={S.label}>Postal Code *</label>
+                                                <input
+                                                    className="co-input"
+                                                    style={{ ...S.input, borderColor: errors.postalCode ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                    value={form.postalCode}
+                                                    onChange={(e) => set("postalCode", e.target.value)}
+                                                    placeholder="10001"
+                                                />
+                                                {errors.postalCode && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.postalCode}</p>}
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
-                            <div style={{ marginBottom: 16 }}>
-                                <label style={S.label}>Street Address *</label>
-                                <input
-                                    className="co-input"
-                                    style={{ ...S.input, borderColor: errors.street ? "#f87171" : "rgba(255,255,255,0.12)" }}
-                                    value={form.street}
-                                    onChange={(e) => set("street", e.target.value)}
-                                    placeholder="123 Main Street, Apt 4B"
-                                />
-                                {errors.street && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.street}</p>}
-                            </div>
+                            {/* ── Contact Number Section ── */}
+                            <div style={{ ...S.card, marginTop: 16 }}>
+                                <h2 style={{ fontSize: 17, fontWeight: 700, marginBottom: 6, display: "flex", alignItems: "center", gap: 8 }}>
+                                    📞 Contact Number
+                                </h2>
+                                <p style={{ color: "#64748b", fontSize: 13, marginBottom: 16 }}>
+                                    We'll call this number for delivery updates
+                                </p>
 
-                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                                <div>
-                                    <label style={S.label}>City *</label>
-                                    <input
-                                        className="co-input"
-                                        style={{ ...S.input, borderColor: errors.city ? "#f87171" : "rgba(255,255,255,0.12)" }}
-                                        value={form.city}
-                                        onChange={(e) => set("city", e.target.value)}
-                                        placeholder="Colombo"
-                                    />
-                                    {errors.city && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.city}</p>}
-                                </div>
-                                <div>
-                                    <label style={S.label}>Postal Code *</label>
-                                    <input
-                                        className="co-input"
-                                        style={{ ...S.input, borderColor: errors.postalCode ? "#f87171" : "rgba(255,255,255,0.12)" }}
-                                        value={form.postalCode}
-                                        onChange={(e) => set("postalCode", e.target.value)}
-                                        placeholder="10001"
-                                    />
-                                    {errors.postalCode && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.postalCode}</p>}
+                                {/* Phone options */}
+                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+
+                                    {/* Option 1: Profile phone */}
+                                    {profileAddress?.phone && (
+                                        <div
+                                            className={`addr-option ${phoneSource === "profile" ? "active" : ""}`}
+                                            onClick={() => { setPhoneSource("profile"); setErrors(e => { const n = { ...e }; delete n.phone; return n; }); }}
+                                            style={{ padding: "12px 16px" }}
+                                        >
+                                            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                                <div style={{
+                                                    width: 20, height: 20, borderRadius: "50%", flexShrink: 0,
+                                                    border: phoneSource === "profile" ? "2px solid #0582ca" : "2px solid rgba(255,255,255,0.2)",
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                    transition: "all 0.2s",
+                                                }}>
+                                                    {phoneSource === "profile" && (
+                                                        <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0582ca" }} />
+                                                    )}
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0" }}>
+                                                        {profileAddress.phone}
+                                                    </div>
+                                                    <div style={{ fontSize: 11, color: "#64748b", marginTop: 2 }}>Saved number from your profile</div>
+                                                </div>
+                                                <span style={{ fontSize: 10, color: "#60a5fa", background: "rgba(59,130,246,0.1)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 20, padding: "2px 8px", fontWeight: 600 }}>DEFAULT</span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Option 2: Different number */}
+                                    <div
+                                        className={`addr-option ${phoneSource === "other" ? "active" : ""}`}
+                                        onClick={() => { setPhoneSource("other"); }}
+                                        style={{ padding: "12px 16px" }}
+                                    >
+                                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                                            <div style={{
+                                                width: 20, height: 20, borderRadius: "50%", flexShrink: 0,
+                                                border: phoneSource === "other" ? "2px solid #0582ca" : "2px solid rgba(255,255,255,0.2)",
+                                                display: "flex", alignItems: "center", justifyContent: "center",
+                                                transition: "all 0.2s",
+                                            }}>
+                                                {phoneSource === "other" && (
+                                                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: "#0582ca" }} />
+                                                )}
+                                            </div>
+                                            <span style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0" }}>
+                                                Use a different number
+                                            </span>
+                                        </div>
+
+                                        {/* Input for other phone */}
+                                        {phoneSource === "other" && (
+                                            <div style={{ marginTop: 12, marginLeft: 32, animation: "fadeIn 0.2s ease forwards" }}>
+                                                <input
+                                                    className="co-input"
+                                                    style={{ ...S.input, borderColor: errors.phone ? "#f87171" : "rgba(255,255,255,0.12)" }}
+                                                    value={otherPhone}
+                                                    onChange={(e) => {
+                                                        setOtherPhone(e.target.value);
+                                                        if (errors.phone) setErrors(er => { const n = { ...er }; delete n.phone; return n; });
+                                                    }}
+                                                    placeholder="+94 77 000 0000"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                                {errors.phone && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.phone}</p>}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        {/* Right: Order Summary */}
                         <div style={{ ...S.card, position: "sticky", top: 24 }}>
                             <h3 style={{ fontSize: 16, fontWeight: 700, marginBottom: 20 }}>Order Summary</h3>
 
@@ -307,6 +659,32 @@ export default function CheckoutPage() {
                             )}
 
                             <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "16px 0" }} />
+
+                            {/* Delivery address summary */}
+                            <div style={{ marginBottom: 16, padding: "10px 12px", background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)" }}>
+                                <div style={{ fontSize: 10, color: "#64748b", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 6, fontWeight: 600 }}>Delivering To</div>
+                                <div style={{ fontSize: 13, color: "#e2e8f0", lineHeight: 1.5 }}>
+                                    {addressSource === "profile" && hasProfileAddr ? (
+                                        <>
+                                            <div style={{ fontWeight: 600 }}>{profileAddress.fullName}</div>
+                                            <div style={{ color: "#94a3b8" }}>{profileAddress.address}</div>
+                                            {profileVerified && <span style={{ fontSize: 10, color: "#4ade80" }}>✓ Map Verified</span>}
+                                        </>
+                                    ) : form.street ? (
+                                        <>
+                                            <div style={{ fontWeight: 600 }}>{form.fullName || "—"}</div>
+                                            <div style={{ color: "#94a3b8" }}>{form.street}</div>
+                                            {form.city && <div style={{ color: "#94a3b8" }}>{form.city} {form.postalCode}</div>}
+                                            {mapLocation?.verified && <span style={{ fontSize: 10, color: "#4ade80" }}>✓ Map Verified</span>}
+                                        </>
+                                    ) : (
+                                        <span style={{ color: "#64748b" }}>No address selected</span>
+                                    )}
+                                    <div style={{ marginTop: 4, color: "#94a3b8", fontSize: 12 }}>
+                                        📞 {phoneSource === "profile" ? (profileAddress?.phone || "—") : (otherPhone || "—")}
+                                    </div>
+                                </div>
+                            </div>
 
                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, fontSize: 13 }}>
                                 <span style={{ color: "#94a3b8" }}>Shipping</span>
