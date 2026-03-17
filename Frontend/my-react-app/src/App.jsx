@@ -7,6 +7,7 @@ import ProductListing from "./pages/ProductListing.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import SellerRegister from "./pages/SellerRegister";
 import SellerDashboard from "./pages/SellerDashboard";
+import SellerRestock from "./pages/SellerRestock";
 import Profile from "./pages/Profile";
 import VerifySellerEmail from "./pages/VerifySellerEmail";
 import CreateSellerOffer from "./pages/CreateSellerOffer";
@@ -50,6 +51,7 @@ function App() {
           <Route path="/become-seller" element={<SellerRegister />} />
 
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          <Route path="/seller/restock" element={<SellerRestock />} />
 
           {/* Seller Offer Management */}
           <Route path="/seller/offers" element={<MySellerOffers />} />

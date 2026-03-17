@@ -7,6 +7,7 @@ import {
   getSellerById,
 } from "../controllers/sellerController.js";
 import { getSellerDashboardStats } from "../controllers/sellerDashboardController.js";
+import { getSellerRestockPriorities } from "../controllers/sellerRestockController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import Seller from "../models/seller.js";
 
@@ -38,6 +39,15 @@ const requireSeller = async (req, res, next) => {
  * ======================================================
  */
 router.get("/dashboard/stats", authMiddleware, requireSeller, getSellerDashboardStats);
+
+/**
+ * ======================================================
+ * SELLER RESTOCK PRIORITIES
+ * GET /api/sellers/restock/priorities
+ * Returns all seller offers ranked by restock urgency.
+ * ======================================================
+ */
+router.get("/restock/priorities", authMiddleware, requireSeller, getSellerRestockPriorities);
 
 /**
  * ======================================================
