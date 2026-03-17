@@ -19,6 +19,7 @@ import searchRouter from "./router/searchRouter.js"; // ✅ Smart Search
 import inventoryRouter from "./router/inventoryRouter.js"; // ✅ Inventory Management
 import adminProductRouter from "./router/adminProductRouter.js"; // ✅ Admin Product Management
 import adminOrderRouter from "./router/adminOrderRouter.js"; // ✅ Admin Order Management
+import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority ML
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -107,6 +108,9 @@ app.use("/api/admin/products", adminProductRouter);
 
 // 📋 Admin Order Management (view & track)
 app.use("/api/admin/orders", adminOrderRouter);
+
+// 🤖 Admin Restock Priority ML Scoring
+app.use("/api/admin/restock", restockRouter);
 
 // ================== TEST ROUTES ==================
 

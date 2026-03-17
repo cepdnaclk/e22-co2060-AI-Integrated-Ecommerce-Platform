@@ -8,3 +8,23 @@ __pycache__/
 
 AI-ML/venv/
 AI-ML/__pycache__/
+
+# ── Restock ML generated/runtime files ──
+AI-ML/restock_ml/models/
+AI-ML/restock_ml/data/synthetic/
+AI-ML/restock_ml/data/processed/
+AI-ML/restock_ml/logs/
+AI-ML/restock_ml/reports/
+AI-ML/restock_ml/restock.db
+AI-ML/restock_ml/restock_order.csv
+AI-ML/restock_ml/venv/
+
+# ── General ML/data artifacts ──
+*.joblib
+*.pt
+*.h5
+*.pkl
+*.db
+*.sqlite3
+*.csv
+!requirements*.txt
