@@ -35,7 +35,7 @@ export const scoreBatchSKUs = async (skuList) => {
   try {
     const response = await axios.post(
       `${RESTOCK_ML_API}/score/batch`,
-      { items: skuList },
+      skuList,
       { timeout: 60000 }
     );
     return response.data;

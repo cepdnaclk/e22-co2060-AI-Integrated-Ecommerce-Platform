@@ -1,23 +1,20 @@
+import axios from "axios";
 import sellerOfferModel from "../models/sellerOffer.js";
 import Order from "../models/order.js";
 import InventoryLog from "../models/inventoryLog.js";
-import Seller from "../models/seller.js";
-import mongoose from "mongoose";
 
 /**
  * ======================================================
  * SELLER RESTOCK CONTROLLER
  * ======================================================
- * Provides restock priority scoring for sellers to see
- * which of THEIR products need restocking most urgently.
- *
- * Uses the deterministic priority formula directly so
- * sellers can get results even when the ML service is down.
+ * Scores seller products via the ML FastAPI service (port 8001).
+ * Falls back to the deterministic formula if the ML service is down.
  * ======================================================
  */
 
-// ─── Priority Score Formula ───
-// PS = w1·D + w2·(1−S) + w3·L + w4·P + w5·SC + w6·(1−HC) + w7·SR + w8·SE
+const ML_API = process.env.RESTOCK_ML_API || "http://localhost:8001";
+
+// ─── Fallback deterministic scoring (used when ML API is unreachable) ───
 
 const FALLBACK_WEIGHTS = {
   w1: 0.25, w2: 0.20, w3: 0.15, w4: 0.10,
@@ -43,27 +40,21 @@ function minmax(value, min, max) {
   return Math.max(0, Math.min(1, (value - min) / (max - min)));
 }
 
-function computePriorityScore(features, weights = FALLBACK_WEIGHTS) {
+function computeFallbackScore(features) {
+  const w = FALLBACK_WEIGHTS;
   const { D, S, L, P, SC, HC, SR, SE } = features;
-  const score =
-    weights.w1 * D +
-    weights.w2 * (1 - S) +
-    weights.w3 * L +
-    weights.w4 * P +
-    weights.w5 * SC +
-    weights.w6 * (1 - HC) +
-    weights.w7 * SR +
-    weights.w8 * SE;
-  return Math.max(0, Math.min(1, score));
+  return Math.max(0, Math.min(1,
+    w.w1 * D + w.w2 * (1 - S) + w.w3 * L + w.w4 * P +
+    w.w5 * SC + w.w6 * (1 - HC) + w.w7 * SR + w.w8 * SE
+  ));
 }
 
-// ─── Build features for a single offer ───
+// ─── Build 8 features for a single offer from MongoDB ───
 
 async function buildOfferFeatures(offer, sellerId) {
   const offerId = offer._id;
   const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000);
 
-  // Sales in last 90 days
   const salesAgg = await Order.aggregate([
     { $match: { sellerId, createdAt: { $gte: ninetyDaysAgo }, status: { $ne: "cancelled" } } },
     { $unwind: "$items" },
@@ -88,11 +79,8 @@ async function buildOfferFeatures(offer, sellerId) {
   const costPrice = offer.costPrice || sellingPrice * 0.6;
   const profitMargin = sellingPrice > 0 ? ((sellingPrice - costPrice) / sellingPrice) * 100 : 30;
 
-  // Lead time from restock logs
   const restockLogs = await InventoryLog.find({
-    sellerOfferId: offerId,
-    type: "restock",
-    createdAt: { $gte: ninetyDaysAgo },
+    sellerOfferId: offerId, type: "restock", createdAt: { $gte: ninetyDaysAgo },
   }).sort({ createdAt: 1 }).lean();
 
   const leadTimes = [];
@@ -119,9 +107,37 @@ async function buildOfferFeatures(offer, sellerId) {
   };
 }
 
+// ─── Call ML API for batch scoring ───
+
+async function scoreViaMLAPI(skuPayloads) {
+  const response = await axios.post(`${ML_API}/score/batch`, skuPayloads, { timeout: 30000 });
+  return response.data; // { results: [...], total, timestamp }
+}
+
+// ─── Fallback: score locally using deterministic formula ───
+
+function scoreLocalFallback(allFeatures) {
+  const keys = ["D", "S", "L", "P", "SC", "HC", "SR", "SE"];
+  const mins = {}, maxs = {};
+  for (const k of keys) {
+    const values = allFeatures.map(f => f.features[k]);
+    mins[k] = Math.min(...values);
+    maxs[k] = Math.max(...values);
+  }
+
+  return allFeatures.map(({ features }) => {
+    const normalized = {};
+    for (const k of keys) normalized[k] = minmax(features[k], mins[k], maxs[k]);
+    const score = computeFallbackScore(normalized);
+    const tier = getTier(score);
+    return { priority_score: score, tier: tier.name, action: tier.action, response_time: tier.response };
+  });
+}
+
 /**
  * GET /api/sellers/restock/priorities
  * Returns all seller's offers scored and ranked by restock priority.
+ * Tries ML API first → falls back to deterministic formula.
  */
 export async function getSellerRestockPriorities(req, res) {
   try {
@@ -133,13 +149,11 @@ export async function getSellerRestockPriorities(req, res) {
       .lean();
 
     if (offers.length === 0) {
-      return res.json({ success: true, data: [], summary: { total: 0, critical: 0, high: 0, medium: 0, low: 0 } });
+      return res.json({ success: true, data: [], summary: { total: 0, critical: 0, high: 0, medium: 0, low: 0 }, scoringMode: "none" });
     }
 
-    // Build features for all offers
-    const results = [];
+    // Build features for all offers from real MongoDB data
     const allFeatures = [];
-
     for (const offer of offers) {
       try {
         const features = await buildOfferFeatures(offer, sellerId);
@@ -150,27 +164,68 @@ export async function getSellerRestockPriorities(req, res) {
     }
 
     if (allFeatures.length === 0) {
-      return res.json({ success: true, data: [], summary: { total: 0, critical: 0, high: 0, medium: 0, low: 0 } });
+      return res.json({ success: true, data: [], summary: { total: 0, critical: 0, high: 0, medium: 0, low: 0 }, scoringMode: "none" });
     }
 
-    // Compute min/max for normalization across this seller's products
-    const keys = ["D", "S", "L", "P", "SC", "HC", "SR", "SE"];
-    const mins = {}, maxs = {};
-    for (const k of keys) {
-      const values = allFeatures.map(f => f.features[k]);
-      mins[k] = Math.min(...values);
-      maxs[k] = Math.max(...values);
+    // Prepare payload for ML API
+    const skuPayloads = allFeatures.map(({ offer, features }) => ({
+      SKU_ID: offer._id.toString(),
+      D: features.D,
+      S: features.S,
+      L: features.L,
+      P: features.P,
+      SC: features.SC,
+      HC: features.HC,
+      SR: features.SR,
+      SE: features.SE,
+    }));
+
+    // Try ML API first, fall back to deterministic
+    let mlResults = null;
+    let scoringMode = "ml_ensemble";
+
+    try {
+      const mlResponse = await scoreViaMLAPI(skuPayloads);
+      mlResults = mlResponse.results;
+      console.log(`✅ ML API scored ${mlResults.length} SKUs via ensemble model`);
+    } catch (mlError) {
+      console.warn(`⚠️ ML API unavailable (${mlError.message}), using deterministic fallback`);
+      scoringMode = "deterministic_fallback";
     }
 
-    // Normalize and score
-    for (const { offer, features } of allFeatures) {
-      const normalized = {};
-      for (const k of keys) {
-        normalized[k] = minmax(features[k], mins[k], maxs[k]);
+    // Build results
+    const results = [];
+
+    for (let i = 0; i < allFeatures.length; i++) {
+      const { offer, features } = allFeatures[i];
+
+      let score, tierName, action, responseTime, weightsUsed;
+
+      if (mlResults) {
+        // Match ML result by SKU_ID
+        const mlResult = mlResults.find(r => r.sku_id === offer._id.toString());
+        if (mlResult) {
+          score = mlResult.priority_score;
+          tierName = mlResult.tier;
+          action = mlResult.action;
+          responseTime = mlResult.response_time;
+          weightsUsed = mlResult.weights_used || null;
+        } else {
+          // ML didn't return this SKU — use fallback for this one
+          const fallback = scoreLocalFallback([{ features }]);
+          score = fallback[0].priority_score;
+          tierName = fallback[0].tier;
+          action = fallback[0].action;
+          responseTime = fallback[0].response_time;
+        }
+      } else {
+        // Full fallback
+        const fallback = scoreLocalFallback([{ features }]);
+        score = fallback[0].priority_score;
+        tierName = fallback[0].tier;
+        action = fallback[0].action;
+        responseTime = fallback[0].response_time;
       }
-
-      const score = computePriorityScore(normalized);
-      const tier = getTier(score);
 
       results.push({
         offerId: offer._id,
@@ -180,9 +235,10 @@ export async function getSellerRestockPriorities(req, res) {
         price: offer.price,
         currentStock: offer.stock,
         score: Math.round(score * 10000) / 10000,
-        tier: tier.name,
-        action: tier.action,
-        responseTime: tier.response,
+        tier: tierName,
+        action,
+        responseTime,
+        weightsUsed: weightsUsed || null,
         metrics: {
           demandRate: Math.round(features.raw.demandRate * 100) / 100,
           daysOfSupply: Math.round(features.raw.daysOfSupply),
@@ -195,13 +251,9 @@ export async function getSellerRestockPriorities(req, res) {
       });
     }
 
-    // Sort by score descending (highest priority first)
     results.sort((a, b) => b.score - a.score);
-
-    // Add rank
     results.forEach((r, i) => { r.rank = i + 1; });
 
-    // Summary
     const summary = {
       total: results.length,
       critical: results.filter(r => r.tier === "CRITICAL").length,
@@ -210,7 +262,7 @@ export async function getSellerRestockPriorities(req, res) {
       low: results.filter(r => r.tier === "LOW").length,
     };
 
-    res.json({ success: true, data: results, summary });
+    res.json({ success: true, data: results, summary, scoringMode });
   } catch (error) {
     console.error("❌ getSellerRestockPriorities error:", error.message);
     res.status(500).json({ success: false, message: error.message });

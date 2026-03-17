@@ -18,6 +18,7 @@ const SellerRestock = () => {
   const [summary, setSummary] = useState({ total: 0, critical: 0, high: 0, medium: 0, low: 0 });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [scoringMode, setScoringMode] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -32,6 +33,7 @@ const SellerRestock = () => {
         setSeller(sellerInfo);
         setItems(restock.data || []);
         setSummary(restock.summary || {});
+        setScoringMode(restock.scoringMode || "unknown");
       } catch (err) {
         setError(err.message);
       } finally {
@@ -84,6 +86,18 @@ const SellerRestock = () => {
             <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: "#fff" }}>🔄 Restock Priorities</h1>
             <p style={{ color: "#94a3b8", marginTop: 6, fontSize: 15 }}>
               AI-powered restocking recommendations for <strong>{seller?.shopName || "your store"}</strong>
+              <span style={{
+                marginLeft: 12,
+                padding: "3px 10px",
+                borderRadius: 9999,
+                fontSize: 11,
+                fontWeight: 600,
+                background: scoringMode === "ml_ensemble" ? "rgba(34,197,94,0.12)" : "rgba(251,191,36,0.12)",
+                color: scoringMode === "ml_ensemble" ? "#4ade80" : "#fbbf24",
+                border: `1px solid ${scoringMode === "ml_ensemble" ? "rgba(34,197,94,0.25)" : "rgba(251,191,36,0.25)"}`,
+              }}>
+                {scoringMode === "ml_ensemble" ? "🤖 ML Ensemble" : "📐 Deterministic Fallback"}
+              </span>
             </p>
           </div>
           <div style={{ display: "flex", gap: 12 }}>
