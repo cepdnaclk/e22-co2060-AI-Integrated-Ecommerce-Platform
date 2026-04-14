@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchProductDetails } from "../services/productService";
 import { useCart } from "../context/CartContext";
+import ProductRecommendations from "../components/ProductRecommendations";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -392,6 +393,8 @@ const ProductDetails = () => {
             </div>
           )}
         </div>
+
+        <ProductRecommendations productId={product._id} />
       </div>
     </div>
   );

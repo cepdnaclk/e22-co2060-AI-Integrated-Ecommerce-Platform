@@ -26,6 +26,7 @@ from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
 
 # ── Project config import ──
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from config import (  # noqa: E402
     ALL_FEATURES,
     API_HOST,
@@ -45,6 +46,15 @@ except ImportError:
     from explain import ModelExplainer  # noqa: E402
     from scoring import PriorityScoreEngine  # noqa: E402
     from weights import FALLBACK_WEIGHTS, WeightEngine  # noqa: E402
+
+try:
+    from recommendation.api import router as recommendation_router  # noqa: E402
+    from recommendation.api import warmup_graph_cache  # noqa: E402
+except Exception as reco_import_error:
+    recommendation_router = None
+    warmup_graph_cache = None
+    logger = logging.getLogger(__name__)
+    logger.warning("Recommendation module unavailable: %s", reco_import_error)
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -265,6 +275,12 @@ async def lifespan(app: FastAPI):
     """Load models on startup; clean up on shutdown."""
     logger.info("Starting Restock Priority ML API …")
     _load_ml_models()
+    if warmup_graph_cache is not None:
+        try:
+            warmup_graph_cache()
+            logger.info("Recommendation graph cache warmed.")
+        except Exception as exc:
+            logger.warning("Recommendation warmup failed: %s", exc)
     yield
     logger.info("Shutting down Restock Priority ML API.")
 
@@ -287,6 +303,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+if recommendation_router is not None:
+    app.include_router(recommendation_router)
 
 
 # ── Request/response logging & rate limiting middleware ──

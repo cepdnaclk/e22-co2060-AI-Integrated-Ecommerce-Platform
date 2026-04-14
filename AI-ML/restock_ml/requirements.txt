@@ -14,3 +14,5 @@ sqlalchemy>=2.0.0
 python-dotenv>=1.0.0
 scipy>=1.12.0
 joblib>=1.3.0
+networkx>=3.3
+pymongo>=4.8.0

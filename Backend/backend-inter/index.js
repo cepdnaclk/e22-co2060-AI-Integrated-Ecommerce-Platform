@@ -20,9 +20,11 @@ import inventoryRouter from "./router/inventoryRouter.js"; // ✅ Inventory Mana
 import adminProductRouter from "./router/adminProductRouter.js"; // ✅ Admin Product Management
 import adminOrderRouter from "./router/adminOrderRouter.js"; // ✅ Admin Order Management
 import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority ML
+import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
+import "./cron/graphRebuildJob.js";
 
 // ================== CONFIG ==================
 dotenv.config();
@@ -111,6 +113,9 @@ app.use("/api/admin/orders", adminOrderRouter);
 
 // 🤖 Admin Restock Priority ML Scoring
 app.use("/api/admin/restock", restockRouter);
+
+// 🧭 Product Recommendations (Dijkstra)
+app.use("/api/recommendations", recommendationRouter);
 
 // ================== TEST ROUTES ==================
 
