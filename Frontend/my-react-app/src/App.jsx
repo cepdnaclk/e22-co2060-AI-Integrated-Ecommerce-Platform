@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import VerifySellerEmail from "./pages/VerifySellerEmail";
 import CreateSellerOffer from "./pages/CreateSellerOffer";
 import MySellerOffers from "./pages/MySellerOffers";
+import SellerMarketingScheduler from "./pages/SellerMarketingScheduler";
 import Chatbot from "./components/Chatbot";
 import CartWidget from "./components/CartWidget";
 import CreateProduct from "./pages/CreateProduct";
@@ -52,6 +53,7 @@ function App() {
 
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
           <Route path="/seller/restock" element={<SellerRestock />} />
+          <Route path="/seller/marketing-scheduler" element={<SellerMarketingScheduler />} />
 
           {/* Seller Offer Management */}
           <Route path="/seller/offers" element={<MySellerOffers />} />

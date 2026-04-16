@@ -1,0 +1,78 @@
+%PDF-1.4
+1 0 obj << /Type /Catalog /Pages 2 0 R >> endobj
+2 0 obj << /Type /Pages /Kids [3 0 R] /Count 1 >> endobj
+3 0 obj << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >> endobj
+4 0 obj << /Length 1552 >> stream
+BT
+/F1 11 Tf
+50 780 Td
+(Automatic Facebook Page Post Publishing Platform - Implementation Plan) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(1. Architecture) Tj
+0 -16 Td
+(- Frontend: Next.js App Router + Tailwind dashboard for auth, Facebook connect, page selection, scheduling, status tracking.) Tj
+0 -16 Td
+(- Backend: Express REST API with JWT auth, Facebook OAuth, Prisma/PostgreSQL, Cloudinary upload, BullMQ enqueue.) Tj
+0 -16 Td
+(- Worker: BullMQ consumer publishes scheduled posts and updates status.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(2. Core Modules) Tj
+0 -16 Td
+(- Auth: register/login with bcrypt + JWT.) Tj
+0 -16 Td
+(- Facebook OAuth: connect/callback, short-lived to long-lived token exchange.) Tj
+0 -16 Td
+(- Pages: retrieve only pages, persist page tokens encrypted.) Tj
+0 -16 Td
+(- Posts: create/list/delete scheduled posts with optional image/link.) Tj
+0 -16 Td
+(- Queue: delayed jobs, retry 3 attempts, backoff and failure logs.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(3. Prisma Data Model) Tj
+0 -16 Td
+(- User, FacebookAccount, Page, Post + status enum \\(pending/published/failed\\).) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(4. Security) Tj
+0 -16 Td
+(- Encrypt external tokens at rest \\(AES-256-GCM\\).) Tj
+0 -16 Td
+(- Zod input validation.) Tj
+0 -16 Td
+(- Helmet, CORS, rate limiting.) Tj
+0 -16 Td
+(- Env-var based secret handling.) Tj
+0 -16 Td
+() Tj
+0 -16 Td
+(5. Deliverables) Tj
+0 -16 Td
+(- /backend, /frontend, /worker full code.) Tj
+0 -16 Td
+(- .env.example templates.) Tj
+0 -16 Td
+(- Setup guide and curl examples.) Tj
+0 -16 Td
+(- Mocked Facebook API test sample.) Tj
+ET
+endstream endobj
+5 0 obj << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001845 00000 n 
+trailer << /Size 6 /Root 1 0 R >>
+startxref
+1915
+%%EOF

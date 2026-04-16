@@ -89,6 +89,7 @@ const SellerDashboard = () => {
           <div style={{ display: "flex", gap: 12 }}>
             <Link to="/seller/restock" style={{ ...styles.btnGray, textDecoration: "none", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: "#f87171" }}>🔄 Restock</Link>
             <Link to="/seller/offers" style={{ ...styles.btnGray, textDecoration: "none" }}>My Offers</Link>
+            <Link to="/seller/marketing-scheduler" style={{ ...styles.btnGray, textDecoration: "none" }}>📣 Marketing Scheduler</Link>
             <Link to="/seller/offers/new" style={{ ...styles.btnBlue, textDecoration: "none" }}>+ New Offer</Link>
           </div>
         </div>

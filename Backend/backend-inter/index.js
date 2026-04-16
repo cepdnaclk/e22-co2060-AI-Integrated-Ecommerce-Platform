@@ -116,6 +116,10 @@ app.use("/api/admin/restock", restockRouter);
 
 // 🧭 Product Recommendations (Dijkstra)
 app.use("/api/recommendations", recommendationRouter);
+if ((process.env.ENABLE_FACEBOOK_MODULE || "false").toLowerCase() === "true") {
+  const { default: facebookRouter } = await import("./router/facebookRouter.js");
+  app.use("/api/facebook", facebookRouter);
+}
 
 // ================== TEST ROUTES ==================
 
