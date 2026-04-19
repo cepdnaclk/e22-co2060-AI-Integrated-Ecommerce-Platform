@@ -23,6 +23,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
 import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import AdminBookkeeping from "./pages/AdminBookkeeping";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
@@ -99,6 +100,11 @@ function App() {
           <Route path="/admin/face-management" element={
             <AdminProtectedRoute>
               <AdminFaceManagement />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/bookkeeping" element={
+            <AdminProtectedRoute>
+              <AdminBookkeeping />
             </AdminProtectedRoute>
           } />
 

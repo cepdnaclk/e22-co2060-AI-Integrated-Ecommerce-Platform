@@ -1,5 +1,6 @@
 import Cart from "../models/cart.js";
 import Order from "../models/order.js";
+import { postOrderPaidEventWithRetry } from "../services/bookkeepingService.js";
 
 /**
  * ======================================================
@@ -83,9 +84,29 @@ export async function createOrder(req, res) {
     cart.items = [];
     await cart.save();
 
+    const bookkeepingResults = await Promise.allSettled(
+      createdOrders.map((order) => postOrderPaidEventWithRetry(order))
+    );
+    const failedBookkeeping = bookkeepingResults
+      .map((result, index) => ({ result, order: createdOrders[index] }))
+      .filter(({ result }) => result.status === "rejected")
+      .map(({ result, order }) => ({
+        orderId: order._id?.toString(),
+        error: result.reason?.message || "Unknown bookkeeping sync error"
+      }));
+
+    if (failedBookkeeping.length > 0) {
+      console.error("⚠️ Bookkeeping sync failures after checkout:", failedBookkeeping);
+    }
+
     res.status(201).json({
       message: "Order placed successfully",
-      orders: createdOrders
+      orders: createdOrders,
+      bookkeeping: {
+        syncedCount: createdOrders.length - failedBookkeeping.length,
+        failedCount: failedBookkeeping.length,
+        failedOrders: failedBookkeeping
+      }
     });
 
   } catch (error) {

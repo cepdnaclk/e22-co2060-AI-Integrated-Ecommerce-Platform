@@ -94,6 +94,7 @@ export default function CheckoutPage() {
     const [errors, setErrors] = useState({});
     const [placing, setPlacing] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [bookkeepingDelayed, setBookkeepingDelayed] = useState(false);
     const [toast, setToast] = useState(null);
 
     // Address source: "profile" = use saved address, "custom" = enter new one
@@ -243,7 +244,8 @@ export default function CheckoutPage() {
                 shippingData.placeId = mapLocation.placeId;
                 shippingData.verified = true;
             }
-            await placeOrder(token, shippingData);
+            const checkoutResult = await placeOrder(token, shippingData);
+            setBookkeepingDelayed(Boolean(checkoutResult?.bookkeeping?.failedCount > 0));
             setSuccess(true);
             setTimeout(() => navigate("/orders"), 3500);
         } catch (err) {
@@ -276,6 +278,11 @@ export default function CheckoutPage() {
                     <p style={{ color: "#64748b", fontSize: 13 }}>
                         Redirecting to your orders…
                     </p>
+                    {bookkeepingDelayed ? (
+                        <p style={{ color: "#facc15", fontSize: 13, marginTop: 8 }}>
+                            Accounting sync is still processing. Refresh Admin Bookkeeping shortly.
+                        </p>
+                    ) : null}
                 </div>
             </div>
         );
