@@ -154,14 +154,14 @@ export default function AdminDashboard() {
                     </div>
 
                     {/* Platform Analytics Card (Placeholder) */}
-                    <div className="ad-card" style={{ ...S.card, opacity: 0.7 }}>
-                        <div style={{ fontSize: 32, marginBottom: 16 }}>📈</div>
-                        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Platform Analytics</h2>
+                    <div className="ad-card" style={S.card}>
+                        <div style={{ fontSize: 32, marginBottom: 16 }}>💹</div>
+                        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Bookkeeping Console</h2>
                         <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5, marginBottom: 24, minHeight: 42 }}>
-                            View high-level volume metrics, transaction histories, and AI search performances.
+                            Manage automated accounting events, inspect ledgers, and view financial statements.
                         </p>
-                        <button style={{ ...S.btnGray, width: "100%", cursor: "not-allowed" }}>
-                            Coming Soon
+                        <button onClick={() => navigate("/admin/bookkeeping")} style={{ ...S.btnPurple, width: "100%" }}>
+                            Open Bookkeeping →
                         </button>
                     </div>
 
