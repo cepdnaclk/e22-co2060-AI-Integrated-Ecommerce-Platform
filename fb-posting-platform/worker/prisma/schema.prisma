@@ -1,0 +1,66 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PostStatus {
+  pending
+  published
+  failed
+}
+
+model User {
+  id              String            @id @default(cuid())
+  email           String            @unique
+  password        String
+  createdAt       DateTime          @default(now())
+  facebookAccount FacebookAccount?
+  pages           Page[]
+  posts           Post[]
+}
+
+model FacebookAccount {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  accessToken String
+  tokenExpiry DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Page {
+  id              String   @id @default(cuid())
+  userId          String
+  pageId          String
+  pageName        String
+  pageAccessToken String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts           Post[]
+
+  @@unique([userId, pageId])
+}
+
+model Post {
+  id           String     @id @default(cuid())
+  userId       String
+  pageId       String
+  content      String
+  linkUrl      String?
+  imageUrl     String?
+  scheduledAt  DateTime
+  status       PostStatus @default(pending)
+  publishedAt  DateTime?
+  errorMessage String?
+  graphPostId  String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  page         Page       @relation(fields: [pageId], references: [id], onDelete: Cascade)
+}
