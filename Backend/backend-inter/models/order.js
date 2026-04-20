@@ -21,9 +21,16 @@ const shippingAddressSchema = new mongoose.Schema(
     street: { type: String, required: true },
     city: { type: String, required: true },
     postalCode: { type: String, required: true },
+    deliveryInstructions: { type: String, default: "" },
     lat: { type: Number, default: null },
     lng: { type: Number, default: null },
     placeId: { type: String, default: "" },
+    provider: { type: String, default: "" },
+    accuracy: { type: Number, default: null },
+    timestamp: { type: String, default: "" },
+    country: { type: String, default: "" },
+    state: { type: String, default: "" },
+    formattedAddress: { type: String, default: "" },
     verified: { type: Boolean, default: false }
   },
   { _id: false }

@@ -19,7 +19,7 @@ const accountingRuleSchema = new mongoose.Schema(
     requiresSourceDocument: { type: Boolean, default: true },
     sourceDocumentType: { type: String, default: "SYSTEM_EVENT" },
     lines: { type: [lineTemplateSchema], required: true }
-  },
+  },  
   { timestamps: true, versionKey: false }
 );
 

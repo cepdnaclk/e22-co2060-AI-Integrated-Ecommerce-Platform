@@ -8,7 +8,8 @@
     "start": "nodemon index.js",
     "worker:facebook": "node worker/facebookPublisherWorker.js",
     "test:login": "node --test tests/firebaseLogin.test.js",
-    "seed:user": "node scripts/seedTestUser.js"
+    "seed:user": "node scripts/seedTestUser.js",
+    "migrate:location": "node scripts/migrateLocationMetadata.js"
   },
   "keywords": [],
   "author": "",

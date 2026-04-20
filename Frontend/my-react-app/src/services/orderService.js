@@ -4,7 +4,7 @@ const BASE_URL = `${API_BASE_URL}/api/orders`;
 
 // ─────────────────────────────────────
 // 📦 PLACE ORDER (CHECKOUT)
-// Body: { shippingAddress: { fullName, phone, street, city, postalCode } }
+// Body: { shippingAddress: { fullName, phone, street, city, postalCode, deliveryInstructions, lat, lng, provider... } }
 // ─────────────────────────────────────
 export const placeOrder = async (token, shippingAddress) => {
     const res = await fetch(BASE_URL, {

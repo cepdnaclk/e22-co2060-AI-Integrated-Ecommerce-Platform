@@ -1,42 +1,53 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  GoogleMap,
-  useJsApiLoader,
-  MarkerF,
-  Autocomplete,
-} from "@react-google-maps/api";
+  Circle,
+  MapContainer,
+  Marker,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { buildAddressLocationPayload, locationService } from "../location/services/locationService";
 
-const LIBRARIES = ["places"];
 const DEFAULT_CENTER = { lat: 7.8731, lng: 80.7718 };
 const DEFAULT_ZOOM = 7;
 const SELECTED_ZOOM = 17;
+const SEARCH_DEBOUNCE_MS = 450;
 
-const mapContainerStyle = {
-  width: "100%",
-  height: 300,
-  borderRadius: 12,
-  border: "1px solid rgba(255,255,255,0.1)",
-};
+const TILE_SOURCES = [
+  {
+    name: "OpenStreetMap Standard",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  {
+    name: "OpenStreetMap HOT",
+    url: "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+  {
+    name: "OpenStreetMap DE",
+    url: "https://{s}.tile.openstreetmap.de/{z}/{x}/{y}.png",
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+];
 
-const mapOptions = {
-  disableDefaultUI: true,
-  zoomControl: true,
-  streetViewControl: false,
-  mapTypeControl: false,
-  fullscreenControl: true,
-  clickableIcons: false,
-  styles: [
-    { elementType: "geometry", stylers: [{ color: "#1d2c4d" }] },
-    { elementType: "labels.text.fill", stylers: [{ color: "#8ec3b9" }] },
-    { elementType: "labels.text.stroke", stylers: [{ color: "#1a3646" }] },
-    { featureType: "water", elementType: "geometry.fill", stylers: [{ color: "#0e1626" }] },
-    { featureType: "road", elementType: "geometry", stylers: [{ color: "#304a7d" }] },
-    { featureType: "road", elementType: "geometry.stroke", stylers: [{ color: "#255763" }] },
-    { featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] },
-  ],
-};
+const MAP_MARKER_ICON = L.icon({
+  iconRetinaUrl: markerIcon2x,
+  iconUrl: markerIcon,
+  shadowUrl: markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  tooltipAnchor: [16, -28],
+  shadowSize: [41, 41],
+});
 
-/* ── Styles ── */
 const S = {
   wrapper: {
     borderRadius: 14,
@@ -45,407 +56,458 @@ const S = {
     background: "rgba(255,255,255,0.02)",
   },
   searchRow: {
-    display: "flex", alignItems: "center", gap: 8,
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
     padding: "10px 14px",
     background: "rgba(0,0,0,0.25)",
     borderBottom: "1px solid rgba(255,255,255,0.06)",
   },
-  searchIcon: {
-    fontSize: 16, color: "#64748b", flexShrink: 0,
-  },
   searchInput: {
-    flex: 1, background: "transparent", border: "none", outline: "none",
-    color: "#e2e8f0", fontSize: 14, fontFamily: "inherit",
+    flex: 1,
+    background: "transparent",
+    border: "none",
+    outline: "none",
+    color: "#e2e8f0",
+    fontSize: 14,
+    fontFamily: "inherit",
   },
-  lockedCard: {
-    display: "flex", alignItems: "flex-start", gap: 12,
-    padding: "14px 16px",
-    background: "rgba(34,197,94,0.06)",
-    borderBottom: "1px solid rgba(34,197,94,0.15)",
-  },
-  lockedPin: {
-    width: 36, height: 36, borderRadius: "50%",
-    background: "rgba(34,197,94,0.15)", display: "flex",
-    alignItems: "center", justifyContent: "center", fontSize: 18, flexShrink: 0,
-  },
-  lockedText: {
-    flex: 1, minWidth: 0,
-  },
-  lockedAddr: {
-    fontSize: 14, color: "#e2e8f0", fontWeight: 600,
-    lineHeight: 1.4, wordBreak: "break-word",
-  },
-  lockedCoords: {
-    fontSize: 11, color: "#64748b", marginTop: 2,
-  },
-  verifiedBadge: {
-    display: "inline-flex", alignItems: "center", gap: 4,
-    fontSize: 10, fontWeight: 700, textTransform: "uppercase",
-    letterSpacing: "0.06em", color: "#4ade80",
-    background: "rgba(34,197,94,0.12)", border: "1px solid rgba(34,197,94,0.25)",
-    borderRadius: 20, padding: "3px 10px", marginTop: 6,
-  },
-  changeBtn: {
-    flexShrink: 0, background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8,
-    color: "#94a3b8", fontSize: 12, padding: "6px 14px",
-    cursor: "pointer", fontWeight: 600, marginTop: 2,
-    transition: "all 0.15s",
+  actionBtn: {
+    border: "1px solid rgba(255,255,255,0.12)",
+    background: "rgba(255,255,255,0.06)",
+    color: "#cbd5e1",
+    borderRadius: 8,
+    padding: "6px 10px",
+    fontSize: 12,
+    fontWeight: 600,
+    cursor: "pointer",
   },
   confirmBtn: {
-    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-    width: "100%", padding: "12px 0",
+    width: "100%",
+    border: "none",
+    borderTop: "1px solid rgba(34,197,94,0.15)",
     background: "linear-gradient(135deg, #059669, #10b981)",
-    border: "none", borderRadius: 0, color: "#fff",
-    fontSize: 14, fontWeight: 700, cursor: "pointer",
-    transition: "opacity 0.15s",
+    color: "#fff",
+    fontWeight: 700,
+    fontSize: 14,
+    padding: "12px 0",
+    cursor: "pointer",
+  },
+  infoCard: {
+    padding: "10px 14px",
+    borderBottom: "1px solid rgba(255,255,255,0.06)",
   },
   footer: {
     padding: "8px 14px",
     background: "rgba(0,0,0,0.2)",
     borderTop: "1px solid rgba(255,255,255,0.06)",
-    display: "flex", alignItems: "center", gap: 6,
-    fontSize: 11, color: "#64748b",
+    fontSize: 11,
+    color: "#64748b",
   },
 };
 
-/**
- * GoogleMapAddressPicker — Standard e-commerce address selector
- *
- * Flow: Type → Autocomplete → Select → Map locks on location → Confirm
- */
-const GoogleMapAddressPicker = ({ address, addressLocation, onAddressChange, readOnly = false }) => {
-  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+function formatCoordinates(lat, lng) {
+  return `${Number(lat).toFixed(6)}, ${Number(lng).toFixed(6)}`;
+}
 
-  const { isLoaded, loadError } = useJsApiLoader({
-    googleMapsApiKey: apiKey || "",
-    libraries: LIBRARIES,
+function MapViewportController({ center, zoom }) {
+  const map = useMap();
+  const centerLat = center?.lat;
+  const centerLng = center?.lng;
+
+  useEffect(() => {
+    if (!Number.isFinite(centerLat) || !Number.isFinite(centerLng)) return;
+    map.setView([centerLat, centerLng], zoom, { animate: true });
+  }, [centerLat, centerLng, map, zoom]);
+
+  return null;
+}
+
+function MapClickHandler({ disabled, onPick }) {
+  useMapEvents({
+    click(event) {
+      if (disabled) return;
+      onPick({
+        lat: event.latlng.lat,
+        lng: event.latlng.lng,
+      });
+    },
   });
 
-  // "searching" = typing/picking, "previewing" = place selected on map, "locked" = confirmed
-  const [stage, setStage] = useState(
-    addressLocation?.verified && addressLocation?.lat ? "locked" : "searching"
-  );
-  const [marker, setMarker] = useState(
-    addressLocation?.lat && addressLocation?.lng
-      ? { lat: addressLocation.lat, lng: addressLocation.lng }
-      : null
-  );
+  return null;
+}
+
+const EMPTY_LOCATION = {
+  lat: null,
+  lng: null,
+  placeId: "",
+  provider: "",
+  accuracy: null,
+  timestamp: "",
+  country: "",
+  state: "",
+  city: "",
+  postalCode: "",
+  street: "",
+  formattedAddress: "",
+  verified: false,
+};
+
+const GoogleMapAddressPicker = ({
+  address,
+  addressLocation,
+  onAddressChange,
+  readOnly = false,
+}) => {
+  const initialMarker =
+    Number.isFinite(Number(addressLocation?.lat)) && Number.isFinite(Number(addressLocation?.lng))
+      ? { lat: Number(addressLocation.lat), lng: Number(addressLocation.lng) }
+      : null;
+
+  const [stage, setStage] = useState(addressLocation?.verified && initialMarker ? "locked" : "searching");
+  const [marker, setMarker] = useState(initialMarker);
+  const [mapCenter, setMapCenter] = useState(initialMarker || DEFAULT_CENTER);
+  const [zoom, setZoom] = useState(initialMarker ? SELECTED_ZOOM : DEFAULT_ZOOM);
+  const [accuracy, setAccuracy] = useState(Number.isFinite(Number(addressLocation?.accuracy)) ? Number(addressLocation.accuracy) : null);
   const [inputValue, setInputValue] = useState(address || "");
-  const [previewAddress, setPreviewAddress] = useState(address || "");
-  const [previewPlaceId, setPreviewPlaceId] = useState(addressLocation?.placeId || "");
-  const [mapCenter, setMapCenter] = useState(
-    addressLocation?.lat && addressLocation?.lng
-      ? { lat: addressLocation.lat, lng: addressLocation.lng }
-      : DEFAULT_CENTER
-  );
-  const [zoom, setZoom] = useState(
-    addressLocation?.lat ? SELECTED_ZOOM : DEFAULT_ZOOM
-  );
+  const [previewLocation, setPreviewLocation] = useState({
+    ...EMPTY_LOCATION,
+    ...addressLocation,
+    formattedAddress: addressLocation?.formattedAddress || address || "",
+    provider: addressLocation?.provider || locationService.getProviderName(),
+  });
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [searchMessage, setSearchMessage] = useState("");
+  const [actionMessage, setActionMessage] = useState("");
+  const [tileIndex, setTileIndex] = useState(0);
+  const [tileErrors, setTileErrors] = useState(0);
+  const searchRequestIdRef = useRef(0);
 
-  const autocompleteRef = useRef(null);
-  const mapRef = useRef(null);
-  const geocoderRef = useRef(null);
-  const inputRef = useRef(null);
+  const activeTile = TILE_SOURCES[tileIndex];
 
-  // Sync when props change externally
-  useEffect(() => {
-    if (addressLocation?.verified && addressLocation?.lat) {
-      setStage("locked");
-      setMarker({ lat: addressLocation.lat, lng: addressLocation.lng });
-      setMapCenter({ lat: addressLocation.lat, lng: addressLocation.lng });
-      setPreviewAddress(address || "");
-      setInputValue(address || "");
-      setZoom(SELECTED_ZOOM);
-    }
-  }, []);
+  const emitAddressChange = useCallback((nextLocation) => {
+    const normalized = buildAddressLocationPayload(nextLocation, {
+      lat: nextLocation.lat,
+      lng: nextLocation.lng,
+      accuracy: nextLocation.accuracy,
+      timestamp: nextLocation.timestamp,
+      verified: nextLocation.verified,
+    });
 
-  const onMapLoad = useCallback((map) => {
-    mapRef.current = map;
-    if (window.google) {
-      geocoderRef.current = new window.google.maps.Geocoder();
-    }
-  }, []);
+    onAddressChange?.({
+      address: normalized.formattedAddress,
+      addressLocation: normalized,
+    });
+  }, [onAddressChange]);
 
-  const onAutocompleteLoad = useCallback((ac) => {
-    autocompleteRef.current = ac;
-  }, []);
+  const previewPoint = useCallback((baseLocation, options = {}) => {
+    const payload = buildAddressLocationPayload(baseLocation, {
+      lat: options.lat ?? baseLocation.lat,
+      lng: options.lng ?? baseLocation.lng,
+      accuracy: options.accuracy ?? baseLocation.accuracy,
+      timestamp: options.timestamp ?? baseLocation.timestamp,
+      verified: Boolean(options.verified),
+    });
 
-  // Reverse geocode helper
-  const reverseGeocode = useCallback((lat, lng, cb) => {
-    if (!geocoderRef.current) {
-      cb(`${lat.toFixed(6)}, ${lng.toFixed(6)}`, "");
+    if (!Number.isFinite(payload.lat) || !Number.isFinite(payload.lng)) {
       return;
     }
-    geocoderRef.current.geocode({ location: { lat, lng } }, (results, status) => {
-      if (status === "OK" && results?.[0]) {
-        cb(results[0].formatted_address, results[0].place_id || "");
-      } else {
-        cb(`${lat.toFixed(6)}, ${lng.toFixed(6)}`, "");
+
+    setMarker({ lat: payload.lat, lng: payload.lng });
+    setMapCenter({ lat: payload.lat, lng: payload.lng });
+    setZoom(SELECTED_ZOOM);
+    setAccuracy(payload.accuracy);
+    setPreviewLocation(payload);
+    setInputValue(payload.formattedAddress || formatCoordinates(payload.lat, payload.lng));
+    setStage(payload.verified ? "locked" : "previewing");
+  }, []);
+
+  const reverseAndPreview = useCallback(async ({ lat, lng, accuracyValue = null, timestamp = "" }) => {
+    try {
+      const reversed = await locationService.reverseGeocode({
+        lat,
+        lng,
+        acceptLanguage: typeof navigator !== "undefined" ? navigator.language : "en",
+      });
+
+      previewPoint(reversed, {
+        lat,
+        lng,
+        accuracy: accuracyValue,
+        timestamp: timestamp || new Date().toISOString(),
+      });
+      setActionMessage("");
+    } catch {
+      previewPoint({
+        lat,
+        lng,
+        provider: locationService.getProviderName(),
+        formattedAddress: formatCoordinates(lat, lng),
+      }, {
+        lat,
+        lng,
+        accuracy: accuracyValue,
+        timestamp: timestamp || new Date().toISOString(),
+      });
+
+      setActionMessage("Reverse geocoding is unavailable right now. Coordinates were used instead.");
+    }
+  }, [previewPoint]);
+
+  const handleCurrentLocation = useCallback(async () => {
+    try {
+      const detected = await locationService.detectCurrentLocation({
+        retries: 2,
+        retryDelayMs: 900,
+        enableHighAccuracy: true,
+        timeout: 12000,
+      });
+
+      await reverseAndPreview({
+        lat: detected.lat,
+        lng: detected.lng,
+        accuracyValue: detected.accuracy,
+        timestamp: detected.timestamp,
+      });
+    } catch (error) {
+      const code = error?.code || "UNKNOWN";
+      const messageByCode = {
+        PERMISSION_DENIED: "Location permission denied. Enable location access in your browser settings.",
+        POSITION_UNAVAILABLE: "Could not determine your current location.",
+        TIMEOUT: "Location request timed out. Please retry.",
+        NOT_SUPPORTED: "This browser does not support geolocation.",
+      };
+      setActionMessage(messageByCode[code] || "Unable to detect current location.");
+    }
+  }, [reverseAndPreview]);
+
+  const handleSearchPick = useCallback((result) => {
+    previewPoint(result, {
+      lat: result.lat,
+      lng: result.lng,
+      timestamp: new Date().toISOString(),
+    });
+    setSearchResults([]);
+    setSearchMessage("");
+  }, [previewPoint]);
+
+  const handleMapPick = useCallback(async ({ lat, lng }) => {
+    await reverseAndPreview({ lat, lng, timestamp: new Date().toISOString() });
+  }, [reverseAndPreview]);
+
+  const handleMarkerDragEnd = useCallback(async (event) => {
+    const lat = event.target.getLatLng().lat;
+    const lng = event.target.getLatLng().lng;
+    await reverseAndPreview({ lat, lng, timestamp: new Date().toISOString() });
+  }, [reverseAndPreview]);
+
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (readOnly || stage === "locked") {
+        return;
       }
-    });
-  }, []);
 
-  // ── Autocomplete selection ──
-  const onPlaceChanged = useCallback(() => {
-    const ac = autocompleteRef.current;
-    if (!ac) return;
-    const place = ac.getPlace();
-    if (!place?.geometry?.location) return;
+      const query = inputValue.trim();
+      if (query.length < 3) {
+        setSearchResults([]);
+        setSearchMessage(query.length === 0 ? "" : "Type at least 3 characters");
+        setSearchLoading(false);
+        return;
+      }
 
-    const lat = place.geometry.location.lat();
-    const lng = place.geometry.location.lng();
-    const addr = place.formatted_address || place.name || "";
-    const pid = place.place_id || "";
+      const requestId = ++searchRequestIdRef.current;
+      setSearchLoading(true);
+      setSearchMessage("");
 
-    setMarker({ lat, lng });
-    setMapCenter({ lat, lng });
-    setZoom(SELECTED_ZOOM);
-    setPreviewAddress(addr);
-    setPreviewPlaceId(pid);
-    setInputValue(addr);
-    setStage("previewing");
-  }, []);
+      try {
+        const results = await locationService.searchAddress({
+          query,
+          limit: 5,
+          acceptLanguage: typeof navigator !== "undefined" ? navigator.language : "en",
+        });
 
-  // ── Map click ──
-  const onMapClick = useCallback((e) => {
-    if (readOnly || stage === "locked") return;
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    setMarker({ lat, lng });
-    setMapCenter({ lat, lng });
-    setZoom(SELECTED_ZOOM);
-    reverseGeocode(lat, lng, (addr, pid) => {
-      setPreviewAddress(addr);
-      setPreviewPlaceId(pid);
-      setInputValue(addr);
-      setStage("previewing");
-    });
-  }, [readOnly, stage, reverseGeocode]);
+        if (requestId !== searchRequestIdRef.current) return;
+        setSearchResults(results);
+        setSearchMessage(results.length ? "" : "No matching addresses found.");
+      } catch {
+        if (requestId !== searchRequestIdRef.current) return;
+        setSearchResults([]);
+        setSearchMessage("Search failed. Please try again.");
+      } finally {
+        if (requestId === searchRequestIdRef.current) {
+          setSearchLoading(false);
+        }
+      }
+    }, SEARCH_DEBOUNCE_MS);
 
-  // ── Marker drag end ──
-  const onMarkerDragEnd = useCallback((e) => {
-    const lat = e.latLng.lat();
-    const lng = e.latLng.lng();
-    setMarker({ lat, lng });
-    setMapCenter({ lat, lng });
-    reverseGeocode(lat, lng, (addr, pid) => {
-      setPreviewAddress(addr);
-      setPreviewPlaceId(pid);
-      setInputValue(addr);
-      setStage("previewing");
-    });
-  }, [reverseGeocode]);
+    return () => clearTimeout(timer);
+  }, [inputValue, readOnly, stage]);
 
-  // ── Confirm selection — locks the address ──
   const confirmLocation = useCallback(() => {
     if (!marker) return;
-    setStage("locked");
-    onAddressChange?.({
-      address: previewAddress,
-      addressLocation: {
-        lat: marker.lat, lng: marker.lng,
-        placeId: previewPlaceId, verified: true,
-      },
+
+    const confirmed = buildAddressLocationPayload(previewLocation, {
+      lat: marker.lat,
+      lng: marker.lng,
+      accuracy,
+      timestamp: previewLocation.timestamp || new Date().toISOString(),
+      verified: true,
     });
-  }, [marker, previewAddress, previewPlaceId, onAddressChange]);
 
-  // ── Unlock to change ──
-  const unlockAddress = useCallback(() => {
+    setPreviewLocation(confirmed);
+    setStage("locked");
+    emitAddressChange(confirmed);
+  }, [accuracy, emitAddressChange, marker, previewLocation]);
+
+  const unlockSelection = useCallback(() => {
     setStage("searching");
-    setInputValue(previewAddress);
-    setTimeout(() => inputRef.current?.focus(), 100);
-  }, [previewAddress]);
+    setActionMessage("");
+  }, []);
 
-  // ── Manual typing ──
-  const onInputChange = useCallback((e) => {
-    setInputValue(e.target.value);
-    // Reset preview when user types fresh
-    if (stage === "previewing") {
-      setStage("searching");
-    }
-  }, [stage]);
+  const tileEventHandlers = useMemo(() => ({
+    tileerror: () => {
+      setTileErrors((previous) => {
+        const next = previous + 1;
+        if (next < 4) return next;
+        setTileIndex((current) => (current < TILE_SOURCES.length - 1 ? current + 1 : current));
+        return 0;
+      });
+    },
+    load: () => setTileErrors(0),
+  }), []);
 
-  // Use current location
-  const useCurrentLocation = useCallback(() => {
-    if (!navigator.geolocation) return;
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        setMarker({ lat, lng });
-        setMapCenter({ lat, lng });
-        setZoom(SELECTED_ZOOM);
-        reverseGeocode(lat, lng, (addr, pid) => {
-          setPreviewAddress(addr);
-          setPreviewPlaceId(pid);
-          setInputValue(addr);
-          setStage("previewing");
-        });
-      },
-      () => {},
-      { enableHighAccuracy: true }
-    );
-  }, [reverseGeocode]);
+  const locationSummary = previewLocation.formattedAddress || address || "No address selected";
+  const providerLabel = locationService.getProviderName().toUpperCase();
 
-  // ── Fallback: no API key ──
-  if (!apiKey || apiKey === "YOUR_GOOGLE_MAPS_API_KEY_HERE") {
-    return (
-      <div style={{ padding: 16, background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: 12, fontSize: 13, color: "#fbbf24" }}>
-        <strong>⚠️ Google Maps API Key Required</strong>
-        <p style={{ margin: "8px 0 0", color: "#94a3b8", fontSize: 12 }}>
-          Add your API key to <code>VITE_GOOGLE_MAPS_API_KEY</code> in the <code>.env</code> file.
-          Enable <em>Maps JavaScript API</em> and <em>Places API</em> in Google Cloud Console.
-        </p>
-        {!readOnly && (
-          <input type="text" className="pfield" value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              onAddressChange?.({ address: e.target.value, addressLocation: { lat: null, lng: null, placeId: "", verified: false } });
-            }}
-            placeholder="Enter your address manually"
-            style={{ width: "100%", marginTop: 12 }}
-          />
-        )}
-        {readOnly && <p style={{ color: "#e2e8f0", marginTop: 8 }}>{address || "Not provided"}</p>}
-      </div>
-    );
-  }
-
-  if (loadError) {
-    return (
-      <div style={{ padding: 16, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 12, fontSize: 13, color: "#f87171" }}>
-        ❌ Failed to load Google Maps. Check your API key and network connection.
-      </div>
-    );
-  }
-
-  if (!isLoaded) {
-    return (
-      <div style={{ padding: 20, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
-        <div style={{ width: 24, height: 24, border: "3px solid rgba(255,255,255,0.1)", borderTop: "3px solid #4ac6ff", borderRadius: "50%", animation: "_spin 1s linear infinite", margin: "0 auto 8px" }} />
-        Loading Google Maps…
-      </div>
-    );
-  }
-
-  /* ─── Read-only mode ─── */
-  if (readOnly) {
-    return (
-      <div style={S.wrapper}>
-        {address && (
-          <div style={S.lockedCard}>
-            <div style={S.lockedPin}>📍</div>
-            <div style={S.lockedText}>
-              <div style={S.lockedAddr}>{address}</div>
-              {addressLocation?.verified && <div style={S.verifiedBadge}>✓ Verified Location</div>}
-            </div>
-          </div>
-        )}
-        <GoogleMap
-          mapContainerStyle={{ ...mapContainerStyle, borderRadius: 0, border: "none", height: 220 }}
-          center={mapCenter} zoom={zoom}
-          onLoad={onMapLoad} options={{ ...mapOptions, draggable: false, scrollwheel: false }}
-        >
-          {marker && <MarkerF position={marker} />}
-        </GoogleMap>
-      </div>
-    );
-  }
-
-  /* ─── Editable mode ─── */
   return (
     <div style={S.wrapper}>
-
-      {/* ── Locked state: address is confirmed ── */}
-      {stage === "locked" && (
-        <div style={S.lockedCard}>
-          <div style={S.lockedPin}>📍</div>
-          <div style={S.lockedText}>
-            <div style={S.lockedAddr}>{previewAddress}</div>
-            {marker && <div style={S.lockedCoords}>{marker.lat.toFixed(5)}, {marker.lng.toFixed(5)}</div>}
-            <div style={S.verifiedBadge}>✓ Verified Location</div>
-          </div>
-          <button style={S.changeBtn} onClick={unlockAddress}
-            onMouseEnter={(e) => { e.target.style.color = "#e2e8f0"; e.target.style.borderColor = "rgba(255,255,255,0.25)"; }}
-            onMouseLeave={(e) => { e.target.style.color = "#94a3b8"; e.target.style.borderColor = "rgba(255,255,255,0.12)"; }}
-          >
-            Change
-          </button>
-        </div>
-      )}
-
-      {/* ── Search bar (visible when not locked) ── */}
-      {stage !== "locked" && (
+      {!readOnly && stage !== "locked" && (
         <div style={S.searchRow}>
-          <span style={S.searchIcon}>🔍</span>
-          <Autocomplete onLoad={onAutocompleteLoad} onPlaceChanged={onPlaceChanged}>
-            <input
-              ref={inputRef}
-              type="text"
-              value={inputValue}
-              onChange={onInputChange}
-              placeholder="Type your delivery address…"
-              style={S.searchInput}
-              autoFocus
-            />
-          </Autocomplete>
-          <button onClick={useCurrentLocation} title="Use my current location"
-            style={{ background: "none", border: "none", cursor: "pointer", fontSize: 18, padding: 4, color: "#60a5fa", flexShrink: 0 }}
-          >
-            📌
+          <span style={{ color: "#64748b", fontSize: 14 }}>🔍</span>
+          <input
+            type="text"
+            style={S.searchInput}
+            value={inputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+            placeholder="Search address, city, or landmark..."
+            autoComplete="off"
+          />
+          <button type="button" style={S.actionBtn} onClick={handleCurrentLocation}>
+            Use GPS
           </button>
         </div>
       )}
 
-      {/* ── Preview info bar ── */}
-      {stage === "previewing" && previewAddress && (
-        <div style={{ padding: "10px 14px", background: "rgba(59,130,246,0.08)", borderBottom: "1px solid rgba(59,130,246,0.15)", display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 14 }}>📍</span>
-          <span style={{ flex: 1, fontSize: 13, color: "#93c5fd", lineHeight: 1.3 }}>{previewAddress}</span>
+      {(stage === "locked" || readOnly) && (
+        <div style={{ ...S.infoCard, background: "rgba(34,197,94,0.06)", borderBottom: "1px solid rgba(34,197,94,0.16)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: 10, alignItems: "flex-start" }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 14, color: "#e2e8f0", fontWeight: 600, lineHeight: 1.35 }}>{locationSummary}</div>
+              {marker && <div style={{ fontSize: 11, marginTop: 4, color: "#64748b" }}>{formatCoordinates(marker.lat, marker.lng)}</div>}
+              <div style={{ marginTop: 6, fontSize: 10, color: "#4ade80", fontWeight: 700 }}>VERIFIED LOCATION</div>
+            </div>
+            {!readOnly && (
+              <button type="button" style={S.actionBtn} onClick={unlockSelection}>
+                Change
+              </button>
+            )}
+          </div>
         </div>
       )}
 
-      {/* ── Map ── */}
-      <GoogleMap
-        mapContainerStyle={{ ...mapContainerStyle, borderRadius: 0, border: "none" }}
-        center={mapCenter} zoom={zoom}
-        onClick={onMapClick} onLoad={onMapLoad}
-        options={{ ...mapOptions, draggableCursor: stage === "locked" ? "default" : "crosshair" }}
+      {!readOnly && stage !== "locked" && (searchLoading || searchMessage || searchResults.length > 0) && (
+        <div style={{ ...S.infoCard, background: "rgba(59,130,246,0.08)" }}>
+          {searchLoading && <div style={{ fontSize: 12, color: "#93c5fd" }}>Searching...</div>}
+          {!searchLoading && searchMessage && (
+            <div style={{ fontSize: 12, color: "#93c5fd" }}>{searchMessage}</div>
+          )}
+          {!searchLoading && searchResults.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+              {searchResults.map((result) => (
+                <button
+                  key={`${result.placeId}-${result.lat}-${result.lng}`}
+                  type="button"
+                  onClick={() => handleSearchPick(result)}
+                  style={{
+                    textAlign: "left",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,0.03)",
+                    color: "#e2e8f0",
+                    borderRadius: 8,
+                    padding: "8px 10px",
+                    cursor: "pointer",
+                    fontSize: 12,
+                  }}
+                >
+                  {result.formattedAddress}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {actionMessage && (
+        <div style={{ ...S.infoCard, background: "rgba(251,191,36,0.12)", color: "#facc15", fontSize: 12 }}>
+          {actionMessage}
+        </div>
+      )}
+
+      <MapContainer
+        center={[mapCenter.lat, mapCenter.lng]}
+        zoom={zoom}
+        style={{ height: readOnly ? 220 : 300, width: "100%" }}
+        zoomControl={true}
+        scrollWheelZoom={!readOnly}
+        dragging={!readOnly}
+        attributionControl={true}
       >
+        <MapViewportController center={mapCenter} zoom={zoom} />
+        <MapClickHandler disabled={readOnly || stage === "locked"} onPick={handleMapPick} />
+        <TileLayer
+          key={activeTile.name}
+          url={activeTile.url}
+          attribution={activeTile.attribution}
+          eventHandlers={tileEventHandlers}
+        />
         {marker && (
-          <MarkerF
-            position={marker}
-            draggable={stage !== "locked"}
-            onDragEnd={onMarkerDragEnd}
+          <Marker
+            icon={MAP_MARKER_ICON}
+            position={[marker.lat, marker.lng]}
+            draggable={!readOnly && stage !== "locked"}
+            eventHandlers={{
+              dragend: handleMarkerDragEnd,
+            }}
           />
         )}
-      </GoogleMap>
+        {marker && Number.isFinite(Number(accuracy)) && Number(accuracy) > 0 && (
+          <Circle
+            center={[marker.lat, marker.lng]}
+            radius={Number(accuracy)}
+            pathOptions={{
+              color: "rgba(56,189,248,0.9)",
+              fillColor: "rgba(56,189,248,0.2)",
+              fillOpacity: 0.35,
+              weight: 1,
+            }}
+          />
+        )}
+      </MapContainer>
 
-      {/* ── Confirm button ── */}
-      {stage === "previewing" && marker && (
-        <button style={S.confirmBtn} onClick={confirmLocation}
-          onMouseEnter={(e) => e.target.style.opacity = 0.9}
-          onMouseLeave={(e) => e.target.style.opacity = 1}
-        >
-          ✓ Confirm This Location
+      {!readOnly && stage === "previewing" && marker && (
+        <button type="button" style={S.confirmBtn} onClick={confirmLocation}>
+          Confirm This Location
         </button>
       )}
 
-      {/* ── Footer hint ── */}
       <div style={S.footer}>
-        {stage === "searching" && (
-          <>💡 Type an address above, or click on the map to select a location</>
-        )}
-        {stage === "previewing" && (
-          <>🔄 Drag the pin to adjust, then click <strong style={{ color: "#4ade80", margin: "0 3px" }}>Confirm</strong> to lock it</>
-        )}
-        {stage === "locked" && (
-          <>✅ Address locked — click <strong style={{ color: "#94a3b8", margin: "0 3px" }}>Change</strong> to update</>
-        )}
+        Provider: {providerLabel} • Tiles: {activeTile.name}
+        {tileErrors > 0 ? ` • Tile retries: ${tileErrors}` : ""}
       </div>
     </div>
   );
 };
 
 export default GoogleMapAddressPicker;
+

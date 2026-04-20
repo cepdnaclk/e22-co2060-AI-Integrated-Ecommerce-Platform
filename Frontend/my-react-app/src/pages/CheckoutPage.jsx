@@ -84,7 +84,30 @@ const S = {
     },
 };
 
-const EMPTY_ADDR = { fullName: "", phone: "", street: "", city: "", postalCode: "" };
+const EMPTY_ADDR = {
+    fullName: "",
+    phone: "",
+    street: "",
+    city: "",
+    postalCode: "",
+    deliveryInstructions: "",
+};
+
+const EMPTY_LOCATION = {
+    lat: null,
+    lng: null,
+    placeId: "",
+    provider: "",
+    accuracy: null,
+    timestamp: "",
+    country: "",
+    state: "",
+    city: "",
+    postalCode: "",
+    street: "",
+    formattedAddress: "",
+    verified: false,
+};
 
 export default function CheckoutPage() {
     const navigate = useNavigate();
@@ -106,8 +129,8 @@ export default function CheckoutPage() {
     const [phoneSource, setPhoneSource] = useState("profile");
     const [otherPhone, setOtherPhone] = useState("");
 
-    // Google Map location data for custom address
-    const [mapLocation, setMapLocation] = useState({ lat: null, lng: null, placeId: "", verified: false });
+    // Map location data for custom address
+    const [mapLocation, setMapLocation] = useState(EMPTY_LOCATION);
     const [mapAddress, setMapAddress] = useState("");
 
     const token = localStorage.getItem("token");
@@ -148,8 +171,9 @@ export default function CheckoutPage() {
                     fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
                     phone: data.phone || "",
                     street: data.address || "",
-                    city: "",
-                    postalCode: "",
+                    city: data.addressLocation?.city || "",
+                    postalCode: data.addressLocation?.postalCode || "",
+                    deliveryInstructions: "",
                 });
                 setAddressSource("profile");
             } else {
@@ -183,11 +207,12 @@ export default function CheckoutPage() {
             fullName: profileAddress.fullName,
             phone: profileAddress.phone,
             street: profileAddress.address,
-            city: "",
-            postalCode: "",
+            city: profileAddress.addressLocation?.city || "",
+            postalCode: profileAddress.addressLocation?.postalCode || "",
+            deliveryInstructions: "",
         });
         setMapAddress("");
-        setMapLocation({ lat: null, lng: null, placeId: "", verified: false });
+        setMapLocation(EMPTY_LOCATION);
         setErrors({});
     };
 
@@ -195,15 +220,45 @@ export default function CheckoutPage() {
         setAddressSource("custom");
         setForm(EMPTY_ADDR);
         setMapAddress("");
-        setMapLocation({ lat: null, lng: null, placeId: "", verified: false });
+        setMapLocation(EMPTY_LOCATION);
         setErrors({});
     };
 
-    // Handle Google Map address selection for custom address
+    // Handle map address selection for custom address
     const handleMapAddressChange = ({ address, addressLocation }) => {
         setMapAddress(address);
-        setMapLocation(addressLocation);
-        set("street", address);
+        setMapLocation({ ...EMPTY_LOCATION, ...(addressLocation || {}) });
+        setForm((prev) => ({
+            ...prev,
+            street: address || prev.street,
+            city: addressLocation?.city || prev.city,
+            postalCode: addressLocation?.postalCode || prev.postalCode,
+        }));
+        setErrors((prev) => {
+            const next = { ...prev };
+            delete next.street;
+            if (addressLocation?.city) delete next.city;
+            if (addressLocation?.postalCode) delete next.postalCode;
+            return next;
+        });
+    };
+
+    const applyLocationToShippingData = (shippingData, location) => {
+        if (!location?.verified) return;
+
+        shippingData.lat = location.lat ?? null;
+        shippingData.lng = location.lng ?? null;
+        shippingData.placeId = location.placeId || "";
+        shippingData.provider = location.provider || "osm";
+        shippingData.accuracy = Number.isFinite(Number(location.accuracy)) ? Number(location.accuracy) : null;
+        shippingData.timestamp = location.timestamp || "";
+        shippingData.country = location.country || "";
+        shippingData.state = location.state || "";
+        shippingData.city = shippingData.city || location.city || "";
+        shippingData.postalCode = shippingData.postalCode || location.postalCode || "";
+        shippingData.street = shippingData.street || location.street || "";
+        shippingData.formattedAddress = location.formattedAddress || shippingData.street || "";
+        shippingData.verified = true;
     };
 
     const validate = () => {
@@ -231,18 +286,16 @@ export default function CheckoutPage() {
         setPlacing(true);
         try {
             const activePhone = phoneSource === "profile" ? (profileAddress?.phone || "") : otherPhone;
-            const shippingData = { ...form, phone: activePhone };
-            // Attach location data if available
+            const shippingData = {
+                ...form,
+                phone: activePhone,
+                deliveryInstructions: form.deliveryInstructions?.trim() || "",
+            };
+
             if (addressSource === "profile" && profileAddress?.addressLocation?.verified) {
-                shippingData.lat = profileAddress.addressLocation.lat;
-                shippingData.lng = profileAddress.addressLocation.lng;
-                shippingData.placeId = profileAddress.addressLocation.placeId;
-                shippingData.verified = true;
+                applyLocationToShippingData(shippingData, profileAddress.addressLocation);
             } else if (addressSource === "custom" && mapLocation?.verified) {
-                shippingData.lat = mapLocation.lat;
-                shippingData.lng = mapLocation.lng;
-                shippingData.placeId = mapLocation.placeId;
-                shippingData.verified = true;
+                applyLocationToShippingData(shippingData, mapLocation);
             }
             const checkoutResult = await placeOrder(token, shippingData);
             setBookkeepingDelayed(Boolean(checkoutResult?.bookkeeping?.failedCount > 0));
@@ -447,7 +500,7 @@ export default function CheckoutPage() {
                                 {/* ── Custom Address Form (shown when "custom" selected) ── */}
                                 {addressSource === "custom" && (
                                     <div style={{ animation: "fadeIn 0.3s ease forwards" }}>
-                                        {/* Google Map Address Picker */}
+                                        {/* Location picker (OSM/Leaflet via provider abstraction) */}
                                         <div style={{ marginBottom: 20 }}>
                                             <label style={{ ...S.label, marginBottom: 10 }}>Search & Select Location on Map</label>
                                             <GoogleMapAddressPicker
@@ -524,6 +577,17 @@ export default function CheckoutPage() {
                                                 {errors.postalCode && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.postalCode}</p>}
                                             </div>
                                         </div>
+
+                                        <div style={{ marginTop: 16 }}>
+                                            <label style={S.label}>Delivery Instructions (Optional)</label>
+                                            <textarea
+                                                className="co-input"
+                                                style={{ ...S.input, minHeight: 84, resize: "vertical" }}
+                                                value={form.deliveryInstructions}
+                                                onChange={(e) => set("deliveryInstructions", e.target.value)}
+                                                placeholder="e.g., Leave package at the front desk / call before arrival"
+                                            />
+                                        </div>
                                     </div>
                                 )}
 
@@ -557,6 +621,17 @@ export default function CheckoutPage() {
                                                 />
                                                 {errors.postalCode && <p style={{ color: "#f87171", fontSize: 11, marginTop: 4 }}>{errors.postalCode}</p>}
                                             </div>
+                                        </div>
+
+                                        <div style={{ marginTop: 16 }}>
+                                            <label style={S.label}>Delivery Instructions (Optional)</label>
+                                            <textarea
+                                                className="co-input"
+                                                style={{ ...S.input, minHeight: 84, resize: "vertical" }}
+                                                value={form.deliveryInstructions}
+                                                onChange={(e) => set("deliveryInstructions", e.target.value)}
+                                                placeholder="e.g., Gate code 1234, call on arrival"
+                                            />
                                         </div>
                                     </div>
                                 )}
