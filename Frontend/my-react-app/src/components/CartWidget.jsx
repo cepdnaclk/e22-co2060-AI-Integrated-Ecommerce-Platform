@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 /* Pages where the widget should NOT appear */
-const HIDDEN_PATHS = ["/cart", "/checkout", "/login", "/orders"];
+const HIDDEN_PATHS = ["/cart", "/checkout", "/login", "/orders", "/admin", "/dms"];
 
 export default function CartWidget() {
     const navigate  = useNavigate();

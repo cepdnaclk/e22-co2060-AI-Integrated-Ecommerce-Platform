@@ -21,6 +21,7 @@ import adminProductRouter from "./router/adminProductRouter.js"; // ✅ Admin Pr
 import adminOrderRouter from "./router/adminOrderRouter.js"; // ✅ Admin Order Management
 import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority ML
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
+import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -48,8 +49,11 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
+      "http://localhost:5180",
       "http://192.168.248.238:5173",
-      "http://172.20.10.9:5173"
+      "http://192.168.248.238:5180",
+      "http://172.20.10.9:5173",
+      "http://172.20.10.9:5180"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -116,6 +120,8 @@ app.use("/api/admin/restock", restockRouter);
 
 // 🧭 Product Recommendations (Dijkstra)
 app.use("/api/recommendations", recommendationRouter);
+// 🚚 Delivery Management System
+app.use("/api/dms", dmsRouter);
 if ((process.env.ENABLE_FACEBOOK_MODULE || "false").toLowerCase() === "true") {
   const { default: facebookRouter } = await import("./router/facebookRouter.js");
   app.use("/api/facebook", facebookRouter);

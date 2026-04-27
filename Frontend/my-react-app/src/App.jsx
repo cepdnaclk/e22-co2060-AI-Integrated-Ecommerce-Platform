@@ -24,6 +24,12 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AdminBookkeeping from "./pages/AdminBookkeeping";
+import AdminDmsControlTower from "./pages/AdminDmsControlTower";
+import DmsLogin from "./pages/DmsLogin";
+import DmsRegister from "./pages/DmsRegister";
+import DmsPortalHome from "./pages/DmsPortalHome";
+import DmsCenterDashboard from "./pages/DmsCenterDashboard";
+import DmsProtectedRoute from "./components/DmsProtectedRoute";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
@@ -106,6 +112,24 @@ function App() {
             <AdminProtectedRoute>
               <AdminBookkeeping />
             </AdminProtectedRoute>
+          } />
+          <Route path="/admin/dms-control" element={
+            <AdminProtectedRoute>
+              <AdminDmsControlTower />
+            </AdminProtectedRoute>
+          } />
+          {/* DMS Delivery Center Portal */}
+          <Route path="/dms/register" element={<DmsRegister />} />
+          <Route path="/dms/login" element={<DmsLogin />} />
+          <Route path="/dms/dashboard" element={
+            <DmsProtectedRoute allowedScopes={["branch", "rider"]}>
+              <DmsPortalHome />
+            </DmsProtectedRoute>
+          } />
+          <Route path="/dms/center/dashboard" element={
+            <DmsProtectedRoute allowedScopes={["branch", "rider"]}>
+              <DmsCenterDashboard />
+            </DmsProtectedRoute>
           } />
 
         </Routes>

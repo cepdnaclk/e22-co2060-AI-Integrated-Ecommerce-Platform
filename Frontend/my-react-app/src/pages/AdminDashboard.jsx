@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ParticleCanvas from "../components/ParticleCanvas";
 import API_BASE_URL from "../config/api";
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
+    const [centerStatusLoading, setCenterStatusLoading] = useState(false);
+    const [centerStatusError, setCenterStatusError] = useState("");
+    const [centerStatus, setCenterStatus] = useState(null);
     
     // Get admin user info
     const adminUser = JSON.parse(localStorage.getItem("adminUser") || localStorage.getItem("user") || "{}");
@@ -31,6 +34,41 @@ export default function AdminDashboard() {
         localStorage.removeItem("user");
         
         navigate("/admin/login");
+    };
+
+    const loadCenterStatus = async () => {
+        setCenterStatusLoading(true);
+        setCenterStatusError("");
+        try {
+            const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+            if (!token) {
+                throw new Error("Admin session not found");
+            }
+
+            const controlTowerRes = await fetch(`${API_BASE_URL}/api/dms/admin/centers/control-tower`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            const controlTowerData = await controlTowerRes.json();
+            if (!controlTowerRes.ok) {
+                throw new Error(controlTowerData?.message || "Failed to load control tower status");
+            }
+
+            const totals = controlTowerData?.totals || {};
+
+            setCenterStatus({
+                totalCenters: totals.centers || 0,
+                approvedCenters: totals.approvedCenters || 0,
+                pendingCenters: totals.pendingCenters || 0,
+                disabledCenters: totals.disabledCenters || 0,
+                activeShipments: totals.activeShipments || 0,
+                activeRiders: totals.activeRiders || 0,
+                delayedShipments: totals.delayedShipments || 0,
+            });
+        } catch (err) {
+            setCenterStatusError(err.message || "Failed to fetch center status");
+        } finally {
+            setCenterStatusLoading(false);
+        }
     };
 
     return (
@@ -163,6 +201,36 @@ export default function AdminDashboard() {
                         <button onClick={() => navigate("/admin/bookkeeping")} style={{ ...S.btnPurple, width: "100%" }}>
                             Open Bookkeeping →
                         </button>
+                    </div>
+
+                    {/* Delivery Center Monitoring Card */}
+                    <div className="ad-card" style={S.card}>
+                        <div style={{ fontSize: 32, marginBottom: 16 }}>🚚</div>
+                        <h2 style={{ fontSize: 20, fontWeight: 600, color: "#fff", margin: "0 0 8px 0" }}>Delivery Center Status</h2>
+                        <p style={{ color: "#94a3b8", fontSize: 14, lineHeight: 1.5, marginBottom: 24, minHeight: 42 }}>
+                            View center-level operational status from the admin side while keeping center portal isolated.
+                        </p>
+                        {centerStatusError && (
+                            <div style={{ fontSize: 12, color: "#fca5a5", marginBottom: 10 }}>
+                                {centerStatusError}
+                            </div>
+                        )}
+                        {centerStatus && (
+                            <div style={{ marginBottom: 12, fontSize: 12, color: "#cbd5e1", lineHeight: 1.6 }}>
+                                <div>Total Centers: <strong>{centerStatus.totalCenters}</strong></div>
+                                <div>Approved: <strong>{centerStatus.approvedCenters}</strong> • Pending: <strong>{centerStatus.pendingCenters}</strong> • Disabled: <strong>{centerStatus.disabledCenters}</strong></div>
+                                <div>Active Shipments: <strong>{centerStatus.activeShipments}</strong></div>
+                                <div>Active Riders: <strong>{centerStatus.activeRiders}</strong> • Delayed Shipments: <strong>{centerStatus.delayedShipments}</strong></div>
+                            </div>
+                        )}
+                        <div style={{ display: "flex", gap: 10 }}>
+                            <button onClick={loadCenterStatus} style={{ ...S.btnGray, flex: 1 }}>
+                                {centerStatusLoading ? "Loading..." : "Refresh"}
+                            </button>
+                            <button onClick={() => navigate("/admin/dms-control")} style={{ ...S.btnPurple, flex: 1 }}>
+                                Open Control Tower →
+                            </button>
+                        </div>
                     </div>
 
                 </div>
