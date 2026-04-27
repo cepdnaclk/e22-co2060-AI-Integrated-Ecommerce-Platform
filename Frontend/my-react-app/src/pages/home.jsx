@@ -4,7 +4,7 @@ import SponsorBar from "../components/sponsorbar.jsx";
 import CountUp from "../components/CountUp.jsx";
 import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
-import SeasonalCarShowcase from "../components/seasonalCar.jsx";
+import SeasonalCarShowcase from "../components/SeasonalCar.jsx";
 import API_BASE_URL from "../config/api";
 
 /* ✅ CATEGORY LIST */
