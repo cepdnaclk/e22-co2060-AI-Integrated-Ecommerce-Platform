@@ -7,6 +7,7 @@ import CourierBranch from "../models/courierBranch.js";
 import CourierStaff from "../models/courierStaff.js";
 import DeliveryRule from "../models/deliveryRule.js";
 import ServiceZone from "../models/serviceZone.js";
+import Order from "../../models/order.js";
 import { withTenantScope } from "../middleware/dmsAccess.js";
 import { generateTrackingNumber } from "../utils/idGenerator.js";
 import { requireFields } from "../utils/validation.js";
@@ -14,6 +15,7 @@ import { assignBranchByRules, findServiceZone } from "../services/routingEngine.
 import { detectScanAnomalies } from "../services/fraudService.js";
 import { createAuditLog } from "../services/auditService.js";
 import { emitDeliveryNotification } from "../services/notificationService.js";
+import { parseSellerQrOrderId } from "../../services/sellerQrPayloadService.js";
 
 function actorForAudit(req) {
   return {
@@ -64,6 +66,216 @@ function applyStatusTimeline(deliveryOrder, nextStatus) {
   if (nextStatus === "delivered") deliveryOrder.statusTimeline.deliveredAt = now;
   if (nextStatus === "failed_delivery") deliveryOrder.statusTimeline.failedAt = now;
   if (nextStatus === "returned") deliveryOrder.statusTimeline.returnedAt = now;
+}
+
+function resolveCourierContextForCenterScan(req) {
+  const actorScope = req.dmsActor?.scope || "none";
+  const actorCourierCompanyId = req.dmsActor?.courierCompanyId || null;
+  const actorBranchId = req.dmsActor?.branchId || null;
+  const requestedCourierCompanyId = req.body.courierCompanyId ? `${req.body.courierCompanyId}` : null;
+  const requestedBranchId = req.body.branchId ? `${req.body.branchId}` : null;
+
+  if (actorScope === "branch" || actorScope === "rider") {
+    if (requestedCourierCompanyId && requestedCourierCompanyId !== actorCourierCompanyId) {
+      return {
+        ok: false,
+        status: 403,
+        message: "You cannot scan shipments for another courier company.",
+      };
+    }
+    if (requestedBranchId && requestedBranchId !== actorBranchId) {
+      return {
+        ok: false,
+        status: 403,
+        message: "You cannot scan shipments for another branch.",
+      };
+    }
+    return {
+      ok: true,
+      courierCompanyId: actorCourierCompanyId,
+      branchId: actorBranchId,
+    };
+  }
+
+  if (actorScope === "company") {
+    if (requestedCourierCompanyId && requestedCourierCompanyId !== actorCourierCompanyId) {
+      return {
+        ok: false,
+        status: 403,
+        message: "You cannot scan shipments for another courier company.",
+      };
+    }
+    if (!requestedBranchId) {
+      return {
+        ok: false,
+        status: 400,
+        message: "branchId is required for company-level scan operations.",
+      };
+    }
+    return {
+      ok: true,
+      courierCompanyId: actorCourierCompanyId,
+      branchId: requestedBranchId,
+    };
+  }
+
+  if (actorScope === "platform") {
+    if (!requestedCourierCompanyId || !requestedBranchId) {
+      return {
+        ok: false,
+        status: 400,
+        message: "courierCompanyId and branchId are required for platform scan operations.",
+      };
+    }
+    return {
+      ok: true,
+      courierCompanyId: requestedCourierCompanyId,
+      branchId: requestedBranchId,
+    };
+  }
+
+  return {
+    ok: false,
+    status: 403,
+    message: "Access denied for center scan operation.",
+  };
+}
+
+function buildDestinationFromOrder(ecommerceOrder) {
+  const shipping = ecommerceOrder?.shippingAddress || {};
+  const hasLat = Number.isFinite(Number(shipping.lat));
+  const hasLng = Number.isFinite(Number(shipping.lng));
+  const fallbackAddress = [
+    shipping.street,
+    shipping.city,
+    shipping.state,
+    shipping.postalCode,
+    shipping.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+
+  return {
+    fullName: shipping.fullName || "",
+    phone: shipping.phone || "",
+    province: shipping.state || "",
+    district: shipping.district || "",
+    city: shipping.city || "",
+    address: shipping.formattedAddress || fallbackAddress || "",
+    postalCode: shipping.postalCode || "",
+    lat: hasLat ? Number(shipping.lat) : null,
+    lng: hasLng ? Number(shipping.lng) : null,
+  };
+}
+
+function buildPackageDetailsFromOrder(ecommerceOrder) {
+  const itemCount = Array.isArray(ecommerceOrder?.items)
+    ? ecommerceOrder.items.reduce((sum, item) => sum + Number(item?.quantity || 0), 0)
+    : 0;
+  return {
+    itemCount: itemCount > 0 ? itemCount : 1,
+    packageLabel: ecommerceOrder?.sellerQr?.packingProductName || "",
+  };
+}
+
+async function recordShipmentScan({ req, order, scanPayload }) {
+  const fraudCheck = await detectScanAnomalies({
+    deliveryOrderId: order._id,
+    scanType: scanPayload.scanType,
+    scannedByStaffId: req.dmsActor?.staffId || null,
+  });
+
+  const nextStatus = scanTypeToStatus(scanPayload.scanType);
+  if (nextStatus) {
+    order.status = nextStatus;
+    applyStatusTimeline(order, nextStatus);
+  }
+
+  if (scanPayload.branchId) {
+    order.currentBranchId = scanPayload.branchId;
+  }
+  if (scanPayload.riderStaffId) {
+    order.currentRiderId = scanPayload.riderStaffId;
+  }
+
+  order.scanSummary.lastScanType = scanPayload.scanType;
+  order.scanSummary.lastScanAt = new Date();
+  if (fraudCheck.anomalies.includes("duplicate_scan_detected")) {
+    order.scanSummary.duplicateScanCount += 1;
+  }
+  if (fraudCheck.anomalies.includes("missing_scan_sequence")) {
+    order.scanSummary.missingRequiredScans = true;
+  }
+  if (fraudCheck.suspicious) {
+    order.risk.flags = Array.from(new Set([...(order.risk.flags || []), ...fraudCheck.anomalies]));
+    order.risk.anomalyScore += fraudCheck.anomalyScore;
+  }
+
+  await order.save();
+
+  const event = await ShipmentTrackingEvent.create({
+    deliveryOrderId: order._id,
+    trackingNumber: order.trackingNumber,
+    courierCompanyId: order.courierCompanyId,
+    branchId: scanPayload.branchId || order.currentBranchId || null,
+    riderStaffId: scanPayload.riderStaffId || order.currentRiderId || null,
+    scannedByStaffId: req.dmsActor?.staffId || null,
+    scannedByUserId: req.user.id,
+    scanType: scanPayload.scanType,
+    scanMethod: scanPayload.scanMethod || "barcode",
+    statusAfterScan: order.status,
+    notes: scanPayload.notes || "",
+    geolocation: scanPayload.geolocation || {},
+    anomalyFlags: fraudCheck.anomalies,
+    suspicious: fraudCheck.suspicious,
+    occurredAt: scanPayload.occurredAt || new Date(),
+    metadata: scanPayload.metadata || {},
+  });
+
+  if (order.status === "failed_delivery") {
+    order.attempts.deliveryAttempts += 1;
+    order.attempts.failedReason = scanPayload.notes || "Delivery failed";
+    await order.save();
+  }
+
+  if (order.status === "delivered" || order.status === "returned") {
+    await DeliveryAssignment.updateMany(
+      { deliveryOrderId: order._id, status: "active" },
+      { $set: { status: "completed", completedAt: new Date() } }
+    );
+  }
+
+  if (fraudCheck.suspicious) {
+    await createAuditLog({
+      category: "dms_fraud",
+      action: "shipment.scan_anomaly_detected",
+      severity: "warn",
+      actor: actorForAudit(req),
+      context: {
+        courierCompanyId: order.courierCompanyId,
+        branchId: event.branchId,
+        deliveryOrderId: order._id,
+        trackingNumber: order.trackingNumber,
+      },
+      metadata: { anomalies: fraudCheck.anomalies },
+      req,
+    });
+  }
+
+  await emitDeliveryNotification({
+    type: scanPayload.scanType,
+    recipients: [order.customerId, order.sellerId].filter(Boolean),
+    payload: {
+      trackingNumber: order.trackingNumber,
+      status: order.status,
+      scanType: scanPayload.scanType,
+    },
+    actor: actorForAudit(req),
+    context: { courierCompanyId: order.courierCompanyId, deliveryOrderId: order._id, trackingNumber: order.trackingNumber },
+    req,
+  });
+
+  return { order, event, fraudCheck };
 }
 
 export async function createShipment(req, res) {
@@ -266,110 +478,160 @@ export async function scanShipment(req, res) {
       return res.status(404).json({ message: "Shipment not found in your scope" });
     }
 
-    const fraudCheck = await detectScanAnomalies({
-      deliveryOrderId: order._id,
-      scanType: req.body.scanType,
-      scannedByStaffId: req.dmsActor?.staffId || null,
-    });
-
-    const nextStatus = scanTypeToStatus(req.body.scanType);
-    if (nextStatus) {
-      order.status = nextStatus;
-      applyStatusTimeline(order, nextStatus);
-    }
-
-    if (req.body.branchId) {
-      order.currentBranchId = req.body.branchId;
-    }
-    if (req.body.riderStaffId) {
-      order.currentRiderId = req.body.riderStaffId;
-    }
-
-    order.scanSummary.lastScanType = req.body.scanType;
-    order.scanSummary.lastScanAt = new Date();
-    if (fraudCheck.anomalies.includes("duplicate_scan_detected")) {
-      order.scanSummary.duplicateScanCount += 1;
-    }
-    if (fraudCheck.anomalies.includes("missing_scan_sequence")) {
-      order.scanSummary.missingRequiredScans = true;
-    }
-    if (fraudCheck.suspicious) {
-      order.risk.flags = Array.from(new Set([...(order.risk.flags || []), ...fraudCheck.anomalies]));
-      order.risk.anomalyScore += fraudCheck.anomalyScore;
-    }
-
-    await order.save();
-
-    const event = await ShipmentTrackingEvent.create({
-      deliveryOrderId: order._id,
-      trackingNumber: order.trackingNumber,
-      courierCompanyId: order.courierCompanyId,
-      branchId: req.body.branchId || order.currentBranchId || null,
-      riderStaffId: req.body.riderStaffId || order.currentRiderId || null,
-      scannedByStaffId: req.dmsActor?.staffId || null,
-      scannedByUserId: req.user.id,
-      scanType: req.body.scanType,
-      scanMethod: req.body.scanMethod || "barcode",
-      statusAfterScan: order.status,
-      notes: req.body.notes || "",
-      geolocation: req.body.geolocation || {},
-      anomalyFlags: fraudCheck.anomalies,
-      suspicious: fraudCheck.suspicious,
-      occurredAt: req.body.occurredAt || new Date(),
-      metadata: req.body.metadata || {},
-    });
-
-    if (order.status === "failed_delivery") {
-      order.attempts.deliveryAttempts += 1;
-      order.attempts.failedReason = req.body.notes || "Delivery failed";
-      await order.save();
-    }
-
-    if (order.status === "delivered" || order.status === "returned") {
-      await DeliveryAssignment.updateMany(
-        { deliveryOrderId: order._id, status: "active" },
-        { $set: { status: "completed", completedAt: new Date() } }
-      );
-    }
-
-    if (fraudCheck.suspicious) {
-      await createAuditLog({
-        category: "dms_fraud",
-        action: "shipment.scan_anomaly_detected",
-        severity: "warn",
-        actor: actorForAudit(req),
-        context: {
-          courierCompanyId: order.courierCompanyId,
-          branchId: event.branchId,
-          deliveryOrderId: order._id,
-          trackingNumber: order.trackingNumber,
-        },
-        metadata: { anomalies: fraudCheck.anomalies },
-        req,
-      });
-    }
-
-    await emitDeliveryNotification({
-      type: req.body.scanType,
-      recipients: [order.customerId, order.sellerId].filter(Boolean),
-      payload: {
-        trackingNumber: order.trackingNumber,
-        status: order.status,
-        scanType: req.body.scanType,
-      },
-      actor: actorForAudit(req),
-      context: { courierCompanyId: order.courierCompanyId, deliveryOrderId: order._id, trackingNumber: order.trackingNumber },
+    const { order: updatedOrder, event, fraudCheck } = await recordShipmentScan({
       req,
+      order,
+      scanPayload: req.body,
     });
 
     return res.json({
       message: "Scan recorded",
-      order,
+      order: updatedOrder,
       event,
       fraud: fraudCheck,
     });
   } catch (error) {
     return res.status(500).json({ message: "Failed to record scan", error: error.message });
+  }
+}
+
+export async function scanSellerQrAtCenter(req, res) {
+  try {
+    const missing = requireFields(req.body, ["qrText"]);
+    if (missing.length) {
+      return res.status(400).json({ message: `Missing fields: ${missing.join(", ")}` });
+    }
+
+    const ecommerceOrderId = parseSellerQrOrderId(req.body.qrText);
+    if (!ecommerceOrderId) {
+      return res.status(400).json({ message: "Invalid seller QR content. Could not resolve order ID." });
+    }
+
+    const ecommerceOrder = await Order.findById(ecommerceOrderId);
+    if (!ecommerceOrder) {
+      return res.status(404).json({ message: "Seller order not found for scanned QR." });
+    }
+    if (ecommerceOrder.status === "cancelled") {
+      return res.status(400).json({ message: "Cannot transfer a cancelled order to delivery company." });
+    }
+    if (ecommerceOrder.sellerQr?.verificationStatus !== "approved") {
+      return res.status(400).json({ message: "Seller QR is not approved for delivery transfer yet." });
+    }
+
+    const context = resolveCourierContextForCenterScan(req);
+    if (!context.ok) {
+      return res.status(context.status).json({ message: context.message });
+    }
+
+    const [courierCompany, branch] = await Promise.all([
+      CourierCompany.findOne({
+        _id: context.courierCompanyId,
+        status: "approved",
+      }).lean(),
+      CourierBranch.findOne({
+        _id: context.branchId,
+        courierCompanyId: context.courierCompanyId,
+        status: "approved",
+      }).lean(),
+    ]);
+
+    if (!courierCompany) {
+      return res.status(400).json({ message: "Courier company is not approved or not found." });
+    }
+    if (!branch) {
+      return res.status(400).json({ message: "Delivery center branch is not approved or not found." });
+    }
+
+    let deliveryOrder = await DeliveryOrder.findOne({
+      ecommerceOrderId: ecommerceOrder._id,
+    });
+
+    if (deliveryOrder && `${deliveryOrder.courierCompanyId}` !== `${context.courierCompanyId}`) {
+      return res.status(409).json({
+        message: "This seller order is already linked to another delivery company.",
+        trackingNumber: deliveryOrder.trackingNumber,
+      });
+    }
+
+    if (!deliveryOrder) {
+      deliveryOrder = await DeliveryOrder.create({
+        trackingNumber: generateTrackingNumber(),
+        ecommerceOrderId: ecommerceOrder._id,
+        sellerId: ecommerceOrder.sellerId,
+        customerId: ecommerceOrder.userId,
+        courierCompanyId: context.courierCompanyId,
+        assignedBranchId: context.branchId,
+        currentBranchId: context.branchId,
+        destination: buildDestinationFromOrder(ecommerceOrder),
+        packageDetails: buildPackageDetailsFromOrder(ecommerceOrder),
+        createdByUserId: req.user.id,
+      });
+
+      await createAuditLog({
+        category: "dms_workflow",
+        action: "shipment.registered_from_seller_qr",
+        actor: actorForAudit(req),
+        context: {
+          courierCompanyId: deliveryOrder.courierCompanyId,
+          branchId: deliveryOrder.assignedBranchId,
+          deliveryOrderId: deliveryOrder._id,
+          trackingNumber: deliveryOrder.trackingNumber,
+          targetType: "delivery_order",
+          targetId: `${deliveryOrder._id}`,
+        },
+        metadata: {
+          ecommerceOrderId: `${ecommerceOrder._id}`,
+          source: "seller_qr_scan",
+        },
+        req,
+      });
+    }
+
+    if (["delivered", "returned"].includes(deliveryOrder.status)) {
+      return res.status(409).json({
+        message: "This shipment is already completed and cannot be scanned as seller handover.",
+        trackingNumber: deliveryOrder.trackingNumber,
+      });
+    }
+
+    const scanPayload = {
+      scanType: "branch_received",
+      scanMethod: "qr",
+      branchId: context.branchId,
+      notes: req.body.notes || "Seller handover received at delivery center.",
+      geolocation: req.body.geolocation || {},
+      occurredAt: req.body.occurredAt || new Date(),
+      metadata: {
+        ...(req.body.metadata || {}),
+        source: "seller_qr_scan",
+        ecommerceOrderId: `${ecommerceOrder._id}`,
+        scannedQrText: req.body.qrText,
+      },
+    };
+
+    const { order: updatedDeliveryOrder, event, fraudCheck } = await recordShipmentScan({
+      req,
+      order: deliveryOrder,
+      scanPayload,
+    });
+
+    if (["pending", "confirmed"].includes(ecommerceOrder.status)) {
+      ecommerceOrder.status = "shipped";
+      await ecommerceOrder.save();
+    }
+
+    return res.json({
+      message: "Seller QR scanned. Shipment moved from seller to delivery company.",
+      ecommerceOrder: {
+        id: ecommerceOrder._id,
+        status: ecommerceOrder.status,
+      },
+      deliveryOrder: updatedDeliveryOrder,
+      event,
+      fraud: fraudCheck,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to scan seller QR", error: error.message });
   }
 }
 

@@ -1,6 +1,13 @@
 import Cart from "../models/cart.js";
 import Order from "../models/order.js";
+import Seller from "../models/seller.js";
+import QRCode from "qrcode";
 import { postOrderPaidEventWithRetry } from "../services/bookkeepingService.js";
+import {
+  buildSellerQrPayload,
+  buildSellerQrText,
+  isLatestSellerQrPayload
+} from "../services/sellerQrPayloadService.js";
 
 /**
  * ======================================================
@@ -11,8 +18,17 @@ import { postOrderPaidEventWithRetry } from "../services/bookkeepingService.js";
  * - Split orders by seller
  * - Buyer order history
  * - Seller order view
+ * - Seller proof upload + seller QR retrieval
  * ======================================================
  */
+
+async function getSellerFromAuthUser(user) {
+  if (user.role !== "seller") {
+    return null;
+  }
+
+  return Seller.findOne({ userId: user.id });
+}
 
 
 /**
@@ -137,6 +153,182 @@ export async function getMyOrders(req, res) {
     console.error("❌ Get buyer orders error:", error);
     res.status(500).json({
       message: "Failed to fetch orders",
+      error: error.message
+    });
+  }
+}
+
+
+/**
+ * ======================================================
+ * GET AUTHENTICATED SELLER ORDERS
+ * GET /api/orders/seller/me
+ * ======================================================
+ */
+export async function getMySellerOrders(req, res) {
+  try {
+    const seller = await getSellerFromAuthUser(req.user);
+
+    if (!seller) {
+      return res.status(403).json({ message: "Access denied. Seller account required." });
+    }
+
+    const orders = await Order.find({ sellerId: seller._id })
+      .populate("userId", "email firstName lastName phone")
+      .populate("sellerId", "shopName email")
+      .populate("items.productId", "productName")
+      .sort({ createdAt: -1 });
+
+    res.json(orders);
+  } catch (error) {
+    console.error("❌ Get authenticated seller orders error:", error);
+    res.status(500).json({
+      message: "Failed to fetch seller orders",
+      error: error.message
+    });
+  }
+}
+
+
+/**
+ * ======================================================
+ * SELLER SUBMITS PACKING PROOF
+ * POST /api/orders/seller/me/:orderId/packing-proof
+ * Body (multipart/form-data): productName, skuOrImei, proofImage
+ * ======================================================
+ */
+export async function submitSellerPackingProof(req, res) {
+  try {
+    const seller = await getSellerFromAuthUser(req.user);
+    if (!seller) {
+      return res.status(403).json({ message: "Access denied. Seller account required." });
+    }
+
+    const { orderId } = req.params;
+    const { productName, skuOrImei } = req.body;
+
+    if (!productName?.trim()) {
+      return res.status(400).json({ message: "Packed product name is required." });
+    }
+    if (!skuOrImei?.trim()) {
+      return res.status(400).json({ message: "SKU/IMEI is required." });
+    }
+    if (!req.file) {
+      return res.status(400).json({ message: "Packing proof image is required." });
+    }
+    if (!req.file.mimetype?.startsWith("image/")) {
+      return res.status(400).json({ message: "Packing proof must be an image file." });
+    }
+
+    const order = await Order.findOne({ _id: orderId, sellerId: seller._id })
+      .populate("userId", "email firstName lastName phone")
+      .populate("sellerId", "shopName email")
+      .populate("items.productId", "productName");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found for this seller." });
+    }
+
+    if (order.status === "cancelled") {
+      return res.status(400).json({ message: "Cannot submit proof for a cancelled order." });
+    }
+
+    const proofImageUrl = `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`;
+    order.sellerQr = {
+      ...order.sellerQr,
+      verificationStatus: "pending",
+      proofImageUrl,
+      packingProductName: productName.trim(),
+      packingSkuOrImei: skuOrImei.trim(),
+      proofSubmittedAt: new Date(),
+      proofSubmittedBy: req.user.id,
+      verificationNote: "",
+      verifiedBy: null,
+      verifiedAt: null,
+      qrPayload: null,
+      qrGeneratedAt: null
+    };
+
+    await order.save();
+
+    res.json({
+      message: "Packing proof submitted successfully. Waiting for admin verification.",
+      order
+    });
+  } catch (error) {
+    console.error("❌ Submit seller packing proof error:", error);
+    res.status(500).json({
+      message: "Failed to submit packing proof",
+      error: error.message
+    });
+  }
+}
+
+
+/**
+ * ======================================================
+ * GET SELLER QR FOR AN ORDER
+ * GET /api/orders/seller/me/:orderId/seller-qr
+ * ======================================================
+ */
+export async function getSellerOrderQr(req, res) {
+  try {
+    const seller = await getSellerFromAuthUser(req.user);
+    if (!seller) {
+      return res.status(403).json({ message: "Access denied. Seller account required." });
+    }
+
+    const order = await Order.findOne({ _id: req.params.orderId, sellerId: seller._id })
+      .populate("userId", "email firstName lastName phone")
+      .populate("sellerId", "shopName email")
+      .populate("items.productId", "productName");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found for this seller." });
+    }
+
+    if (order.sellerQr?.verificationStatus !== "approved") {
+      return res.status(403).json({
+        message: "Seller QR is available only after admin approval.",
+        verificationStatus: order.sellerQr?.verificationStatus || "not_submitted"
+      });
+    }
+
+    let qrPayload = order.sellerQr?.qrPayload;
+    if (!isLatestSellerQrPayload(qrPayload)) {
+      qrPayload = buildSellerQrPayload(order);
+      order.sellerQr = {
+        ...order.sellerQr,
+        qrPayload,
+        qrGeneratedAt: new Date()
+      };
+      await order.save();
+    }
+
+    const qrText = qrPayload.qrText || buildSellerQrText(qrPayload);
+    const qrImageDataUrl = await QRCode.toDataURL(qrText, {
+      errorCorrectionLevel: "L",
+      version: 3,
+      margin: 2,
+      scale: 10,
+      color: {
+        dark: "#000000",
+        light: "#FFFFFF"
+      }
+    });
+
+    res.json({
+      message: "Seller QR generated successfully.",
+      verificationStatus: order.sellerQr.verificationStatus,
+      qrGeneratedAt: order.sellerQr.qrGeneratedAt,
+      qrPayload,
+      qrText,
+      qrImageDataUrl
+    });
+  } catch (error) {
+    console.error("❌ Get seller QR error:", error);
+    res.status(500).json({
+      message: "Failed to generate seller QR",
       error: error.message
     });
   }

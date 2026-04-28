@@ -5,6 +5,7 @@ import {
   getOrderStats,
   getOrderById,
   updateOrderStatus,
+  verifySellerQr,
 } from "../controllers/adminOrderController.js";
 
 const router = Router();
@@ -23,5 +24,8 @@ router.get("/:id", getOrderById);
 
 // PUT  /api/admin/orders/:id/status → update order status
 router.put("/:id/status", updateOrderStatus);
+
+// PUT  /api/admin/orders/:id/seller-qr/verify → approve/reject seller proof
+router.put("/:id/seller-qr/verify", verifySellerQr);
 
 export default router;

@@ -178,5 +178,12 @@ export const dmsService = {
   getCenterRiderQueue(params = {}) {
     return dmsRequest("/center/rider-queue", { params });
   },
+
+  scanSellerQr(payload) {
+    return dmsRequest("/shipments/scan-seller-qr", {
+      method: "POST",
+      body: payload,
+    });
+  },
 };
 

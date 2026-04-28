@@ -59,3 +59,18 @@ export const updateOrderStatus = async (orderId, status) => {
   if (!res.ok) throw new Error("Failed to update order status");
   return res.json();
 };
+
+/**
+ * Approve or reject seller packing proof (controls seller QR readiness)
+ */
+export const verifySellerQr = async (orderId, action, notes = "") => {
+  const res = await fetch(`${BASE_URL}/${orderId}/seller-qr/verify`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify({ action, notes }),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to verify seller proof");
+  return data;
+};

@@ -5,6 +5,7 @@ import {
   fetchAllOrders,
   fetchOrderStats,
   updateOrderStatus,
+  verifySellerQr,
 } from "../services/adminOrderService";
 
 const STATUSES = ["all", "pending", "confirmed", "shipped", "delivered", "cancelled"];
@@ -34,6 +35,20 @@ const NEXT_STATUS = {
   cancelled: [],
 };
 
+const SELLER_QR_COLORS = {
+  not_submitted: { bg: "rgba(71,85,105,0.2)", color: "#94a3b8", border: "rgba(71,85,105,0.35)" },
+  pending: { bg: "rgba(234,179,8,0.15)", color: "#facc15", border: "rgba(234,179,8,0.35)" },
+  approved: { bg: "rgba(34,197,94,0.15)", color: "#4ade80", border: "rgba(34,197,94,0.35)" },
+  rejected: { bg: "rgba(239,68,68,0.15)", color: "#f87171", border: "rgba(239,68,68,0.35)" },
+};
+
+const SELLER_QR_LABELS = {
+  not_submitted: "Not submitted",
+  pending: "Pending review",
+  approved: "Approved",
+  rejected: "Rejected",
+};
+
 export default function AdminOrders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
@@ -45,6 +60,7 @@ export default function AdminOrders() {
   const [search, setSearch] = useState("");
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [updating, setUpdating] = useState(false);
+  const [verificationNote, setVerificationNote] = useState("");
 
   const loadOrders = useCallback(async () => {
     try {
@@ -80,6 +96,10 @@ export default function AdminOrders() {
     loadStats();
   }, [loadStats]);
 
+  useEffect(() => {
+    setVerificationNote(selectedOrder?.sellerQr?.verificationNote || "");
+  }, [selectedOrder]);
+
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       setUpdating(true);
@@ -94,6 +114,23 @@ export default function AdminOrders() {
       loadStats();
     } catch (err) {
       alert("Failed to update status: " + err.message);
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleSellerQrVerification = async (orderId, action) => {
+    try {
+      setUpdating(true);
+      const result = await verifySellerQr(orderId, action, verificationNote);
+      setOrders((prev) =>
+        prev.map((o) => (o._id === orderId ? result.order : o))
+      );
+      if (selectedOrder && selectedOrder._id === orderId) {
+        setSelectedOrder(result.order);
+      }
+    } catch (err) {
+      alert("Failed to verify seller proof: " + err.message);
     } finally {
       setUpdating(false);
     }
@@ -198,7 +235,7 @@ export default function AdminOrders() {
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr>
-                      {["Order ID", "Customer", "Seller", "Total", "Status", "Date"].map((h) => (
+                      {["Order ID", "Customer", "Seller", "Total", "Status", "Seller QR", "Date"].map((h) => (
                         <th key={h} style={S.th}>{h}</th>
                       ))}
                     </tr>
@@ -223,6 +260,9 @@ export default function AdminOrders() {
                         <td style={{ ...S.td, fontWeight: 600 }}>{formatCurrency(order.totalAmount)}</td>
                         <td style={S.td}>
                           <StatusBadge status={order.status} />
+                        </td>
+                        <td style={S.td}>
+                          <SellerQrBadge status={order.sellerQr?.verificationStatus || "not_submitted"} />
                         </td>
                         <td style={{ ...S.td, fontSize: 12, color: "#64748b" }}>{formatDate(order.createdAt)}</td>
                       </tr>
@@ -320,7 +360,7 @@ export default function AdminOrders() {
                   <div key={i} style={S.itemRow}>
                     <div style={{ flex: 1 }}>
                       <div style={{ color: "#e2e8f0", fontSize: 13 }}>
-                        {item.productId?.name || "Product"}
+                        {item.productId?.productName || item.productId?.name || "Product"}
                       </div>
                       <div style={{ color: "#64748b", fontSize: 12 }}>Qty: {item.quantity}</div>
                     </div>
@@ -339,7 +379,7 @@ export default function AdminOrders() {
 
               {/* Shipping Address */}
               {selectedOrder.shippingAddress && (
-                <div>
+                <div style={{ marginBottom: 20 }}>
                   <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
                     Shipping Address
                   </div>
@@ -355,6 +395,68 @@ export default function AdminOrders() {
                   </div>
                 </div>
               )}
+
+              {/* Seller QR Verification */}
+              <div>
+                <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
+                  Seller QR Verification
+                </div>
+                <div style={{ marginBottom: 10 }}>
+                  <SellerQrBadge status={selectedOrder.sellerQr?.verificationStatus || "not_submitted"} />
+                </div>
+
+                {selectedOrder.sellerQr?.proofImageUrl ? (
+                  <div>
+                    <div style={{ ...S.infoLine, marginBottom: 6 }}>
+                      <span style={S.infoLabel}>Packed product:</span>
+                      <span style={S.infoValue}>{selectedOrder.sellerQr?.packingProductName || "N/A"}</span>
+                    </div>
+                    <div style={{ ...S.infoLine, marginBottom: 6 }}>
+                      <span style={S.infoLabel}>SKU/IMEI:</span>
+                      <span style={S.infoValue}>{selectedOrder.sellerQr?.packingSkuOrImei || "N/A"}</span>
+                    </div>
+                    <div style={{ ...S.infoLine, marginBottom: 10 }}>
+                      <span style={S.infoLabel}>Submitted:</span>
+                      <span style={S.infoValue}>
+                        {selectedOrder.sellerQr?.proofSubmittedAt
+                          ? formatDate(selectedOrder.sellerQr.proofSubmittedAt)
+                          : "N/A"}
+                      </span>
+                    </div>
+                    <img
+                      src={selectedOrder.sellerQr.proofImageUrl}
+                      alt="Seller packing proof"
+                      style={S.proofImage}
+                    />
+                    <textarea
+                      placeholder="Verification notes (optional)"
+                      value={verificationNote}
+                      onChange={(e) => setVerificationNote(e.target.value)}
+                      style={S.noteInput}
+                    />
+                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                      <button
+                        disabled={updating}
+                        onClick={() => handleSellerQrVerification(selectedOrder._id, "approve")}
+                        style={{ ...S.statusBtn, background: "rgba(34,197,94,0.15)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.35)" }}
+                      >
+                        ✅ Approve seller QR
+                      </button>
+                      <button
+                        disabled={updating}
+                        onClick={() => handleSellerQrVerification(selectedOrder._id, "reject")}
+                        style={{ ...S.statusBtn, background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.35)" }}
+                      >
+                        ❌ Reject proof
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ color: "#64748b", fontSize: 13 }}>
+                    Seller has not submitted packing proof yet.
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -383,6 +485,24 @@ function InfoBlock({ label, value }) {
       <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>{label}</div>
       <div style={{ fontSize: 13, color: "#e2e8f0" }}>{value}</div>
     </div>
+  );
+}
+
+function SellerQrBadge({ status }) {
+  const key = SELLER_QR_COLORS[status] ? status : "not_submitted";
+  const c = SELLER_QR_COLORS[key];
+  return (
+    <span style={{
+      padding: "3px 10px",
+      borderRadius: 10,
+      fontSize: 11,
+      fontWeight: 600,
+      background: c.bg,
+      color: c.color,
+      border: `1px solid ${c.border}`,
+    }}>
+      🧾 {SELLER_QR_LABELS[key]}
+    </span>
   );
 }
 
@@ -504,6 +624,41 @@ const S = {
   statusBtn: {
     padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
     cursor: "pointer", transition: "opacity 0.2s",
+  },
+  infoLine: {
+    display: "flex",
+    gap: 8,
+    alignItems: "baseline",
+  },
+  infoLabel: {
+    color: "#64748b",
+    fontSize: 12,
+    minWidth: 100,
+  },
+  infoValue: {
+    color: "#e2e8f0",
+    fontSize: 13,
+  },
+  proofImage: {
+    width: "100%",
+    maxHeight: 220,
+    objectFit: "cover",
+    borderRadius: 10,
+    border: "1px solid rgba(255,255,255,0.12)",
+    marginBottom: 10,
+  },
+  noteInput: {
+    width: "100%",
+    minHeight: 70,
+    background: "rgba(255,255,255,0.04)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: 10,
+    padding: "10px 12px",
+    color: "#e2e8f0",
+    fontSize: 13,
+    marginBottom: 10,
+    outline: "none",
+    resize: "vertical",
   },
   itemRow: {
     display: "flex", justifyContent: "space-between", alignItems: "center",

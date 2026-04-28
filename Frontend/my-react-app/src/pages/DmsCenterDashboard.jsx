@@ -123,18 +123,21 @@ export default function DmsCenterDashboard() {
   return (
     <div style={S.page}>
       <div style={S.container}>
-        <div style={S.header}>
-          <div>
-            <h1 style={S.title}>Delivery Center Dashboard</h1>
-            <p style={S.subtitle}>
-              {profile?.branch?.branchName || "Center"} • {profile?.staff?.fullName || ""}
-            </p>
+          <div style={S.header}>
+            <div>
+              <h1 style={S.title}>Delivery Center Dashboard</h1>
+              <p style={S.subtitle}>
+                {profile?.branch?.branchName || "Center"} • {profile?.staff?.fullName || ""}
+              </p>
+            </div>
+            <div style={{ display: "flex", gap: 10 }}>
+              <button style={S.btnPrimary} onClick={() => navigate("/dms/center/scan")} disabled={loading}>
+                Scan Seller QR
+              </button>
+              <button style={S.btnGhost} onClick={load} disabled={loading}>Refresh</button>
+              <button style={S.btnDanger} onClick={handleLogout}>Logout</button>
+            </div>
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
-            <button style={S.btnGhost} onClick={load} disabled={loading}>Refresh</button>
-            <button style={S.btnDanger} onClick={handleLogout}>Logout</button>
-          </div>
-        </div>
 
         {error && <div style={S.error}>{error}</div>}
         {loading && <div style={S.info}>Loading center analytics...</div>}

@@ -7,6 +7,7 @@ import ProductListing from "./pages/ProductListing.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import SellerRegister from "./pages/SellerRegister";
 import SellerDashboard from "./pages/SellerDashboard";
+import SellerOrderQr from "./pages/SellerOrderQr";
 import SellerRestock from "./pages/SellerRestock";
 import Profile from "./pages/Profile";
 import VerifySellerEmail from "./pages/VerifySellerEmail";
@@ -29,6 +30,7 @@ import DmsLogin from "./pages/DmsLogin";
 import DmsRegister from "./pages/DmsRegister";
 import DmsPortalHome from "./pages/DmsPortalHome";
 import DmsCenterDashboard from "./pages/DmsCenterDashboard";
+import DmsQrScanner from "./pages/DmsQrScanner";
 import DmsProtectedRoute from "./components/DmsProtectedRoute";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
@@ -59,6 +61,7 @@ function App() {
           <Route path="/become-seller" element={<SellerRegister />} />
 
           <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          <Route path="/seller/orders/qr" element={<SellerOrderQr />} />
           <Route path="/seller/restock" element={<SellerRestock />} />
           <Route path="/seller/marketing-scheduler" element={<SellerMarketingScheduler />} />
 
@@ -129,6 +132,11 @@ function App() {
           <Route path="/dms/center/dashboard" element={
             <DmsProtectedRoute allowedScopes={["branch", "rider"]}>
               <DmsCenterDashboard />
+            </DmsProtectedRoute>
+          } />
+          <Route path="/dms/center/scan" element={
+            <DmsProtectedRoute allowedScopes={["branch", "rider"]}>
+              <DmsQrScanner />
             </DmsProtectedRoute>
           } />
 

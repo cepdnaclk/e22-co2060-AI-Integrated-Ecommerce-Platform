@@ -109,6 +109,57 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending"
+    },
+
+    // 🧾 Seller fulfillment proof + verification + QR metadata
+    sellerQr: {
+      verificationStatus: {
+        type: String,
+        enum: ["not_submitted", "pending", "approved", "rejected"],
+        default: "not_submitted"
+      },
+      proofImageUrl: {
+        type: String,
+        default: ""
+      },
+      packingProductName: {
+        type: String,
+        default: ""
+      },
+      packingSkuOrImei: {
+        type: String,
+        default: ""
+      },
+      proofSubmittedAt: {
+        type: Date,
+        default: null
+      },
+      proofSubmittedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+      },
+      verificationNote: {
+        type: String,
+        default: ""
+      },
+      verifiedBy: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+      },
+      verifiedAt: {
+        type: Date,
+        default: null
+      },
+      qrPayload: {
+        type: mongoose.Schema.Types.Mixed,
+        default: null
+      },
+      qrGeneratedAt: {
+        type: Date,
+        default: null
+      }
     }
   },
   {
