@@ -30,7 +30,7 @@ import DmsLogin from "./pages/DmsLogin";
 import DmsRegister from "./pages/DmsRegister";
 import DmsPortalHome from "./pages/DmsPortalHome";
 import DmsCenterDashboard from "./pages/DmsCenterDashboard";
-import DmsQrScanner from "./pages/DmsQrScanner";
+import DmsQrScanner from "./pages/DmsQrScanner"; // DMS QR scanner route
 import DmsProtectedRoute from "./components/DmsProtectedRoute";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
