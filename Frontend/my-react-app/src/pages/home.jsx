@@ -40,9 +40,6 @@ export default function Home() {
     // Inside your login.jsx
   const handleLogin = async (e) => {
     e.preventDefault();
-    
-    // ... your existing login logic (API calls to your backend, etc.) ...
-
     // TRIGGER N8N WELCOME EMAIL
     try {
       await fetch('http://localhost:5678/webhook-test/user-login', {
