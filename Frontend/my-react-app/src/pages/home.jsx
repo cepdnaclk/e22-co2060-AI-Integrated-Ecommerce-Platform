@@ -37,6 +37,27 @@ export default function Home() {
     }
   };
 
+    // Inside your login.jsx
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    
+    // ... your existing login logic (API calls to your backend, etc.) ...
+
+    // TRIGGER N8N WELCOME EMAIL
+    try {
+      await fetch('http://localhost:5678/webhook-test/user-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: userEmail, // The email the user entered in your form
+          name: userName,   // The user's name
+          event: "successful_login"
+        }),
+      });
+    } catch (error) {
+      console.error("n8n login trigger failed", error);
+    }
+  };
   return (
     <div className="min-h-screen smooth-bg text-white">
       {/* TOP ROW */}
