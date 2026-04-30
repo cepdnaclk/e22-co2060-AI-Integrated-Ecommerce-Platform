@@ -5,10 +5,37 @@ import CountUp from "../components/CountUp.jsx";
 import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
 import Lottie from "lottie-react";
-import Login from "./login.jsx";
 
 export default function Home() {
   const navigate = useNavigate();
+
+  // Function to send data to your n8n workflow
+  const triggerN8N = async () => {
+    // This URL comes from your n8n Webhook node settings
+    const webhookUrl = "http://localhost:5678/webhook-test/7c1fbaa9-7973-415c-8ccb-e72589f1d779";
+
+    try {
+      const response = await fetch(webhookUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          event_type: "button_click",
+          button_name: "Discover Products",
+          project: "BEETA",
+          user_action: "Initial Discovery",
+          timestamp: new Date().toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        console.log("Successfully sent to n8n!");
+      }
+    } catch (error) {
+      console.error("Error connecting to n8n:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen smooth-bg text-white">
@@ -81,6 +108,7 @@ export default function Home() {
             {(visible) => (
               <div className="pt-14">
                 <button
+                  onClick={triggerN8N} // Triggering the n8n automation here
                   className={`
                     px-6 py-3
                     rounded-2xl
