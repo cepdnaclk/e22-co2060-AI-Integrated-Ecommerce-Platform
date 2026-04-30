@@ -121,135 +121,130 @@ export default function DmsCenterDashboard() {
   };
 
   return (
-    <div style={S.page}>
-      <div style={S.container}>
-          <div style={S.header}>
-            <div>
-              <h1 style={S.title}>Delivery Center Dashboard</h1>
-              <p style={S.subtitle}>
-                {profile?.branch?.branchName || "Center"} • {profile?.staff?.fullName || ""}
-              </p>
-            </div>
-            <div style={{ display: "flex", gap: 10 }}>
-              <button style={S.btnPrimary} onClick={() => navigate("/dms/center/scan")} disabled={loading}>
-                Scan Seller QR
-              </button>
-              <button style={S.btnGhost} onClick={load} disabled={loading}>Refresh</button>
-              <button style={S.btnDanger} onClick={handleLogout}>Logout</button>
-            </div>
+    <div className="min-h-screen bg-slate-950 text-white font-sans p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-md">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight">Delivery Center Dashboard</h1>
+            <p className="text-slate-400 mt-1">
+              {profile?.branch?.branchName || "Center"} • {profile?.staff?.fullName || "Staff"}
+            </p>
           </div>
+          <div className="flex flex-wrap gap-3 w-full md:w-auto">
+            <button 
+              className="flex-1 md:flex-none bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-purple-900/20 active:scale-95 disabled:opacity-50"
+              onClick={() => navigate("/dms/center/scan")} 
+              disabled={loading}
+            >
+              Scan Seller QR
+            </button>
+            <button 
+              className="px-6 py-3 rounded-xl font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition-all active:scale-95 disabled:opacity-50"
+              onClick={load} 
+              disabled={loading}
+            >
+              Refresh
+            </button>
+            <button 
+              className="px-6 py-3 rounded-xl font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all active:scale-95"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
 
-        {error && <div style={S.error}>{error}</div>}
-        {loading && <div style={S.info}>Loading center analytics...</div>}
+        {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 text-sm font-medium">{error}</div>}
+        {loading && <div className="text-slate-500 text-sm animate-pulse">Loading center analytics...</div>}
 
-        <div style={S.metrics}>
-          <Metric label="Shipments Handled" value={dashboard?.shipmentsHandled || 0} />
+        {/* Metrics Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <Metric label="Handled" value={dashboard?.shipmentsHandled || 0} />
           <Metric label="Delivered" value={dashboard?.delivered || 0} />
           <Metric label="Failed" value={dashboard?.failed || 0} />
           <Metric label="Delayed" value={dashboard?.delayed || 0} />
-          <Metric label="Inventory In Branch" value={dashboard?.branchInventory || 0} />
-          <Metric label="On-Time Performance" value={`${dashboard?.onTimePerformance || 0}%`} />
+          <Metric label="Inventory" value={dashboard?.branchInventory || 0} />
+          <Metric label="Performance" value={`${dashboard?.onTimePerformance || 0}%`} color="text-emerald-400" />
         </div>
 
-        <div style={S.twoCol}>
-          <div style={S.card}>
-            <h2 style={S.cardTitle}>Center Shipment Queue</h2>
-            <div style={S.list}>
-              {shipments.slice(0, 12).map((item) => (
-                <div key={item._id} style={S.listItem}>
-                  <div style={{ fontWeight: 700 }}>{item.trackingNumber}</div>
-                  <div style={{ fontSize: 12, color: "#94a3b8" }}>{item.status}</div>
+        {/* Two Column Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Shipment Queue */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+              Center Shipment Queue
+            </h2>
+            <div className="space-y-3">
+              {shipments.slice(0, 10).map((item) => (
+                <div key={item._id} className="bg-white/5 border border-white/5 rounded-xl p-4 hover:bg-white/10 transition-colors">
+                  <div className="font-bold">{item.trackingNumber}</div>
+                  <div className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-bold">{item.status}</div>
                 </div>
               ))}
-              {shipments.length === 0 && <div style={S.empty}>No active center shipments</div>}
+              {shipments.length === 0 && <div className="text-slate-600 text-sm py-8 text-center italic">No active center shipments</div>}
             </div>
           </div>
 
-          <div style={S.card}>
-            <h2 style={S.cardTitle}>{isRider ? "My Rider Queue" : "Rider Assignment Queue"}</h2>
-            <div style={S.list}>
-              {queue.slice(0, 12).map((item) => (
-                <div key={item._id} style={S.listItem}>
-                  <div style={{ fontWeight: 700 }}>{item.deliveryOrderId}</div>
-                  <div style={{ fontSize: 12, color: "#94a3b8" }}>
+          {/* Rider Queue */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-indigo-500"></span>
+              {isRider ? "My Rider Queue" : "Rider Assignment Queue"}
+            </h2>
+            <div className="space-y-3">
+              {queue.slice(0, 10).map((item) => (
+                <div key={item._id} className="bg-white/5 border border-white/5 rounded-xl p-4 hover:bg-white/10 transition-colors">
+                  <div className="font-bold">{item.deliveryOrderId}</div>
+                  <div className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-bold">
                     Position #{item.queuePosition || 0} • {item.status}
                   </div>
                 </div>
               ))}
-              {queue.length === 0 && <div style={S.empty}>No active rider assignments</div>}
+              {queue.length === 0 && <div className="text-slate-600 text-sm py-8 text-center italic">No active rider assignments</div>}
             </div>
           </div>
         </div>
 
+        {/* Rider Management */}
         {canManageRiders && (
-          <div style={S.card}>
-            <h2 style={S.cardTitle}>Register Rider Accounts</h2>
-            <p style={S.cardSubTitle}>
-              Add riders under this center. Registered riders can sign in through the DMS login page.
-            </p>
-            {riderError && <div style={S.error}>{riderError}</div>}
-            {riderSuccess && <div style={S.success}>{riderSuccess}</div>}
-            <form style={S.formGrid} onSubmit={handleRiderRegister}>
-              <input
-                style={S.input}
-                placeholder="Rider full name"
-                value={riderForm.fullName}
-                onChange={handleRiderInputChange("fullName")}
-                required
-              />
-              <input
-                style={S.input}
-                placeholder="Rider email"
-                type="email"
-                value={riderForm.email}
-                onChange={handleRiderInputChange("email")}
-                required
-              />
-              <input
-                style={S.input}
-                placeholder="Phone (optional)"
-                value={riderForm.phone}
-                onChange={handleRiderInputChange("phone")}
-              />
-              <input
-                style={S.input}
-                placeholder="Employee ID (optional)"
-                value={riderForm.employeeId}
-                onChange={handleRiderInputChange("employeeId")}
-              />
-              <input
-                style={S.input}
-                placeholder="Temporary password"
-                type="password"
-                value={riderForm.password}
-                onChange={handleRiderInputChange("password")}
-                required
-              />
-              <input
-                style={S.input}
-                placeholder="Confirm password"
-                type="password"
-                value={riderForm.confirmPassword}
-                onChange={handleRiderInputChange("confirmPassword")}
-                required
-              />
-              <button style={S.btnPrimary} type="submit" disabled={riderSubmitting}>
-                {riderSubmitting ? "Registering rider..." : "Register Rider"}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div className="mb-6">
+              <h2 className="text-xl font-bold">Register Rider Accounts</h2>
+              <p className="text-slate-400 text-sm mt-1">Add new riders to this center. They can then sign in via the portal.</p>
+            </div>
+
+            {riderError && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 text-sm mb-4">{riderError}</div>}
+            {riderSuccess && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 text-sm mb-4">{riderSuccess}</div>}
+
+            <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" onSubmit={handleRiderRegister}>
+              <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50" placeholder="Full Name" value={riderForm.fullName} onChange={handleRiderInputChange("fullName")} required />
+              <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50" placeholder="Email Address" type="email" value={riderForm.email} onChange={handleRiderInputChange("email")} required />
+              <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50" placeholder="Phone Number" value={riderForm.phone} onChange={handleRiderInputChange("phone")} />
+              <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50" placeholder="Employee ID" value={riderForm.employeeId} onChange={handleRiderInputChange("employeeId")} />
+              <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50" placeholder="Password" type="password" value={riderForm.password} onChange={handleRiderInputChange("password")} required />
+              <input className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50" placeholder="Confirm Password" type="password" value={riderForm.confirmPassword} onChange={handleRiderInputChange("confirmPassword")} required />
+              <button className="md:col-span-2 lg:col-span-1 bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl transition-all" type="submit" disabled={riderSubmitting}>
+                {riderSubmitting ? "Registering..." : "Register Rider"}
               </button>
             </form>
 
-            <div style={{ marginTop: 14 }}>
-              <h3 style={S.listTitle}>Center Riders</h3>
-              <div style={S.list}>
+            <div className="mt-10">
+              <h3 className="text-lg font-bold mb-4 text-slate-300">Registered Center Riders</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {riders.map((rider) => (
-                  <div key={rider._id} style={S.listItem}>
-                    <div style={{ fontWeight: 700 }}>{rider.fullName}</div>
-                    <div style={{ fontSize: 12, color: "#94a3b8" }}>
-                      {rider.employeeId} • {rider.email || "No email"} • {rider.status}
+                  <div key={rider._id} className="bg-white/5 border border-white/5 rounded-xl p-4">
+                    <div className="font-bold">{rider.fullName}</div>
+                    <div className="text-xs text-slate-500 mt-1 uppercase tracking-tight truncate">
+                      {rider.employeeId || "No ID"} • {rider.email}
+                    </div>
+                    <div className="mt-2 inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded text-[10px] font-bold uppercase">
+                      {rider.status}
                     </div>
                   </div>
                 ))}
-                {riders.length === 0 && <div style={S.empty}>No riders registered in this center</div>}
+                {riders.length === 0 && <div className="text-slate-600 text-sm py-4 italic">No riders registered yet</div>}
               </div>
             </div>
           </div>
@@ -259,46 +254,11 @@ export default function DmsCenterDashboard() {
   );
 }
 
-function Metric({ label, value }) {
+function Metric({ label, value, color = "text-purple-400" }) {
   return (
-    <div style={S.metricCard}>
-      <div style={S.metricValue}>{value}</div>
-      <div style={S.metricLabel}>{label}</div>
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col justify-center items-center text-center">
+      <div className={`text-2xl font-black ${color}`}>{value}</div>
+      <div className="text-[10px] font-bold uppercase tracking-widest text-slate-500 mt-1">{label}</div>
     </div>
   );
 }
-
-const S = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #020617, #0f172a, #1e1b4b)",
-    color: "#fff",
-    padding: "30px 20px",
-    fontFamily: "'Segoe UI', Arial, sans-serif",
-  },
-  container: { maxWidth: 1300, margin: "0 auto" },
-  header: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, marginBottom: 16 },
-  title: { margin: 0, fontSize: 30, fontWeight: 800 },
-  subtitle: { margin: "6px 0 0", color: "#94a3b8", fontSize: 14 },
-  error: { background: "rgba(239,68,68,0.12)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.3)", borderRadius: 10, padding: "10px 12px", marginBottom: 12 },
-  success: { background: "rgba(34,197,94,0.12)", color: "#86efac", border: "1px solid rgba(34,197,94,0.3)", borderRadius: 10, padding: "10px 12px", marginBottom: 12 },
-  info: { color: "#94a3b8", marginBottom: 12, fontSize: 13 },
-  btnGhost: { background: "rgba(255,255,255,0.06)", color: "#e2e8f0", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, padding: "8px 12px", cursor: "pointer", fontWeight: 700, fontSize: 12 },
-  btnDanger: { background: "rgba(239,68,68,0.14)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.35)", borderRadius: 10, padding: "8px 12px", cursor: "pointer", fontWeight: 700, fontSize: 12 },
-  btnPrimary: { width: "fit-content", background: "linear-gradient(to right, #7e22ce, #a855f7)", color: "#fff", border: "none", borderRadius: 10, padding: "10px 14px", cursor: "pointer", fontWeight: 700, fontSize: 13 },
-  metrics: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, marginBottom: 16 },
-  metricCard: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "12px 14px" },
-  metricValue: { fontSize: 24, fontWeight: 800, color: "#c084fc" },
-  metricLabel: { marginTop: 4, fontSize: 11, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.06em" },
-  twoCol: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 },
-  card: { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: 14 },
-  cardTitle: { margin: "0 0 10px", fontSize: 16, fontWeight: 700 },
-  cardSubTitle: { margin: "0 0 12px", color: "#94a3b8", fontSize: 13 },
-  listTitle: { margin: "0 0 8px", fontSize: 13, fontWeight: 700, color: "#cbd5e1" },
-  formGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 10, alignItems: "center" },
-  input: { width: "100%", background: "rgba(255,255,255,0.06)", color: "#fff", border: "1px solid rgba(255,255,255,0.14)", borderRadius: 10, padding: "10px 12px", fontSize: 13, boxSizing: "border-box" },
-  list: { display: "flex", flexDirection: "column", gap: 8, minHeight: 120 },
-  listItem: { background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 10, padding: "10px 12px" },
-  empty: { color: "#64748b", fontSize: 13, marginTop: 8 },
-};
-

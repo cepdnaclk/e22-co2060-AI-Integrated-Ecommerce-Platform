@@ -49,217 +49,113 @@ export default function DmsLogin() {
 
   if (checking) {
     return (
-      <div style={S.page}>
-        <div style={S.panel}>Checking existing delivery session...</div>
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-400 font-sans">
+        Checking existing delivery session...
       </div>
     );
   }
 
   return (
-    <div style={S.page}>
-      <div style={S.leftPanel}>
-        <h1 style={S.brandTitle}>Delivery Partner Portal</h1>
-        <p style={S.brandText}>
+    <div className="min-h-screen w-full flex flex-col md:flex-row bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e1b4b] text-white font-sans overflow-x-hidden">
+      {/* Left Branding Panel */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center px-8 py-16 md:px-16 md:py-24">
+        <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-purple-200">
+          Delivery Partner Portal
+        </h1>
+        <p className="text-slate-300 text-lg md:text-xl max-w-lg leading-relaxed">
           Login for delivery center staff. Access branch operations, shipment workflow, scanning queue, and center performance.
         </p>
+        <div className="mt-8 flex gap-4 opacity-50 text-sm font-bold uppercase tracking-widest">
+          <span>Speed</span>
+          <span>•</span>
+          <span>Safety</span>
+          <span>•</span>
+          <span>Scale</span>
+        </div>
       </div>
 
-      <div style={S.rightPanel}>
-        <form style={S.form} onSubmit={handleSubmit}>
-          <h2 style={S.formTitle}>DMS Sign In</h2>
-          <p style={S.formSub}>Use your delivery center account credentials.</p>
-
-          {registrationSuccess && (
-            <div style={S.success}>Registration complete. You can now sign in.</div>
-          )}
-          {error && <div style={S.error}>{error}</div>}
-
-          <label style={S.label}>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={S.input}
-            placeholder="courier.user@company.com"
-            required
-          />
-
-          <label style={S.label}>Password</label>
-          <div style={S.passwordWrap}>
-            <input
-              type={showPassword ? "text" : "password"}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={{ ...S.input, marginBottom: 0 }}
-              placeholder="Enter password"
-              required
-            />
-            <button type="button" style={S.showBtn} onClick={() => setShowPassword((v) => !v)}>
-              {showPassword ? "Hide" : "Show"}
-            </button>
+      {/* Right Login Panel */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-6 md:p-12">
+        <form 
+          className="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-8 md:p-10 backdrop-blur-md shadow-2xl" 
+          onSubmit={handleSubmit}
+        >
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-2">DMS Sign In</h2>
+            <p className="text-slate-400 text-sm">Use your delivery center account credentials.</p>
           </div>
 
-          <button type="submit" style={S.loginBtn} disabled={loading}>
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
+          {registrationSuccess && (
+            <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 text-sm mb-6">
+              Registration complete. You can now sign in.
+            </div>
+          )}
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 text-sm mb-6">
+              {error}
+            </div>
+          )}
 
-          <Link to="/dms/register" style={S.secondaryBtn}>
-            Register New Delivery Center
-          </Link>
+          <div className="space-y-5">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
+                Email Address
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all text-white placeholder:text-slate-600"
+                placeholder="courier.user@company.com"
+                required
+              />
+            </div>
 
-          <span style={S.helpLink}>
-            Need account activation? Contact platform admin.
-          </span>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">
+                Secure Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all text-white placeholder:text-slate-600"
+                  placeholder="Enter password"
+                  required
+                />
+                <button 
+                  type="button" 
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-300 font-bold text-xs"
+                  onClick={() => setShowPassword((v) => !v)}
+                >
+                  {showPassword ? "HIDE" : "SHOW"}
+                </button>
+              </div>
+            </div>
+
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-purple-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed transform active:scale-[0.98]"
+            >
+              {loading ? "SIGNING IN..." : "SIGN IN TO PORTAL"}
+            </button>
+
+            <div className="pt-4 space-y-4">
+              <Link 
+                to="/dms/register" 
+                className="block w-full text-center border border-white/10 hover:bg-white/5 text-slate-300 font-bold py-3 rounded-xl transition-all"
+              >
+                Register New Delivery Center
+              </Link>
+              <p className="text-center text-xs text-slate-500">
+                Need account activation? <span className="text-purple-400 cursor-pointer">Contact platform admin</span>
+              </p>
+            </div>
+          </div>
         </form>
       </div>
     </div>
   );
 }
-
-const S = {
-  page: {
-    minHeight: "100vh",
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    background: "linear-gradient(135deg, #020617, #0f172a, #1e1b4b)",
-    color: "#fff",
-    fontFamily: "'Segoe UI', Arial, sans-serif",
-  },
-  panel: {
-    margin: "auto",
-    color: "#94a3b8",
-  },
-  leftPanel: {
-    padding: "72px 56px",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  brandTitle: {
-    margin: 0,
-    fontSize: 40,
-    fontWeight: 800,
-    lineHeight: 1.2,
-  },
-  brandText: {
-    marginTop: 18,
-    color: "#cbd5e1",
-    fontSize: 16,
-    maxWidth: 520,
-    lineHeight: 1.6,
-  },
-  rightPanel: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-  },
-  form: {
-    width: "100%",
-    maxWidth: 430,
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 16,
-    padding: "28px 24px",
-  },
-  formTitle: {
-    margin: 0,
-    fontSize: 24,
-    fontWeight: 800,
-  },
-  formSub: {
-    marginTop: 6,
-    marginBottom: 18,
-    color: "#94a3b8",
-    fontSize: 13,
-  },
-  error: {
-    background: "rgba(239,68,68,0.12)",
-    border: "1px solid rgba(239,68,68,0.3)",
-    borderRadius: 10,
-    color: "#fca5a5",
-    fontSize: 13,
-    padding: "10px 12px",
-    marginBottom: 12,
-  },
-  success: {
-    background: "rgba(34,197,94,0.12)",
-    border: "1px solid rgba(34,197,94,0.3)",
-    borderRadius: 10,
-    color: "#86efac",
-    fontSize: 13,
-    padding: "10px 12px",
-    marginBottom: 12,
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: 700,
-    letterSpacing: "0.05em",
-    textTransform: "uppercase",
-    color: "#94a3b8",
-    marginBottom: 6,
-    display: "block",
-  },
-  input: {
-    width: "100%",
-    marginBottom: 14,
-    padding: "11px 12px",
-    fontSize: 14,
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.06)",
-    color: "#fff",
-    boxSizing: "border-box",
-    outline: "none",
-  },
-  passwordWrap: {
-    position: "relative",
-    marginBottom: 14,
-  },
-  showBtn: {
-    position: "absolute",
-    right: 8,
-    top: 8,
-    background: "none",
-    border: "none",
-    color: "#93c5fd",
-    fontSize: 12,
-    cursor: "pointer",
-    fontWeight: 700,
-    padding: "4px 6px",
-  },
-  loginBtn: {
-    width: "100%",
-    padding: "11px 12px",
-    border: "none",
-    borderRadius: 10,
-    cursor: "pointer",
-    color: "#fff",
-    fontWeight: 800,
-    background: "linear-gradient(to right, #7e22ce, #a855f7)",
-    fontSize: 14,
-    marginBottom: 10,
-  },
-  secondaryBtn: {
-    width: "100%",
-    display: "inline-block",
-    textAlign: "center",
-    padding: "10px 12px",
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.2)",
-    color: "#cbd5e1",
-    textDecoration: "none",
-    fontWeight: 700,
-    fontSize: 13,
-    boxSizing: "border-box",
-    background: "rgba(255,255,255,0.02)",
-  },
-  helpLink: {
-    display: "inline-block",
-    marginTop: 12,
-    color: "#93c5fd",
-    textDecoration: "none",
-    fontSize: 12,
-  },
-};
-

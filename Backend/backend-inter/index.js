@@ -47,14 +47,7 @@ app.use(express.json());
 // CORS configuration
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5180",
-      "http://192.168.248.238:5173",
-      "http://192.168.248.238:5180",
-      "http://172.20.10.9:5173",
-      "http://172.20.10.9:5180"
-    ],
+    origin: true, // Temporarily allow all for debugging
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true

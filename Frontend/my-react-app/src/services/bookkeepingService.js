@@ -1,5 +1,5 @@
 const BOOKKEEPING_API_BASE_URL =
-  import.meta.env.VITE_BOOKKEEPING_API_BASE_URL || "http://localhost:4020";
+  import.meta.env.VITE_BOOKKEEPING_API_BASE_URL || "/bookkeeping-api";
 
 const parseError = async (response) => {
   try {
