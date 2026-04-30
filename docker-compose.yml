@@ -137,18 +137,23 @@ services:
         condition: service_healthy
       bookkeeping-service:
         condition: service_healthy
+    env_file:
+      - .\Backend\backend-inter\.env
     environment:
       PORT: 3000
-      MONGO_URI: ${BACKEND_MONGO_URI:-mongodb://host.docker.internal:27017/ecommerce}
-      JWT_SECRET: change-this-jwt-secret-in-production
+      MONGO_URI: mongodb://mongodb:27017/ecommerce
+      JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
       FRONTEND_URL: http://localhost:5173
-      ENABLE_FACEBOOK_MODULE: "false"
+      ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-false}
       FACE_RECOGNITION_ENABLED: "true"
       FACE_SERVICE_URL: http://face-service:5000
       FACE_SIMILARITY_THRESHOLD: "0.45"
       RESTOCK_ML_API: http://restock-ml:8001
       RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
       BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
+    volumes:
+      - .\Backend\backend-inter:/app
+      - /app/node_modules
     ports:
       - "3000:3000"
 
@@ -162,6 +167,9 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    volumes:
+      - .\Frontend\my-react-app:/app
+      - /app/node_modules
     ports:
       - "5173:80"
 

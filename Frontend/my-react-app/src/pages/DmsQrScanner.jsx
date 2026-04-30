@@ -14,7 +14,7 @@ export default function DmsQrScanner() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const barcodeDetectorAvailable = true; // html5-qrcode is a polyfill/library that works in most browsers
+  const isSecure = window.isSecureContext || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 
   const stopCamera = useCallback(async () => {
     if (scannerRef.current) {
@@ -71,6 +71,10 @@ export default function DmsQrScanner() {
   const startCamera = () => {
     setError("");
     setSuccess("");
+    if (!isSecure) {
+      setError("Camera access requires a Secure Context (HTTPS or localhost). Please check your connection.");
+      return;
+    }
     setCameraActive(true);
   };
 
@@ -79,22 +83,41 @@ export default function DmsQrScanner() {
     const initScanner = async () => {
       if (cameraActive) {
         try {
+          // Clear container to prevent "Already scanning" issues
+          const container = document.getElementById("reader-container");
+          if (container) container.innerHTML = "";
+
           const scanner = new Html5Qrcode("reader-container");
           scannerRef.current = scanner;
-          await scanner.start(
-            { facingMode: "environment" },
-            {
-              fps: 10,
-              qrbox: { width: 250, height: 250 },
-            },
-            (decodedText) => {
+
+          // Constraints with fallback
+          const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0
+          };
+
+          try {
+            // Try back camera first
+            await scanner.start({ facingMode: "environment" }, config, (decodedText) => {
               if (isMounted) submitQr(decodedText, "camera");
-            },
-            () => {}
-          );
+            });
+          } catch (firstErr) {
+            console.warn("Back camera failed, trying any camera...", firstErr);
+            // Fallback to any available camera
+            await scanner.start({ facingMode: "user" }, config, (decodedText) => {
+              if (isMounted) submitQr(decodedText, "camera");
+            });
+          }
         } catch (err) {
           if (isMounted) {
-            setError(err.message || "Failed to start camera scanner.");
+            let msg = err.message || "Failed to start camera scanner.";
+            if (msg.includes("Permission")) {
+              msg = "Camera permission denied. Please allow camera access in your browser settings.";
+            } else if (msg.includes("NotFound")) {
+              msg = "No camera found on this device.";
+            }
+            setError(msg);
             setCameraActive(false);
           }
         }
@@ -109,7 +132,7 @@ export default function DmsQrScanner() {
         scannerRef.current.stop().catch((e) => console.error("Cleanup stop error", e));
       }
     };
-  }, [cameraActive, submitQr]);
+  }, [cameraActive, submitQr, isSecure]);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -171,9 +194,9 @@ export default function DmsQrScanner() {
             <p style={S.cardText}>
               Position seller QR inside camera view. Scan runs automatically.
             </p>
-            {!barcodeDetectorAvailable ? (
+            {!isSecure ? (
               <div style={S.info}>
-                Camera QR detection is not available in this browser. Use manual QR text input.
+                Camera access is restricted in non-secure contexts. Please use HTTPS or localhost.
               </div>
             ) : null}
             <div style={S.videoWrap} id="reader-container">
