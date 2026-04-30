@@ -1,14 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { Html5Qrcode } from "html5-qrcode";
 import { dmsService } from "../services/dmsService";
 
 export default function DmsQrScanner() {
-  const videoRef = useRef(null);
-  const streamRef = useRef(null);
-  const detectorRef = useRef(null);
-  const intervalRef = useRef(null);
-  const scanFrameBusyRef = useRef(false);
-
+  const scannerRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [cameraActive, setCameraActive] = useState(false);
@@ -18,23 +14,18 @@ export default function DmsQrScanner() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const barcodeDetectorAvailable =
-    typeof window !== "undefined" &&
-    "BarcodeDetector" in window &&
-    Boolean(navigator.mediaDevices?.getUserMedia);
+  const barcodeDetectorAvailable = true; // html5-qrcode is a polyfill/library that works in most browsers
 
-  const stopCamera = useCallback(() => {
-    scanFrameBusyRef.current = false;
-    if (intervalRef.current) {
-      window.clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
-    }
-    if (videoRef.current) {
-      videoRef.current.srcObject = null;
+  const stopCamera = useCallback(async () => {
+    if (scannerRef.current) {
+      try {
+        if (scannerRef.current.isScanning) {
+          await scannerRef.current.stop();
+        }
+      } catch (err) {
+        console.error("Failed to stop scanner:", err);
+      }
+      scannerRef.current = null;
     }
     setCameraActive(false);
   }, []);
@@ -66,7 +57,7 @@ export default function DmsQrScanner() {
         setManualQrText(qrText);
         setSuccess(result?.message || "QR scanned successfully.");
         if (source === "camera") {
-          stopCamera();
+          await stopCamera();
         }
       } catch (err) {
         setError(err.message || "Failed to scan seller QR");
@@ -77,63 +68,48 @@ export default function DmsQrScanner() {
     [scanBusy, stopCamera]
   );
 
-  const startCamera = useCallback(async () => {
-    if (!barcodeDetectorAvailable) {
-      setError("Camera QR scanning is not supported on this browser. Use manual QR text input.");
-      return;
-    }
-
+  const startCamera = () => {
     setError("");
     setSuccess("");
+    setCameraActive(true);
+  };
 
-    try {
-      if (!detectorRef.current) {
-        detectorRef.current = new window.BarcodeDetector({ formats: ["qr_code"] });
-      }
-
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" },
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-        },
-        audio: false,
-      });
-
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
-      }
-
-      setCameraActive(true);
-      intervalRef.current = window.setInterval(async () => {
-        if (scanFrameBusyRef.current || scanBusy || !videoRef.current || !detectorRef.current) {
-          return;
-        }
-
-        if (videoRef.current.readyState < 2) {
-          return;
-        }
-
-        scanFrameBusyRef.current = true;
+  useEffect(() => {
+    let isMounted = true;
+    const initScanner = async () => {
+      if (cameraActive) {
         try {
-          const codes = await detectorRef.current.detect(videoRef.current);
-          const qrCode = codes?.find((item) => item?.rawValue);
-          if (qrCode?.rawValue) {
-            await submitQr(qrCode.rawValue, "camera");
+          const scanner = new Html5Qrcode("reader-container");
+          scannerRef.current = scanner;
+          await scanner.start(
+            { facingMode: "environment" },
+            {
+              fps: 10,
+              qrbox: { width: 250, height: 250 },
+            },
+            (decodedText) => {
+              if (isMounted) submitQr(decodedText, "camera");
+            },
+            () => {}
+          );
+        } catch (err) {
+          if (isMounted) {
+            setError(err.message || "Failed to start camera scanner.");
+            setCameraActive(false);
           }
-        } catch {
-          // Ignore frame-level detection errors and keep scanning.
-        } finally {
-          scanFrameBusyRef.current = false;
         }
-      }, 700);
-    } catch (err) {
-      setError(err.message || "Failed to start camera scanner.");
-      stopCamera();
-    }
-  }, [barcodeDetectorAvailable, scanBusy, stopCamera, submitQr]);
+      }
+    };
+
+    initScanner();
+
+    return () => {
+      isMounted = false;
+      if (scannerRef.current && scannerRef.current.isScanning) {
+        scannerRef.current.stop().catch((e) => console.error("Cleanup stop error", e));
+      }
+    };
+  }, [cameraActive, submitQr]);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -151,11 +127,6 @@ export default function DmsQrScanner() {
     loadProfile();
   }, []);
 
-  useEffect(() => {
-    return () => {
-      stopCamera();
-    };
-  }, [stopCamera]);
 
   const handleManualSubmit = async (event) => {
     event.preventDefault();
@@ -205,8 +176,7 @@ export default function DmsQrScanner() {
                 Camera QR detection is not available in this browser. Use manual QR text input.
               </div>
             ) : null}
-            <div style={S.videoWrap}>
-              <video ref={videoRef} style={S.video} muted playsInline />
+            <div style={S.videoWrap} id="reader-container">
               {!cameraActive ? <div style={S.videoOverlay}>Camera is idle</div> : null}
             </div>
           </div>
