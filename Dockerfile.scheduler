@@ -1,0 +1,39 @@
+# ============================================================================
+# Optional Scheduler Dockerfile - For automated daily pipeline execution
+# Use this alongside the main FastAPI container to run pipeline daily
+# ============================================================================
+
+FROM python:3.11-slim as builder
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt && \
+    pip install --user --no-cache-dir schedule
+
+# ============================================================================
+# Runtime Stage
+# ============================================================================
+FROM python:3.11-slim
+
+WORKDIR /app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH=/root/.local/bin:$PATH
+
+# Copy dependencies
+COPY --from=builder /root/.local /root/.local
+
+# Copy application
+COPY . .
+
+# Create directories
+RUN mkdir -p /app/storage /app/output /app/logs
+
+# Run scheduler
+CMD ["python", "scheduler.py"]

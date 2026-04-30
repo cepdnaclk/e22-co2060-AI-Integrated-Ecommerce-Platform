@@ -15,3 +15,5 @@ def root():
         simplified_data = [{"Keyword": item["Keyword"], "GrowthRate": item["GrowthRate"]} for item in json.load(f)] 
 
     return {"top3": simplified_data}
+
+    #    uvicorn app.main:app --reload
