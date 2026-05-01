@@ -42,15 +42,25 @@ export default function AdminProtectedRoute({ children }) {
           } else {
             setAuthState("unauthorized");
           }
-        } else {
-          // Token invalid or expired
+        } else if (res.status === 401 || res.status === 403) {
+          // Token explicitly rejected by the server — clear it and redirect
           localStorage.removeItem("adminToken");
           localStorage.removeItem("adminUser");
           setAuthState("unauthorized");
+        } else {
+          // Server returned a non-auth error (5xx, etc.) — don't log the user out.
+          // If we have a token, trust it optimistically to avoid spurious logouts
+          // that cause the login-redirect loop on mobile HTTPS.
+          console.warn("Admin verify returned unexpected status:", res.status);
+          setAuthState("authorized");
         }
       } catch (error) {
-        console.error("Admin auth verification failed:", error);
-        setAuthState("unauthorized");
+        // Network/fetch error (self-signed cert not yet accepted, proxy hiccup, etc.)
+        // Do NOT clear the token or redirect — that causes the login loop on mobile.
+        // If a token exists, allow access optimistically; the backend will reject
+        // the token on any actual API call if it is invalid.
+        console.warn("Admin auth verification network error (non-fatal):", error.message);
+        setAuthState("authorized");
       }
     };
 
