@@ -51,7 +51,7 @@ export function createFirebaseLogin({
           role: user.role,
         },
         process.env.JWT_SECRET,
-        { expiresIn: "1h" }
+        { expiresIn: "8h" }
       );
 
       user.token = appToken;
@@ -61,7 +61,10 @@ export function createFirebaseLogin({
         message: "Login successful",
         token: appToken,
         user: {
+          id: user._id,
           email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
           role: user.role,
           image: user.image,
         },

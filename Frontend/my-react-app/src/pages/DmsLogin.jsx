@@ -15,7 +15,7 @@ export default function DmsLogin() {
 
   useEffect(() => {
     const verifyExistingSession = async () => {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("dms_token");
       if (!token) {
         setChecking(false);
         return;

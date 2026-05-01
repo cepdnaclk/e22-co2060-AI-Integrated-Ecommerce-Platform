@@ -4,7 +4,7 @@ const DMS_API_BASE = `${API_BASE_URL}/api/dms`;
 const AUTH_API_BASE = `${API_BASE_URL}/api/auth`;
 
 function getDmsAuthToken() {
-  return localStorage.getItem("token");
+  return localStorage.getItem("dms_token");
 }
 
 function toQueryString(params = {}) {
@@ -62,10 +62,10 @@ async function plainRequest(url, { method = "GET", body } = {}) {
 
 function persistDmsSession(data) {
   if (data?.token) {
-    localStorage.setItem("token", data.token);
+    localStorage.setItem("dms_token", data.token);
   }
   if (data?.user) {
-    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("dms_user", JSON.stringify(data.user));
   }
 }
 
@@ -94,8 +94,8 @@ export const dmsService = {
 
   clearPortalSession() {
     localStorage.removeItem("dmsPortalUser");
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("dms_token");
+    localStorage.removeItem("dms_user");
   },
 
   registerCourier(payload) {

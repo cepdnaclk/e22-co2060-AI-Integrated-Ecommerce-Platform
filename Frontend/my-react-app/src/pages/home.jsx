@@ -21,34 +21,39 @@ const categories = [
 export default function Home() {
   const navigate = useNavigate();
   const [showCategories, setShowCategories] = useState(false);
-  const [user, setUser] = useState(null);
+
+  // ✅ Initialize user immediately from localStorage (no flash of logged-out UI)
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
+
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isSeller, setIsSeller] = useState(false);
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Failed to parse user from localStorage", err);
-      }
-    }
-  }, []);
-
-  // ✅ Check on mount if current user has a registered seller account
+  // ✅ Check if current user has a registered seller account
+  // Re-runs when user changes (e.g. after login navigates here)
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!token || !user) {
+      setIsSeller(false);
+      return;
+    }
 
     fetch(`${API_BASE_URL}/api/sellers/me`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         if (res.ok) setIsSeller(true);
+        else setIsSeller(false);
       })
-      .catch(() => { }); // silently ignore if not a seller
-  }, []);
+      .catch((err) => {
+        console.warn("Seller check failed (may be HTTPS proxy issue):", err.message);
+        setIsSeller(false);
+      });
+  }, [user]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -177,9 +182,10 @@ export default function Home() {
                 My Account
               </span>
               <img
-                src={user.image || `https://ui-avatars.com/api/?name=${user.name || user.firstName || "User"}&background=0D8ABC&color=fff`}
+                src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.firstName || user.name || user.email || "User")}&background=0D8ABC&color=fff`}
                 alt="Profile"
                 className="w-10 h-10 rounded-full border-2 border-white/30 object-cover bg-white"
+                referrerPolicy="no-referrer"
               />
 
               {/* Dropdown */}
@@ -202,7 +208,7 @@ export default function Home() {
                   >
                     <div className="px-5 py-3 text-sm text-gray-200 border-b border-white/10">
                       Welcome, <br />
-                      <span className="font-semibold text-white truncate block">{user.name || "User"}</span>
+                      <span className="font-semibold text-white truncate block">{user.firstName || user.name || user.email || "User"}</span>
                     </div>
 
                     <div

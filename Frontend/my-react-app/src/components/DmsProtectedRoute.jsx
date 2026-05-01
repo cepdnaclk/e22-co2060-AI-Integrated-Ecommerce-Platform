@@ -12,7 +12,7 @@ export default function DmsProtectedRoute({ children, allowedScopes = ["branch",
   useEffect(() => {
     const verify = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("dms_token");
         if (!token) {
           setState("unauthorized");
           return;
