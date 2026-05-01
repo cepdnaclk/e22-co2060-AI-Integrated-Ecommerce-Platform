@@ -25,8 +25,7 @@ WORKDIR /app
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PATH=/root/.local/bin:$PATH \
-    PORT=8000
+    PATH=/root/.local/bin:$PATH
 
 # Copy Python packages from builder
 COPY --from=builder /root/.local /root/.local
@@ -37,12 +36,12 @@ COPY . .
 # Create necessary directories
 RUN mkdir -p /app/storage /app/output /app/logs
 
-# Expose port (default 8000)
-EXPOSE ${PORT}
+# Expose port (flexible for Railway and local)
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:${PORT}/', timeout=5)" || exit 1
+    CMD python -c "import requests; requests.get('http://localhost:8000/', timeout=5)" || exit 1
 
 # Default command: Run FastAPI server
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD sh -c "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"
