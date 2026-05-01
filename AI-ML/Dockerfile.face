@@ -1,0 +1,23 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Runtime libs required by OpenCV/DeepFace on Debian slim
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libglib2.0-0 \
+    libgl1 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libxcb1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# DeepFace + TensorFlow pull many binary wheels; keep image lean and deterministic.
+COPY face_requirements.txt ./
+RUN pip install --no-cache-dir -r face_requirements.txt
+
+COPY app.py embedding_cache.py face_engine.py ./
+
+EXPOSE 5000
+
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "5000", "--workers", "1"]

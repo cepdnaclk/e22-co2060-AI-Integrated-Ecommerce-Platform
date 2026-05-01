@@ -3,14 +3,29 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 
-// Routers
+// ================== ROUTERS ==================
 import authRouter from "./router/authRouter.js";
+import adminAuthRouter from "./router/adminAuthRouter.js"; // ✅ Admin Auth
 import aiRouter from "./router/aiRouter.js";
 import productRouter from "./router/productRouter.js";
-import sellerOfferRouter from "./router/sellerOfferRouter.js"; // ✅ NEW
+import sellerOfferRouter from "./router/sellerOfferRouter.js";
+import cartRouter from "./router/cartRouter.js";      // ✅ Cart
+import orderRouter from "./router/orderRouter.js";
+import exportRouter from "./router/exportRouter.js";   // ✅ Order
+import sellerRouter from "./router/sellerRouter.js"; //seller router
+import userRouter from "./router/userRouter.js"; // ✅ Users
+import chatRouter from "./router/chatRouter.js"; // ✅ AI Chatbot
+import searchRouter from "./router/searchRouter.js"; // ✅ Smart Search
+import inventoryRouter from "./router/inventoryRouter.js"; // ✅ Inventory Management
+import adminProductRouter from "./router/adminProductRouter.js"; // ✅ Admin Product Management
+import adminOrderRouter from "./router/adminOrderRouter.js"; // ✅ Admin Order Management
+import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority ML
+import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
+import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
 
-// Cron jobs
+// ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
+import "./cron/graphRebuildJob.js";
 
 // ================== CONFIG ==================
 dotenv.config();
@@ -26,16 +41,13 @@ const app = express();
 
 // ================== MIDDLEWARE ==================
 
-// Parse JSON bodies
+// Parse JSON request bodies
 app.use(express.json());
 
 // CORS configuration
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://192.168.248.238:5173"
-    ],
+    origin: true, // Temporarily allow all for debugging
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -45,27 +57,68 @@ app.use(
 // ================== TOKEN DEBUG (OPTIONAL) ==================
 app.use((req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (authHeader) {
     console.log("🔐 Authorization Header:", authHeader);
   }
-
   next();
 });
 
 // ================== ROUTES ==================
+app.use("/api/chat", chatRouter);
 
-// Auth routes
+// Auth (login, register)
 app.use("/api/auth", authRouter);
 
-// AI routes
+// 🔐 Admin Authentication (separate login for admins)
+app.use("/api/admin/auth", adminAuthRouter);
+
+// AI features
 app.use("/api/ai", aiRouter);
 
-// Product routes (global catalog + browsing)
+// Product catalog (browse products)
 app.use("/api/products", productRouter);
 
-// ✅ Seller Offer routes (price, stock, seller-specific)
+//seller profile
+app.use("/api/sellers", sellerRouter);
+
+// Seller offers (price, stock per seller)
 app.use("/api/seller-offers", sellerOfferRouter);
+
+// 🔍 Smart Search (Products + Variants + Offers)
+app.use("/api/search", searchRouter);
+
+// 👤 Users
+app.use("/api/users", userRouter);
+
+// 🛒 Cart (buyer side)
+app.use("/api/cart", cartRouter);
+
+// 📦 Orders (checkout & order history)
+app.use("/api/orders", orderRouter);
+
+
+app.use("/api/export", exportRouter);
+
+// 📦 Admin Inventory Management
+app.use("/api/admin/inventory", inventoryRouter);
+
+// 📦 Admin Product Management (CRUD with auth)
+app.use("/api/admin/products", adminProductRouter);
+
+// 📋 Admin Order Management (view & track)
+app.use("/api/admin/orders", adminOrderRouter);
+
+// 🤖 Admin Restock Priority ML Scoring
+app.use("/api/admin/restock", restockRouter);
+
+// 🧭 Product Recommendations (Dijkstra)
+app.use("/api/recommendations", recommendationRouter);
+// 🚚 Delivery Management System
+app.use("/api/dms", dmsRouter);
+if ((process.env.ENABLE_FACEBOOK_MODULE || "false").toLowerCase() === "true") {
+  const { default: facebookRouter } = await import("./router/facebookRouter.js");
+  app.use("/api/facebook", facebookRouter);
+}
 
 // ================== TEST ROUTES ==================
 

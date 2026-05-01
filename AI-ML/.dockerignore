@@ -1,0 +1,14 @@
+.venv
+venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.log
+restock_ml/.venv
+restock_ml/venv
+restock_ml/__pycache__
+restock_ml/data
+restock_ml/logs
+restock_ml/reports
+restock_ml/restock.db

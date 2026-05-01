@@ -12,8 +12,14 @@ const sellerOfferSchema = new mongoose.Schema(
     /* 🏪 Seller business (NOT User) */
     sellerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Seller", // ✅ FIXED
+      ref: "Seller",
       required: true,
+    },
+
+    /* 🎨 Variants offered by this seller (multi-select, e.g. Black 128GB, Blue 256GB) */
+    variantIds: {
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "ProductVariant" }],
+      default: [],
     },
 
     /* 🏷️ Cached seller name */
@@ -47,7 +53,13 @@ const sellerOfferSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    
+
+
+    /* 🖼️ Seller offer image (uploaded separately) */
+    image: {
+      type: String,
+      default: "",
+    },
 
     discountPercentage: {
       type: Number,
