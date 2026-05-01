@@ -114,6 +114,7 @@ const Login = ({ onClose }) => {
 
   return (
     <div className="min-h-screen w-screen grid grid-cols-1 md:grid-cols-2 bg-blue-100">
+      
 
       {/* LEFT PANEL */}
       <div className="relative flex flex-col justify-center px-12 text-white bg-gradient-to-br from-[#0d1424] via-[#072454] to-[#1945a5]">
