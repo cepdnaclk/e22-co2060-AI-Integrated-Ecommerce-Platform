@@ -1,0 +1,174 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: ecommerce-mongodb
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  restock-ml:
+    build:
+      context: .\AI-ML\restock_ml
+      dockerfile: Dockerfile
+    container_name: restock-ml-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  recommendation-engine:
+    build:
+      context: .\AI-ML
+      dockerfile: Dockerfile.recommendation
+    container_name: recommendation-engine
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      RECOMMENDER_MONGO_URI: ${RECOMMENDER_MONGO_URI:-mongodb://host.docker.internal:27017}
+      RECOMMENDER_DB_NAME: ecommerce
+      RECOMMENDER_GRAPH_REBUILD_HOURS: 24
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  face-service:
+    build:
+      context: .\AI-ML
+      dockerfile: Dockerfile.face
+    container_name: face-recognition-service
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 45s
+
+  bookkeeping-service:
+    build:
+      context: .\Backend\bookkeeping-service
+      dockerfile: Dockerfile
+    container_name: bookkeeping-service
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      PORT: 4020
+      MONGO_URI: mongodb://mongodb:27017/bookkeeping_service
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_REQUIRED: "true"
+      INLINE_EVENT_PROCESSING: "true"
+      FRONTEND_ORIGIN: http://localhost:5173,http://127.0.0.1:5173
+    ports:
+      - "4020:4020"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4020/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  bookkeeping-worker:
+    build:
+      context: .\Backend\bookkeeping-service
+      dockerfile: Dockerfile
+    container_name: bookkeeping-worker
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/bookkeeping_service
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_REQUIRED: "true"
+      INLINE_EVENT_PROCESSING: "false"
+    command: ["npm", "run", "start:worker"]
+
+  backend:
+    build:
+      context: .\Backend\backend-inter
+      dockerfile: Dockerfile
+    container_name: ecommerce-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      restock-ml:
+        condition: service_healthy
+      recommendation-engine:
+        condition: service_healthy
+      face-service:
+        condition: service_healthy
+      bookkeeping-service:
+        condition: service_healthy
+    env_file:
+      - .\Backend\backend-inter\.env
+    environment:
+      PORT: 3000
+      MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/?appName=Cluster0}
+      JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
+      FRONTEND_URL: http://localhost:5173
+      ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-false}
+      FACE_RECOGNITION_ENABLED: "true"
+      FACE_SERVICE_URL: http://face-service:5000
+      FACE_SIMILARITY_THRESHOLD: "0.45"
+      RESTOCK_ML_API: http://restock-ml:8001
+      RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
+      BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
+    volumes:
+      - .\Backend\backend-inter:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+
+  frontend:
+    image: node:20-slim
+    container_name: ecommerce-frontend
+    working_dir: /app
+    restart: unless-stopped
+    depends_on:
+      - backend
+    volumes:
+      - .\Frontend\my-react-app:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
+
+volumes:
+  mongo_data:

@@ -15,7 +15,8 @@ const userSchema = new mongoose.Schema(
 
     lastName: {
       type: String,
-      required: true
+      trim: true,
+      default: ""
     },
 
     password: {
@@ -26,7 +27,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       required: true,
-      enum: ["customer", "seller", "admin"], // ✅ seller added
+      enum: ["customer", "seller", "admin", "ceo"],
       default: "customer"
     },
 
@@ -47,9 +48,36 @@ const userSchema = new mongoose.Schema(
       default: "/images/default-profile.png"
     },
 
+    phone: { type: String, default: "" },
+    dateOfBirth: { type: String, default: "" },
+    gender: { type: String, enum: ["male", "female", "other", ""], default: "" },
+    address: { type: String, default: "" },
+    addressLocation: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
+      placeId: { type: String, default: "" },
+      provider: { type: String, default: "" },
+      accuracy: { type: Number, default: null },
+      timestamp: { type: String, default: "" },
+      country: { type: String, default: "" },
+      state: { type: String, default: "" },
+      city: { type: String, default: "" },
+      postalCode: { type: String, default: "" },
+      street: { type: String, default: "" },
+      formattedAddress: { type: String, default: "" },
+      verified: { type: Boolean, default: false },
+    },
+    bio: { type: String, default: "" },
+
     token: {
       type: String,
       default: null
+    },
+
+    // Face recognition embedding (admin only, nullable)
+    faceEmbedding: {
+      type: [Number],
+      default: null,
     }
   },
   { timestamps: true }

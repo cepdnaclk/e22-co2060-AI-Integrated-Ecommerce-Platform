@@ -36,7 +36,7 @@ import Seller from "../models/seller.js";
  */
 export async function addSellerOffer(req, res) {
   try {
-    const { productId, price, stock, warranty } = req.body;
+    const { productId, variantIds, price, stock, warranty, discountPercentage, deliveryOptions, image } = req.body;
 
     // 🔍 Find seller profile for logged-in user
     const seller = await Seller.findOne({ userId: req.user.id });
@@ -49,12 +49,16 @@ export async function addSellerOffer(req, res) {
 
     // 🏷️ Create new seller offer
     const offer = await sellerOfferModel.create({
-      productId,                 // Global product
-      sellerId: seller._id,       // Seller business ID
-      sellerName: seller.shopName,// Cached seller name
+      productId,
+      variantIds: Array.isArray(variantIds) ? variantIds : [],  // 🎨 Multi-variant selection
+      sellerId: seller._id,
+      sellerName: seller.shopName,
       price,
       stock,
-      warranty
+      warranty,
+      discountPercentage: discountPercentage || 0,
+      deliveryOptions: deliveryOptions || ["Standard"],
+      image: image || "",
     });
 
     res.status(201).json({
@@ -98,6 +102,7 @@ export async function getMySellerOffers(req, res) {
     const offers = await sellerOfferModel
       .find({ sellerId: seller._id })
       .populate("productId", "productName image category")
+      .populate("variantIds", "variantName color storage size image")
       .sort({ createdAt: -1 });
 
     res.json(offers);
@@ -152,9 +157,10 @@ export async function updateSellerOffer(req, res) {
     }
 
     // ✏️ Update allowed fields only
-    if (req.body.price !== undefined) offer.price = req.body.price;
-    if (req.body.stock !== undefined) offer.stock = req.body.stock;
+    if (req.body.price    !== undefined) offer.price    = req.body.price;
+    if (req.body.stock    !== undefined) offer.stock    = req.body.stock;
     if (req.body.warranty !== undefined) offer.warranty = req.body.warranty;
+    if (req.body.isActive !== undefined) offer.isActive = req.body.isActive;
 
     await offer.save();
 
@@ -221,6 +227,72 @@ export async function disableSellerOffer(req, res) {
     console.error("❌ Disable seller offer error:", error);
     res.status(500).json({
       message: "Failed to disable seller offer",
+      error: error.message
+    });
+  }
+}
+
+// BUYER SEARCH – NO AUTH
+export async function searchSellerOffers(req, res) {
+  try {
+    const { q, category, sort = "price_asc", page = 1, limit = 8 } = req.query;
+
+    const pipeline = [];
+
+    // 🔗 Join Product
+    pipeline.push({
+      $lookup: {
+        from: "products",
+        localField: "productId",
+        foreignField: "_id",
+        as: "product"
+      }
+    });
+
+    pipeline.push({ $unwind: "$product" });
+
+    // 🔍 Search
+    if (q) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { "product.productName": { $regex: q, $options: "i" } },
+            { "product.description": { $regex: q, $options: "i" } }
+          ]
+        }
+      });
+    }
+
+    // 📂 Category
+    if (category && category !== "null") {
+      pipeline.push({ $match: { "product.category": category } });
+    }
+
+    // ✅ Only active offers
+    pipeline.push({ $match: { isActive: true } });
+
+    // ↕ Sort
+    if (sort === "price_desc") pipeline.push({ $sort: { price: -1 } });
+    else pipeline.push({ $sort: { price: 1 } });
+
+    // 📄 Pagination
+    pipeline.push(
+      { $skip: (page - 1) * Number(limit) },
+      { $limit: Number(limit) }
+    );
+
+    const results = await sellerOfferModel.aggregate(pipeline);
+
+    res.json({
+      results,
+      totalResults: results.length
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      results: [],
+      totalResults: 0,
+      message: "Seller offer search failed",
       error: error.message
     });
   }

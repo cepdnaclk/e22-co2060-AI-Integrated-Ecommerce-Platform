@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../index.css";
 
 import { auth } from "../firebase";
@@ -7,6 +8,8 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import SuccessAnimation from "../components/SuccessAnimation";
+import API_BASE_URL from "../config/api";
 
 const Login = ({ onClose }) => {
   const [email, setEmail] = useState("");
@@ -14,12 +17,14 @@ const Login = ({ onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+  const navigate = useNavigate();
 
   // 🔹 SEND FIREBASE TOKEN TO BACKEND
   const sendTokenToBackend = async (idToken) => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/login",
+        `${API_BASE_URL}/api/auth/login`,
         {
           method: "POST",
           headers: {
@@ -43,6 +48,8 @@ const Login = ({ onClose }) => {
 
       if (onClose) onClose();
 
+      setIsSuccess(true);
+
       return data;
     } catch (err) {
       console.error("❌ Backend error:", err);
@@ -64,15 +71,10 @@ const Login = ({ onClose }) => {
       );
 
       const idToken = await userCredential.user.getIdToken();
-<<<<<<< HEAD
-      await sendTokenToBackend(idToken);
-    } catch (err) {
-=======
 
       await sendTokenToBackend(idToken);
     } catch (err) {
       console.error("❌ Firebase login error:", err);
->>>>>>> origin/dev_yuneth
       setError(err.message);
     } finally {
       setLoading(false);
@@ -87,30 +89,33 @@ const Login = ({ onClose }) => {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(auth, provider);
-<<<<<<< HEAD
-      const idToken = await result.user.getIdToken();
-      await sendTokenToBackend(idToken);
-    } catch (err) {
-=======
 
       const idToken = await result.user.getIdToken();
 
       await sendTokenToBackend(idToken);
     } catch (err) {
       console.error("❌ Google login error:", err);
->>>>>>> origin/dev_yuneth
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-[#0d1424] via-[#072454] to-[#1945a5]">
+        <SuccessAnimation
+          message="Login Successful!"
+          onDone={() => navigate("/")}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen w-screen grid grid-cols-1 md:grid-cols-2 bg-blue-100">
-<<<<<<< HEAD
-=======
       
->>>>>>> origin/dev_yuneth
+
       {/* LEFT PANEL */}
       <div className="relative flex flex-col justify-center px-12 text-white bg-gradient-to-br from-[#0d1424] via-[#072454] to-[#1945a5]">
         <h2 className="text-4xl font-bold mb-6">WELCOME</h2>
@@ -122,13 +127,9 @@ const Login = ({ onClose }) => {
       {/* RIGHT PANEL */}
       <div className="flex items-center justify-center bg-white">
         <div className="w-full max-w-md px-8">
-<<<<<<< HEAD
-          <h3 className="text-2xl font-semibold text-gray-800 mb-6">Sign in</h3>
-=======
           <h3 className="text-2xl font-semibold text-gray-800 mb-6">
             Sign in
           </h3>
->>>>>>> origin/dev_yuneth
 
           {error && (
             <p className="mb-4 bg-red-100 text-red-600 text-sm p-2 rounded">
@@ -137,10 +138,7 @@ const Login = ({ onClose }) => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/dev_yuneth
             <input
               type="email"
               placeholder="Email"
@@ -159,10 +157,7 @@ const Login = ({ onClose }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/dev_yuneth
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -179,11 +174,7 @@ const Login = ({ onClose }) => {
               {loading ? "Signing in..." : "Sign in"}
             </button>
 
-<<<<<<< HEAD
-            {/* 🔥 GOOGLE LOGIN BUTTON */}
-=======
             {/* GOOGLE LOGIN */}
->>>>>>> origin/dev_yuneth
             <button
               type="button"
               onClick={handleGoogleLogin}
@@ -191,10 +182,7 @@ const Login = ({ onClose }) => {
             >
               Continue with Google
             </button>
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/dev_yuneth
           </form>
         </div>
       </div>
