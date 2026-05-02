@@ -152,6 +152,9 @@ services:
       RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
       YOUTUBE_TRENDING_URL: http://youtube-trending:8003
       BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
     volumes:
       - .\Backend\backend-inter:/app
       - /app/node_modules

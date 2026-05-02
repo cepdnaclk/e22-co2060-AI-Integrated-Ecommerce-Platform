@@ -50,7 +50,7 @@ const LeaderCard = () => {
                 Team Lead
               </span>
               <h2 className="text-4xl font-bold text-white mb-2">Yuneth Hansira</h2>
-              <p className="text-[#4DA3FF] text-xl font-medium mb-6">Project Lead & Full Stack Developer</p>
+              <p className="text-[#4DA3FF] text-xl font-medium mb-6">Project Lead  & Founder of BEETA </p>
 
               <div className="relative mb-8">
                 <Quote className="absolute -left-8 -top-4 w-12 h-12 text-white/5" />
