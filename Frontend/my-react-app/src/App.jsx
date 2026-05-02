@@ -35,6 +35,7 @@ import DmsProtectedRoute from "./components/DmsProtectedRoute";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
+import AboutUs from "./pages/AboutUs";
 import { CartProvider } from "./context/CartContext";
 
 function App() {
@@ -44,6 +45,9 @@ function App() {
         <Routes>
           {/* Home Page */}
           <Route path="/" element={<Home />} />
+
+          {/* About Us Page */}
+          <Route path="/about" element={<AboutUs />} />
 
           {/* Login Page */}
           <Route path="/login" element={<Login />} />
