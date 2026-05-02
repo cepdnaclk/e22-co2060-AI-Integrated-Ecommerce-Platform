@@ -154,7 +154,7 @@ export default function CustomerNavbar() {
           ) : (
             <div className="flex gap-4">
               <button onClick={() => navigate("/login")} className="hover:text-blue-400 transition">Login</button>
-              <button onClick={() => navigate("/login")} className="bg-blue-600 hover:bg-blue-500 px-4 py-1.5 rounded-lg text-sm font-medium transition">Signup</button>
+              <button onClick={() => navigate("/signup")} className="bg-blue-600 hover:bg-blue-500 px-4 py-1.5 rounded-lg text-sm font-medium transition">Signup</button>
             </div>
           )}
 

@@ -298,7 +298,7 @@ export default function Home() {
                 Login
               </button>
 
-              <button onClick={() => navigate("/become-seller")} className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
+              <button onClick={() => navigate("/signup")} className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
                 Sign Up
               </button>
             </>

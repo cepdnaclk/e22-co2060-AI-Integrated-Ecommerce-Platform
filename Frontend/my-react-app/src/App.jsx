@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/home.jsx";
 import Login from "./pages/login.jsx";
+import Signup from "./pages/Signup.jsx";
 import ProductListing from "./pages/ProductListing.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import SellerRegister from "./pages/SellerRegister";
@@ -51,6 +52,7 @@ function App() {
 
           {/* Login Page */}
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
           {/* Browse Products Page */}
           <Route path="/products" element={<ProductListing />} />
