@@ -83,31 +83,43 @@ export default function DmsQrScanner() {
     const initScanner = async () => {
       if (cameraActive) {
         try {
-          // Clear container to prevent "Already scanning" issues
           const container = document.getElementById("reader-container");
           if (container) container.innerHTML = "";
 
           const scanner = new Html5Qrcode("reader-container");
           scannerRef.current = scanner;
 
-          // Constraints with fallback
           const config = {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0
+            fps: 15,
+            qrbox: (viewWidth, viewHeight) => {
+              const minDim = Math.min(viewWidth, viewHeight);
+              return { width: Math.floor(minDim * 0.7), height: Math.floor(minDim * 0.7) };
+            },
+            aspectRatio: 1.0,
+            rememberLastUsedCamera: true,
+            supportedScanTypes: [0] 
           };
 
           try {
-            // Try back camera first
-            await scanner.start({ facingMode: "environment" }, config, (decodedText) => {
-              if (isMounted) submitQr(decodedText, "camera");
-            });
+            await scanner.start(
+              { facingMode: { exact: "environment" } }, 
+              config, 
+              (decodedText) => {
+                if (isMounted) submitQr(decodedText, "camera");
+              }
+            );
           } catch (firstErr) {
-            console.warn("Back camera failed, trying any camera...", firstErr);
-            // Fallback to any available camera
-            await scanner.start({ facingMode: "user" }, config, (decodedText) => {
-              if (isMounted) submitQr(decodedText, "camera");
-            });
+            console.warn("Exact environment failed, trying standard environment...", firstErr);
+            try {
+              await scanner.start({ facingMode: "environment" }, config, (decodedText) => {
+                if (isMounted) submitQr(decodedText, "camera");
+              });
+            } catch (secondErr) {
+              console.warn("Back camera failed, trying any camera...", secondErr);
+              await scanner.start({ facingMode: "user" }, config, (decodedText) => {
+                if (isMounted) submitQr(decodedText, "camera");
+              });
+            }
           }
         } catch (err) {
           if (isMounted) {
@@ -116,6 +128,8 @@ export default function DmsQrScanner() {
               msg = "Camera permission denied. Please allow camera access in your browser settings.";
             } else if (msg.includes("NotFound")) {
               msg = "No camera found on this device.";
+            } else if (msg.includes("Constraint")) {
+              msg = "Your device camera does not support the required settings.";
             }
             setError(msg);
             setCameraActive(false);
@@ -157,86 +171,114 @@ export default function DmsQrScanner() {
   };
 
   return (
-    <div style={S.page}>
-      <div style={S.container}>
-        <div style={S.header}>
-          <div>
-            <h1 style={S.title}>Delivery Center QR Reader</h1>
-            <p style={S.subtitle}>
+    <div className="min-h-screen bg-slate-950 text-white font-sans p-4 md:p-8">
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-md">
+          <div className="flex-1">
+            <h1 className="text-3xl font-black tracking-tight">Delivery Center QR Reader</h1>
+            <p className="text-slate-400 text-sm mt-1">
               Scan seller QR to register transfer from seller to delivery company.
             </p>
-            <p style={S.subtleMeta}>
+            <div className="mt-3 text-[10px] font-bold uppercase tracking-widest text-slate-500">
               {loadingProfile
                 ? "Loading center profile..."
-                : `${profile?.branch?.branchName || "Delivery Center"} • ${profile?.staff?.fullName || ""}`}
-            </p>
+                : `${profile?.branch?.branchName || "Delivery Center"} • ${profile?.staff?.fullName || "Staff"}`}
+            </div>
           </div>
-          <div style={S.headerActions}>
-            <Link to="/dms/center/dashboard" style={S.ghostBtn}>← Back to Dashboard</Link>
+          <div className="flex gap-3 w-full md:w-auto">
+            <Link 
+              to="/dms/center/dashboard" 
+              className="px-6 py-3 rounded-xl font-bold bg-white/5 border border-white/10 hover:bg-white/10 transition-all text-center flex-1 md:flex-none"
+            >
+              ← Back
+            </Link>
             {!cameraActive ? (
-              <button type="button" style={S.primaryBtn} onClick={startCamera} disabled={scanBusy}>
-                Start Camera Scan
+              <button 
+                className="flex-1 md:flex-none bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 px-8 py-3 rounded-xl font-bold shadow-lg shadow-purple-900/20 active:scale-95 disabled:opacity-50"
+                onClick={startCamera} 
+                disabled={scanBusy}
+              >
+                Start Scan
               </button>
             ) : (
-              <button type="button" style={S.warnBtn} onClick={stopCamera}>
+              <button 
+                className="flex-1 md:flex-none bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 px-8 py-3 rounded-xl font-bold active:scale-95"
+                onClick={stopCamera}
+              >
                 Stop Camera
               </button>
             )}
           </div>
         </div>
 
-        {error ? <div style={S.error}>{error}</div> : null}
-        {success ? <div style={S.success}>{success}</div> : null}
+        {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 text-sm font-medium">{error}</div>}
+        {success && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 text-sm font-medium">{success}</div>}
 
-        <div style={S.grid}>
-          <div style={S.card}>
-            <h2 style={S.cardTitle}>Camera Scanner</h2>
-            <p style={S.cardText}>
-              Position seller QR inside camera view. Scan runs automatically.
-            </p>
-            {!isSecure ? (
-              <div style={S.info}>
-                Camera access is restricted in non-secure contexts. Please use HTTPS or localhost.
-              </div>
-            ) : null}
-            <div style={S.videoWrap} id="reader-container">
-              {!cameraActive ? <div style={S.videoOverlay}>Camera is idle</div> : null}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Camera Card */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center">
+            <div className="w-full mb-4">
+              <h2 className="text-xl font-bold">Camera Scanner</h2>
+              <p className="text-slate-500 text-sm">Position seller QR inside the camera view.</p>
             </div>
+            
+            <div 
+              id="reader-container" 
+              className="w-full aspect-square max-w-sm rounded-2xl overflow-hidden border-2 border-white/10 bg-black flex items-center justify-center relative shadow-inner"
+            >
+              {!cameraActive && <div className="text-slate-600 font-bold uppercase tracking-widest text-xs">Camera Idle</div>}
+            </div>
+            
+            {!isSecure && (
+              <div className="mt-4 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl p-3 text-xs text-center w-full">
+                Camera access restricted. Use HTTPS or localhost.
+              </div>
+            )}
           </div>
 
-          <div style={S.card}>
-            <h2 style={S.cardTitle}>Manual QR Input</h2>
-            <p style={S.cardText}>
-              Paste scanned QR text and submit if camera scan is unavailable.
-            </p>
-            <form onSubmit={handleManualSubmit} style={S.form}>
+          {/* Manual Input Card */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6 h-full flex flex-col">
+            <div className="w-full mb-4">
+              <h2 className="text-xl font-bold">Manual QR Input</h2>
+              <p className="text-slate-500 text-sm">Paste scanned QR text and submit manually.</p>
+            </div>
+            
+            <form onSubmit={handleManualSubmit} className="space-y-4 flex-1 flex flex-col">
               <textarea
-                style={S.textarea}
-                placeholder="Example: SOQR4:660f9c5f56c2a74f2c5a4c1b"
+                className="w-full flex-1 bg-white/5 border border-white/10 rounded-xl p-4 outline-none focus:ring-2 focus:ring-purple-500/50 text-white placeholder:text-slate-700 min-h-[120px] resize-none"
+                placeholder="Example: SOQR4:seller:order..."
                 value={manualQrText}
                 onChange={(e) => setManualQrText(e.target.value)}
-                rows={5}
               />
-              <button type="submit" style={S.primaryBtn} disabled={scanBusy}>
-                {scanBusy ? "Processing..." : "Submit QR"}
+              <button 
+                type="submit" 
+                disabled={scanBusy}
+                className="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-purple-900/20 active:scale-95 disabled:opacity-50"
+              >
+                {scanBusy ? "PROCESSING..." : "SUBMIT QR MANUALLY"}
               </button>
             </form>
           </div>
         </div>
 
-        {lastResult ? (
-          <div style={S.card}>
-            <h2 style={S.cardTitle}>Last Scan Result</h2>
-            <div style={S.resultGrid}>
-              <ResultItem label="Tracking Number" value={lastResult?.deliveryOrder?.trackingNumber || "N/A"} />
-              <ResultItem label="Delivery Status" value={lastResult?.deliveryOrder?.status || "N/A"} />
-              <ResultItem label="Order ID" value={lastResult?.ecommerceOrder?.id || "N/A"} />
-              <ResultItem label="Order Status" value={lastResult?.ecommerceOrder?.status || "N/A"} />
-              <ResultItem label="Event Type" value={lastResult?.event?.scanType || "N/A"} />
-              <ResultItem label="Event Time" value={formatDate(lastResult?.event?.occurredAt)} />
+        {/* Scan Results */}
+        {lastResult && (
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Last Scan Result
+            </h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <ResultItem label="Tracking" value={lastResult?.deliveryOrder?.trackingNumber} />
+              <ResultItem label="D. Status" value={lastResult?.deliveryOrder?.status} />
+              <ResultItem label="Order ID" value={lastResult?.ecommerceOrder?.id} />
+              <ResultItem label="E. Status" value={lastResult?.ecommerceOrder?.status} />
+              <ResultItem label="Type" value={lastResult?.event?.scanType} />
+              <ResultItem label="Time" value={formatDate(lastResult?.event?.occurredAt)} />
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );
@@ -244,9 +286,9 @@ export default function DmsQrScanner() {
 
 function ResultItem({ label, value }) {
   return (
-    <div style={S.resultItem}>
-      <div style={S.resultLabel}>{label}</div>
-      <div style={S.resultValue}>{value || "N/A"}</div>
+    <div className="bg-white/5 border border-white/5 rounded-xl p-4 flex flex-col">
+      <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">{label}</div>
+      <div className="text-xs font-bold text-slate-200 truncate">{value || "N/A"}</div>
     </div>
   );
 }
@@ -255,193 +297,5 @@ function formatDate(value) {
   if (!value) return "N/A";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "N/A";
-  return date.toLocaleString();
+  return date.toLocaleString([], { dateStyle: "short", timeStyle: "short" });
 }
-
-const S = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #020617, #0f172a, #1e1b4b)",
-    color: "#fff",
-    padding: "30px 20px",
-    fontFamily: "'Segoe UI', Arial, sans-serif",
-  },
-  container: {
-    maxWidth: 1200,
-    margin: "0 auto",
-    display: "grid",
-    gap: 14,
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    gap: 16,
-    alignItems: "flex-start",
-    flexWrap: "wrap",
-  },
-  title: {
-    margin: 0,
-    fontSize: 30,
-    fontWeight: 800,
-  },
-  subtitle: {
-    margin: "8px 0 0",
-    color: "#cbd5e1",
-    fontSize: 14,
-  },
-  subtleMeta: {
-    margin: "6px 0 0",
-    color: "#64748b",
-    fontSize: 12,
-  },
-  headerActions: {
-    display: "flex",
-    gap: 10,
-    flexWrap: "wrap",
-  },
-  card: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 12,
-    padding: 14,
-  },
-  cardTitle: {
-    margin: "0 0 8px",
-    fontSize: 16,
-    fontWeight: 700,
-  },
-  cardText: {
-    margin: "0 0 10px",
-    color: "#94a3b8",
-    fontSize: 13,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: 12,
-  },
-  form: {
-    display: "grid",
-    gap: 10,
-  },
-  textarea: {
-    width: "100%",
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.14)",
-    borderRadius: 10,
-    color: "#fff",
-    padding: "10px 12px",
-    fontSize: 13,
-    boxSizing: "border-box",
-    resize: "vertical",
-    outline: "none",
-  },
-  primaryBtn: {
-    border: "none",
-    borderRadius: 10,
-    padding: "10px 14px",
-    background: "linear-gradient(to right, #7e22ce, #a855f7)",
-    color: "#fff",
-    cursor: "pointer",
-    fontWeight: 700,
-    fontSize: 13,
-  },
-  warnBtn: {
-    border: "1px solid rgba(251,191,36,0.35)",
-    borderRadius: 10,
-    padding: "10px 14px",
-    background: "rgba(251,191,36,0.14)",
-    color: "#fde68a",
-    cursor: "pointer",
-    fontWeight: 700,
-    fontSize: 13,
-  },
-  ghostBtn: {
-    border: "1px solid rgba(255,255,255,0.2)",
-    borderRadius: 10,
-    padding: "10px 14px",
-    background: "rgba(255,255,255,0.04)",
-    color: "#e2e8f0",
-    textDecoration: "none",
-    fontWeight: 700,
-    fontSize: 13,
-    display: "inline-flex",
-    alignItems: "center",
-  },
-  videoWrap: {
-    position: "relative",
-    borderRadius: 10,
-    overflow: "hidden",
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "#000",
-    minHeight: 260,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  video: {
-    width: "100%",
-    maxHeight: 360,
-    objectFit: "cover",
-  },
-  videoOverlay: {
-    position: "absolute",
-    inset: 0,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#94a3b8",
-    background: "rgba(2,6,23,0.58)",
-    fontSize: 13,
-    fontWeight: 600,
-  },
-  info: {
-    background: "rgba(59,130,246,0.12)",
-    border: "1px solid rgba(59,130,246,0.3)",
-    color: "#93c5fd",
-    borderRadius: 10,
-    padding: "10px 12px",
-    fontSize: 13,
-    marginBottom: 10,
-  },
-  error: {
-    background: "rgba(239,68,68,0.12)",
-    border: "1px solid rgba(239,68,68,0.3)",
-    color: "#fca5a5",
-    borderRadius: 10,
-    padding: "10px 12px",
-    fontSize: 13,
-  },
-  success: {
-    background: "rgba(34,197,94,0.12)",
-    border: "1px solid rgba(34,197,94,0.3)",
-    color: "#86efac",
-    borderRadius: 10,
-    padding: "10px 12px",
-    fontSize: 13,
-  },
-  resultGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))",
-    gap: 10,
-  },
-  resultItem: {
-    background: "rgba(255,255,255,0.03)",
-    border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 10,
-    padding: "10px 12px",
-  },
-  resultLabel: {
-    fontSize: 11,
-    color: "#94a3b8",
-    textTransform: "uppercase",
-    letterSpacing: "0.04em",
-    marginBottom: 4,
-  },
-  resultValue: {
-    fontSize: 13,
-    color: "#e2e8f0",
-    fontWeight: 700,
-    wordBreak: "break-word",
-  },
-};

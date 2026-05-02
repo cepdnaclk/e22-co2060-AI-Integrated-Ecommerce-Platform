@@ -12,7 +12,7 @@ export default function DmsProtectedRoute({ children, allowedScopes = ["branch",
   useEffect(() => {
     const verify = async () => {
       try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("dms_token");
         if (!token) {
           setState("unauthorized");
           return;
@@ -31,8 +31,26 @@ export default function DmsProtectedRoute({ children, allowedScopes = ["branch",
         }
 
         setState("authorized");
-      } catch {
-        setState("unauthorized");
+      } catch (err) {
+        // Only redirect to login if it's an explicit auth error (401/403).
+        // Network errors (proxy hiccup, self-signed cert, etc.) should NOT
+        // kick the user out — that causes the login-redirect loop on mobile HTTPS.
+        const msg = err?.message || "";
+        const isAuthError =
+          msg.includes("401") ||
+          msg.includes("403") ||
+          msg.includes("Authentication token not found") ||
+          msg.includes("Unauthorized") ||
+          msg.includes("Forbidden");
+
+        if (isAuthError) {
+          setState("unauthorized");
+        } else {
+          // Non-auth error — allow access optimistically if token exists.
+          // The backend will reject invalid tokens on any real API call.
+          console.warn("DMS portal verify non-fatal error:", msg);
+          setState("authorized");
+        }
       }
     };
 

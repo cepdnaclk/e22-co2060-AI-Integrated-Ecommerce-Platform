@@ -141,7 +141,7 @@ services:
       - .\Backend\backend-inter\.env
     environment:
       PORT: 3000
-      MONGO_URI: mongodb://mongodb:27017/ecommerce
+      MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/?appName=Cluster0}
       JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
       FRONTEND_URL: http://localhost:5173
       ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-false}
@@ -158,20 +158,17 @@ services:
       - "3000:3000"
 
   frontend:
-    build:
-      context: .\Frontend\my-react-app
-      dockerfile: Dockerfile
-      args:
-        VITE_API_BASE_URL: http://localhost:3000
+    image: node:20-slim
     container_name: ecommerce-frontend
+    working_dir: /app
     restart: unless-stopped
     depends_on:
       - backend
     volumes:
       - .\Frontend\my-react-app:/app
-      - /app/node_modules
     ports:
-      - "5173:80"
+      - "5173:5173"
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
 
 volumes:
   mongo_data:

@@ -126,63 +126,79 @@ export default function DmsRegister() {
   };
 
   return (
-    <div style={S.page}>
-      <div style={S.container}>
-        <div style={S.header}>
-          <h1 style={S.title}>Register Delivery Company Center</h1>
-          <p style={S.subtitle}>
-            Create your delivery company + center account first, then sign in to the center dashboard.
+    <div className="min-h-screen bg-slate-950 text-white font-sans p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-md">
+          <h1 className="text-3xl font-black tracking-tight">Register Delivery Center</h1>
+          <p className="text-slate-400 mt-2 text-sm md:text-base">
+            Create your delivery company and center account first, then sign in to the dashboard.
           </p>
         </div>
 
-        <form style={S.form} onSubmit={onSubmit}>
-          {error && <div style={S.error}>{error}</div>}
-          {success && <div style={S.success}>{success}</div>}
+        <form className="space-y-6 bg-white/5 border border-white/10 rounded-2xl p-6 md:p-10 shadow-2xl backdrop-blur-md" onSubmit={onSubmit}>
+          {error && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 text-sm font-medium">{error}</div>}
+          {success && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 text-sm font-medium">{success}</div>}
 
-          <div style={S.sectionTitle}>Account Details</div>
-          <div style={S.grid}>
+          {/* Section: Account */}
+          <SectionTitle>Account Administrator</SectionTitle>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="First Name" value={form.firstName} onChange={onChange("firstName")} required />
             <Field label="Last Name" value={form.lastName} onChange={onChange("lastName")} required />
-            <Field label="Email" type="email" value={form.email} onChange={onChange("email")} required />
-            <Field label="Phone" value={form.phone} onChange={onChange("phone")} />
+            <Field label="Email Address" type="email" value={form.email} onChange={onChange("email")} required />
+            <Field label="Phone Number" value={form.phone} onChange={onChange("phone")} />
             <Field label="Password" type="password" value={form.password} onChange={onChange("password")} required />
             <Field label="Confirm Password" type="password" value={form.confirmPassword} onChange={onChange("confirmPassword")} required />
           </div>
 
-          <div style={S.sectionTitle}>Company Details</div>
-          <div style={S.grid}>
-            <Field label="Company Name" value={form.companyName} onChange={onChange("companyName")} required />
-            <Field label="Registration Number" value={form.registrationNumber} onChange={onChange("registrationNumber")} required />
-            <Field label="Business License No" value={form.businessLicenseNumber} onChange={onChange("businessLicenseNumber")} />
-          </div>
-
-          <div style={S.sectionTitle}>Delivery Center Details</div>
-          <div style={S.mapWrap}>
-            <label style={S.label}>Pick Address from Map (OpenStreetMap)</label>
-            <GoogleMapAddressPicker
-              address={mapAddress || form.address}
-              addressLocation={mapLocation}
-              onAddressChange={handleMapAddressChange}
-            />
-            <div style={S.mapHint}>
-              Selecting a map location auto-fills district, city, province, postal code, and address.
+          {/* Section: Company */}
+          <SectionTitle>Company Details</SectionTitle>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <Field label="Company Name" value={form.companyName} onChange={onChange("companyName")} required />
+            </div>
+            <Field label="Reg. Number" value={form.registrationNumber} onChange={onChange("registrationNumber")} required />
+            <div className="md:col-span-3">
+              <Field label="Business License Number" value={form.businessLicenseNumber} onChange={onChange("businessLicenseNumber")} />
             </div>
           </div>
-          <div style={S.grid}>
+
+          {/* Section: Center */}
+          <SectionTitle>Delivery Center Details</SectionTitle>
+          <div className="mb-6">
+            <label className="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Pick Location from Map</label>
+            <div className="rounded-xl overflow-hidden border border-white/10">
+              <GoogleMapAddressPicker
+                address={mapAddress || form.address}
+                addressLocation={mapLocation}
+                onAddressChange={handleMapAddressChange}
+              />
+            </div>
+            <p className="text-[10px] text-slate-500 mt-2 italic uppercase tracking-wider">Selecting map location auto-fills address fields below.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Field label="Center Code" value={form.branchCode} onChange={onChange("branchCode")} required />
             <Field label="Center Name" value={form.branchName} onChange={onChange("branchName")} required />
             <Field label="District" value={form.district} onChange={onChange("district")} required />
             <Field label="City" value={form.city} onChange={onChange("city")} />
             <Field label="Province / State" value={form.province} onChange={onChange("province")} />
             <Field label="Postal Code" value={form.postalCode} onChange={onChange("postalCode")} />
-            <Field label="Address" value={form.address} onChange={onChange("address")} />
+            <div className="md:col-span-2">
+              <Field label="Full Street Address" value={form.address} onChange={onChange("address")} />
+            </div>
           </div>
 
-          <div style={S.actions}>
-            <button type="submit" style={S.primaryBtn} disabled={loading}>
-              {loading ? "Registering..." : "Register Center Account"}
+          <div className="flex flex-col md:flex-row items-center gap-6 pt-6 border-t border-white/10">
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="w-full md:w-auto bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-4 px-10 rounded-xl shadow-lg shadow-purple-900/20 transition-all active:scale-95 disabled:opacity-50"
+            >
+              {loading ? "REGISTERING..." : "CREATE CENTER ACCOUNT"}
             </button>
-            <Link to="/dms/login" style={S.linkBtn}>Already registered? Sign In</Link>
+            <Link to="/dms/login" className="text-purple-400 hover:text-purple-300 font-bold text-sm transition-colors">
+              Already registered? Sign In
+            </Link>
           </div>
         </form>
       </div>
@@ -190,127 +206,25 @@ export default function DmsRegister() {
   );
 }
 
-function Field({ label, type = "text", value, onChange, required = false }) {
+function SectionTitle({ children }) {
   return (
-    <label style={S.field}>
-      <span style={S.label}>{label}</span>
-      <input style={S.input} type={type} value={value} onChange={onChange} required={required} />
-    </label>
+    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 border-b border-white/5 pb-2 mb-4">
+      {children}
+    </h3>
   );
 }
 
-const S = {
-  page: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #020617, #0f172a, #1e1b4b)",
-    color: "#fff",
-    padding: "28px 14px",
-    fontFamily: "'Segoe UI', Arial, sans-serif",
-  },
-  container: {
-    maxWidth: 1000,
-    margin: "0 auto",
-  },
-  header: {
-    marginBottom: 18,
-  },
-  title: {
-    margin: 0,
-    fontSize: 30,
-    fontWeight: 800,
-  },
-  subtitle: {
-    margin: "8px 0 0",
-    color: "#94a3b8",
-  },
-  form: {
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 16,
-    padding: 18,
-  },
-  error: {
-    background: "rgba(239,68,68,0.12)",
-    border: "1px solid rgba(239,68,68,0.3)",
-    borderRadius: 10,
-    color: "#fca5a5",
-    fontSize: 13,
-    padding: "10px 12px",
-    marginBottom: 12,
-  },
-  success: {
-    background: "rgba(34,197,94,0.12)",
-    border: "1px solid rgba(34,197,94,0.3)",
-    borderRadius: 10,
-    color: "#86efac",
-    fontSize: 13,
-    padding: "10px 12px",
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    marginTop: 8,
-    marginBottom: 10,
-    fontSize: 13,
-    fontWeight: 700,
-    textTransform: "uppercase",
-    letterSpacing: "0.07em",
-    color: "#cbd5e1",
-  },
-  mapWrap: {
-    marginBottom: 12,
-  },
-  mapHint: {
-    marginTop: 6,
-    fontSize: 12,
-    color: "#94a3b8",
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: 10,
-    marginBottom: 12,
-  },
-  field: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 5,
-  },
-  label: {
-    fontSize: 12,
-    color: "#94a3b8",
-    fontWeight: 600,
-  },
-  input: {
-    width: "100%",
-    padding: "10px 12px",
-    fontSize: 14,
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.14)",
-    background: "rgba(255,255,255,0.06)",
-    color: "#fff",
-    boxSizing: "border-box",
-    outline: "none",
-  },
-  actions: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
-    marginTop: 12,
-  },
-  primaryBtn: {
-    padding: "11px 14px",
-    border: "none",
-    borderRadius: 10,
-    cursor: "pointer",
-    color: "#fff",
-    fontWeight: 800,
-    background: "linear-gradient(to right, #7e22ce, #a855f7)",
-    fontSize: 14,
-  },
-  linkBtn: {
-    color: "#93c5fd",
-    fontSize: 13,
-    textDecoration: "none",
-  },
-};
-
+function Field({ label, type = "text", value, onChange, required = false }) {
+  return (
+    <div className="space-y-2">
+      <label className="block text-xs font-bold text-slate-400">{label}</label>
+      <input 
+        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50 transition-all text-white placeholder:text-slate-600" 
+        type={type} 
+        value={value} 
+        onChange={onChange} 
+        required={required} 
+      />
+    </div>
+  );
+}
