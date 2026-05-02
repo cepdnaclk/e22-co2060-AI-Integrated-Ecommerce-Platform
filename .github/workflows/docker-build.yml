@@ -72,6 +72,8 @@ jobs:
   test:
     needs: build-and-push
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ needs.build-and-push.outputs.image_name }}
     
     steps:
       - name: Checkout code
