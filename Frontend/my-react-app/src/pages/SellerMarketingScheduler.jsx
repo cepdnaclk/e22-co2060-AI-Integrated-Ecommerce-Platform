@@ -16,7 +16,6 @@ const styles = {
     background: "linear-gradient(135deg, #050B2E, #081A4A, #020617)",
     color: "#fff",
     fontFamily: "'Segoe UI', Arial, sans-serif",
-    padding: "36px 20px"
   },
   container: {
     maxWidth: 1080,
@@ -209,9 +208,9 @@ const SellerMarketingScheduler = () => {
   };
 
   return (
-    <div style={styles.page}>
+    <div className="p-4 md:p-[36px_20px]" style={styles.page}>
       <div style={styles.container}>
-        <div style={{ ...styles.row, justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
           <div>
             <h1 style={styles.heading}>Seller Marketing Scheduler</h1>
             <p style={styles.subHeading}>Schedule Facebook Page posts for automatic publishing.</p>
@@ -225,7 +224,7 @@ const SellerMarketingScheduler = () => {
         {message ? <div style={{ ...styles.card, borderColor: "rgba(34,197,94,0.35)", color: "#bbf7d0" }}>{message}</div> : null}
 
         <div style={styles.card}>
-          <div style={{ ...styles.row, justifyContent: "space-between", alignItems: "center" }}>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <h2 style={{ margin: 0, fontSize: 20 }}>1. Connect Facebook</h2>
             <button type="button" style={{ ...styles.btn, ...styles.btnBlue }} onClick={handleConnect}>
               Connect Facebook
@@ -336,7 +335,7 @@ const SellerMarketingScheduler = () => {
                     background: "rgba(255,255,255,0.02)"
                   }}
                 >
-                  <div style={{ ...styles.row, justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-2">
                     <strong>{post.pageRef?.pageName || "Page"}</strong>
                     <span style={statusStyle(post.status)}>{post.status}</span>
                   </div>

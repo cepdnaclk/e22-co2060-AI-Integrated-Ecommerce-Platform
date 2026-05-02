@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Home from "./pages/home.jsx";
 import Login from "./pages/login.jsx";
+import Signup from "./pages/Signup.jsx";
 import ProductListing from "./pages/ProductListing.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import SellerRegister from "./pages/SellerRegister";
@@ -35,6 +36,7 @@ import DmsProtectedRoute from "./components/DmsProtectedRoute";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
+import AboutUs from "./pages/AboutUs";
 import { CartProvider } from "./context/CartContext";
 
 function App() {
@@ -45,8 +47,12 @@ function App() {
           {/* Home Page */}
           <Route path="/" element={<Home />} />
 
+          {/* About Us Page */}
+          <Route path="/about" element={<AboutUs />} />
+
           {/* Login Page */}
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
           {/* Browse Products Page */}
           <Route path="/products" element={<ProductListing />} />
@@ -68,6 +74,9 @@ function App() {
           {/* Seller Offer Management */}
           <Route path="/seller/offers" element={<MySellerOffers />} />
           <Route path="/seller/offers/new" element={<CreateSellerOffer />} />
+
+          {/* Seller product creation (no admin auth needed) */}
+          <Route path="/seller/products/new" element={<CreateProduct />} />
 
           {/* Email Verification for Seller Registration */}
           <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
