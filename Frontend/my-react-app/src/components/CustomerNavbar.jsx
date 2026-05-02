@@ -105,6 +105,7 @@ export default function CustomerNavbar() {
           <button onClick={() => navigate("/products")} className="hover:text-blue-400 transition">Trending</button>
           <button onClick={() => navigate("/support")} className="hover:text-blue-400 transition">Support</button>
           <button onClick={() => navigate("/about")} className="hover:text-blue-400 transition">About</button>
+          <button onClick={() => navigate("/team")} className="hover:text-blue-400 transition font-medium text-blue-400">Team</button>
         </div>
 
         {/* RIGHT: Auth or Profile */}
@@ -158,13 +159,27 @@ export default function CustomerNavbar() {
             </div>
           )}
 
-          {/* MOBILE TOGGLE */}
           <button className="lg:hidden p-1" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
             </svg>
           </button>
         </div>
+
+        {/* MOBILE MENU (Overlay) */}
+        {isMenuOpen && (
+          <div className="lg:hidden absolute top-full left-0 w-full bg-[#0b1c2d] border-t border-white/10 z-50 py-4 px-6 flex flex-col gap-4">
+            <button onClick={() => { navigate("/products"); setIsMenuOpen(false); }} className="text-left py-2 hover:text-blue-400">Products</button>
+            <button onClick={() => { navigate("/about"); setIsMenuOpen(false); }} className="text-left py-2 hover:text-blue-400">About</button>
+            <button onClick={() => { navigate("/team"); setIsMenuOpen(false); }} className="text-left py-2 text-blue-400 font-medium">Team</button>
+            {!user && (
+              <>
+                <button onClick={() => { navigate("/login"); setIsMenuOpen(false); }} className="text-left py-2 hover:text-blue-400">Login</button>
+                <button onClick={() => { navigate("/signup"); setIsMenuOpen(false); }} className="bg-blue-600 px-4 py-2 rounded-lg text-center font-medium">Signup</button>
+              </>
+            )}
+          </div>
+        )}
     </div>
   );
 }

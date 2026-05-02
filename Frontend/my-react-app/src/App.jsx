@@ -37,6 +37,7 @@ import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
 import AboutUs from "./pages/AboutUs";
+import Team from "./pages/Team";
 import { CartProvider } from "./context/CartContext";
 
 function App() {
@@ -47,8 +48,9 @@ function App() {
           {/* Home Page */}
           <Route path="/" element={<Home />} />
 
-          {/* About Us Page */}
+          {/* About Us & Team Page */}
           <Route path="/about" element={<AboutUs />} />
+          <Route path="/team" element={<Team />} />
 
           {/* Login Page */}
           <Route path="/login" element={<Login />} />
