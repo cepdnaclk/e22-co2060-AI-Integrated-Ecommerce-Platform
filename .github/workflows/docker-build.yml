@@ -95,8 +95,9 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
         run: |
-          # Use the SHA tag which is always generated
-          IMAGE_URI="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          # Extract the first tag (the most specific one)
+          IMAGE_TAG=$(echo "${{ needs.build-and-push.outputs.image_tag }}" | head -n 1)
+          IMAGE_URI="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}"
           docker pull $IMAGE_URI
           docker run --rm \
             -e YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }} \
