@@ -120,6 +120,24 @@ services:
       INLINE_EVENT_PROCESSING: "false"
     command: ["npm", "run", "start:worker"]
 
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: ecommerce-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
   backend:
     build:
       context: .\Backend\backend-inter
@@ -172,3 +190,4 @@ services:
 
 volumes:
   mongo_data:
+  n8n_data:
