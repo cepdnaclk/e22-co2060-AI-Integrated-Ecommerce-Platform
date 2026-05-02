@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import Product from "../models/products.js";
 import ProductVariant from "../models/productVariant.js";
 import SellerOffer from "../models/sellerOffer.js";
+import Fuse from "fuse.js";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const EMBEDDING_MODEL = "text-embedding-004";
@@ -36,14 +37,14 @@ function cosineSimilarity(a, b) {
  * ───────────────────────────────────────────────────── */
 async function buildOffersForProduct(productId) {
     return SellerOffer.find({ productId, isActive: true })
-        .select("sellerId sellerName price stock warranty discountPercentage deliveryOptions image variantId")
-        .populate("variantId", "variantName color storage size image")
+        .select("sellerId sellerName price stock warranty discountPercentage deliveryOptions image variantIds")
+        .populate("variantIds", "variantName color storage size image")
         .sort({ price: 1 })
         .lean();
 }
 
 async function buildOffersForVariant(variantId) {
-    return SellerOffer.find({ variantId, isActive: true })
+    return SellerOffer.find({ variantIds: variantId, isActive: true })
         .select("sellerId sellerName price stock warranty discountPercentage deliveryOptions image productId")
         .sort({ price: 1 })
         .lean();
@@ -77,37 +78,54 @@ async function layer1TextSearch(q, category) {
 }
 
 /* ─────────────────────────────────────────────────────
- * LAYER 2 – Regex Fallback
+ * LAYER 2 – Fuzzy Search (Fuse.js Bitap Algorithm)
  * ───────────────────────────────────────────────────── */
-async function layer2RegexSearch(q, category) {
-    const re = new RegExp(q.split(" ").join("|"), "i");
+async function layer2FuzzySearch(q, category) {
     const catFilter = category && category !== "null" ? { category } : {};
 
-    const [products, variants] = await Promise.all([
-        Product.find({
-            ...catFilter,
-            $or: [
-                { productName: re },
-                { brand: re },
-                { description: re },
-            ],
-        }).limit(20).lean(),
-
-        ProductVariant.find({
-            isActive: true,
-            $or: [
-                { variantName: re },
-                { color: re },
-                { storage: re },
-                { searchText: re },
-            ],
-        })
-            .limit(20)
+    // 1. Fetch candidates from DB
+    const [allProducts, allVariants] = await Promise.all([
+        Product.find(catFilter).lean(),
+        ProductVariant.find({ isActive: true })
             .populate("productId", "productName image category brand description")
-            .lean(),
+            .lean()
     ]);
 
-    return { products, variants };
+    // Apply category filter to variants manually if category is specified
+    const filteredVariants = category && category !== "null" 
+        ? allVariants.filter(v => v.productId && v.productId.category === category)
+        : allVariants;
+
+    // 2. Setup Fuse for Products
+    const productFuse = new Fuse(allProducts, {
+        keys: [
+            { name: "productName", weight: 0.6 },
+            { name: "brand", weight: 0.3 },
+            { name: "description", weight: 0.1 }
+        ],
+        threshold: 0.35, // Typos allowed. Lower is stricter.
+        includeScore: true,
+        ignoreLocation: true,
+    });
+
+    // 3. Setup Fuse for Variants
+    const variantFuse = new Fuse(filteredVariants, {
+        keys: [
+            { name: "variantName", weight: 0.5 },
+            { name: "searchText", weight: 0.3 },
+            { name: "color", weight: 0.1 },
+            { name: "storage", weight: 0.1 }
+        ],
+        threshold: 0.35,
+        includeScore: true,
+        ignoreLocation: true,
+    });
+
+    // 4. Perform search
+    const productResults = productFuse.search(q).slice(0, 20).map(r => r.item);
+    const variantResults = variantFuse.search(q).slice(0, 20).map(r => r.item);
+
+    return { products: productResults, variants: variantResults };
 }
 
 /* ─────────────────────────────────────────────────────
@@ -183,7 +201,7 @@ export async function smartSearch({ q, category, sort = "price_asc", page = 1, l
     /* Run L1 + L2 in parallel */
     const [l1, l2] = await Promise.all([
         layer1TextSearch(q, category).catch(() => ({ products: [], variants: [] })),
-        layer2RegexSearch(q, category).catch(() => ({ products: [], variants: [] })),
+        layer2FuzzySearch(q, category).catch(() => ({ products: [], variants: [] })),
     ]);
 
     let merged = mergeResults(l1, l2, { products: [], variants: [] });
@@ -196,34 +214,23 @@ export async function smartSearch({ q, category, sort = "price_asc", page = 1, l
 
     /* ── Attach offers to each result ── */
     const results = [];
+    const uniqueProducts = new Map();
 
-    // Variant hits – dominant match type
-    for (const variant of merged.variants) {
-        const offersForVariant = await buildOffersForVariant(variant._id);
-        const offersForProduct = await buildOffersForProduct(variant.productId?._id || variant.productId);
-        const allOffers = [...offersForVariant, ...offersForProduct];
-
-        results.push({
-            type: "variant",
-            variantId: variant._id,
-            variantName: variant.variantName,
-            color: variant.color,
-            storage: variant.storage,
-            image: variant.image || variant.productId?.image,
-            product: variant.productId,
-            offers: allOffers,
-            minPrice: allOffers.length ? Math.min(...allOffers.map((o) => o.price)) : null,
-            sellerCount: allOffers.length,
-        });
+    // 1. Add direct product hits
+    for (const p of merged.products) {
+        uniqueProducts.set(String(p._id), p);
     }
 
-    // Product hits (no specific variant)
-    const variantProductIds = new Set(
-        merged.variants.map((v) => String(v.productId?._id ?? v.productId))
-    );
+    // 2. Add products from variant hits
+    for (const v of merged.variants) {
+        const pId = String(v.productId?._id || v.productId);
+        if (v.productId && !uniqueProducts.has(pId)) {
+            uniqueProducts.set(pId, v.productId);
+        }
+    }
 
-    for (const product of merged.products) {
-        if (variantProductIds.has(String(product._id))) continue; // already covered by variant
+    // 3. For each unique product, fetch all its offers
+    for (const product of uniqueProducts.values()) {
         const offers = await buildOffersForProduct(product._id);
         results.push({
             type: "product",
