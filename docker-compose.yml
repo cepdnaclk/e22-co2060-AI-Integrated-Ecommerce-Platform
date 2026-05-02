@@ -162,7 +162,7 @@ services:
       MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/?appName=Cluster0}
       JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
       FRONTEND_URL: http://localhost:5173
-      ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-false}
+      ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-true}
       FACE_RECOGNITION_ENABLED: "true"
       FACE_SERVICE_URL: http://face-service:5000
       FACE_SIMILARITY_THRESHOLD: "0.45"
