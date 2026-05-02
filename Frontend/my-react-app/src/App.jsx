@@ -69,6 +69,9 @@ function App() {
           <Route path="/seller/offers" element={<MySellerOffers />} />
           <Route path="/seller/offers/new" element={<CreateSellerOffer />} />
 
+          {/* Seller product creation (no admin auth needed) */}
+          <Route path="/seller/products/new" element={<CreateProduct />} />
+
           {/* Email Verification for Seller Registration */}
           <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
 

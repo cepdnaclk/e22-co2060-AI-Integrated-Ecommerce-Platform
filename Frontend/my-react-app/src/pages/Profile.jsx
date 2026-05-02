@@ -165,7 +165,7 @@ const Profile = () => {
     const tabs = ["overview", "orders", "transactions", "personal", "security"];
 
     return (
-        <div style={{ ...styles.pg, position: "relative", overflow: "hidden" }}>
+        <div style={{ ...styles.pg, position: "relative", overflow: "hidden" }} className="p-4 md:p-12">
 
             <ParticleCanvas />
 
@@ -336,7 +336,7 @@ const Profile = () => {
 
                     {/* ── OVERVIEW ── */}
                     {activeTab === "overview" && (
-                        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {[
                                 { label:"First Name",    val: profile.firstName },
                                 { label:"Last Name",     val: profile.lastName },
@@ -361,7 +361,7 @@ const Profile = () => {
                     {activeTab === "orders" && (
                         <div>
                             {/* Summary stats */}
-                            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:24 }}>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                                 {[
                                     { label:"Total Orders",     value: totalOrders,    icon:"📦", color:"#4ac6ff" },
                                     { label:"Active / Pending", value: pendingOrders,  icon:"⏳", color:"#f59e0b" },
@@ -465,7 +465,7 @@ const Profile = () => {
                     {activeTab === "transactions" && (
                         <div>
                             {/* Summary */}
-                            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:24 }}>
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
                                 {[
                                     { label:"Total Transactions", value: orders.filter(o=>o.status!=="cancelled").length, icon:"💳", color:"#4ac6ff" },
                                     { label:"Total Spent",         value: `Rs. ${totalSpent.toLocaleString()}`,               icon:"💰", color:"#4ade80" },
@@ -490,7 +490,8 @@ const Profile = () => {
                                     <p style={{ color:"#64748b", fontSize:14 }}>No transactions yet.</p>
                                 </div>
                             ) : (
-                                <div style={{ background:"rgba(255,255,255,0.02)", borderRadius:14, border:"1px solid rgba(255,255,255,0.07)", overflow:"hidden" }}>
+                                <div style={{ background:"rgba(255,255,255,0.02)", borderRadius:14, border:"1px solid rgba(255,255,255,0.07)", overflowX:"auto" }}>
+                                    <div style={{ minWidth: 700 }}>
                                     {/* Table header */}
                                     <div style={{ display:"grid", gridTemplateColumns:"2fr 1.2fr 1fr 1fr 1fr", gap:0, padding:"12px 20px", borderBottom:"1px solid rgba(255,255,255,0.07)", background:"rgba(255,255,255,0.03)" }}>
                                         {["Transaction", "Date", "Items", "Status", "Amount"].map(h => (
@@ -535,6 +536,7 @@ const Profile = () => {
                                             </div>
                                         );
                                     })}
+                                    </div>
                                 </div>
                             )}
 
@@ -554,7 +556,7 @@ const Profile = () => {
                                 <h3 style={{ margin:0, fontSize:17, color:"#e2e8f0" }}>Personal Information</h3>
                                 <button onClick={openEdit} style={{ ...styles.btnBlue, padding:"8px 16px", fontSize:13 }}>✏️ Edit</button>
                             </div>
-                            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:24 }}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {[
                                     { label:"First Name",    val: profile.firstName },
                                     { label:"Last Name",     val: profile.lastName },
@@ -638,7 +640,7 @@ const Profile = () => {
                             <button onClick={() => setEditing(false)} style={{ background:"none", border:"none", color:"#94a3b8", fontSize:22, cursor:"pointer", lineHeight:1 }}>✕</button>
                         </div>
 
-                        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {[
                                 { key:"firstName",   label:"First Name",     type:"text" },
                                 { key:"lastName",    label:"Last Name",      type:"text" },
@@ -700,7 +702,6 @@ const styles = {
         fontFamily: "'Segoe UI', Arial, sans-serif",
         display: "flex",
         justifyContent: "center",
-        padding: "48px 24px",
     },
     card: {
         background: "rgba(255,255,255,0.04)",
