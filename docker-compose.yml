@@ -91,7 +91,7 @@ services:
       REDIS_PORT: 6379
       REDIS_REQUIRED: "true"
       INLINE_EVENT_PROCESSING: "true"
-      FRONTEND_ORIGIN: http://localhost:5173,http://127.0.0.1:5173
+      FRONTEND_ORIGIN: https://localhost:5173,https://127.0.0.1:5173
     ports:
       - "4020:4020"
     healthcheck:
@@ -143,7 +143,7 @@ services:
       PORT: 3000
       MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/?appName=Cluster0}
       JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
-      FRONTEND_URL: http://localhost:5173
+      FRONTEND_URL: https://localhost:5173
       ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-false}
       FACE_RECOGNITION_ENABLED: "true"
       FACE_SERVICE_URL: http://face-service:5000
