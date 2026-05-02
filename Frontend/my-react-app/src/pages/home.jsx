@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SponsorBar from "../components/sponsorbar.jsx";
 import CountUp from "../components/CountUp.jsx";
 import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
-import SeasonalCarShowcase from "../components/seasonalCar.jsx";
+import TrendingProductsShowcase from "../components/SeasonalCar.jsx";
+import API_BASE_URL from "../config/api";
 
 /* ✅ CATEGORY LIST */
 const categories = [
@@ -21,15 +22,56 @@ export default function Home() {
   const navigate = useNavigate();
   const [showCategories, setShowCategories] = useState(false);
 
+  // ✅ Initialize user immediately from localStorage (no flash of logged-out UI)
+  const [user, setUser] = useState(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  });
+
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isSeller, setIsSeller] = useState(false);
+
+  // ✅ Check if current user has a registered seller account
+  // Re-runs when user changes (e.g. after login navigates here)
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token || !user) {
+      setIsSeller(false);
+      return;
+    }
+
+    fetch(`${API_BASE_URL}/api/sellers/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (res.ok) setIsSeller(true);
+        else setIsSeller(false);
+      })
+      .catch((err) => {
+        console.warn("Seller check failed (may be HTTPS proxy issue):", err.message);
+        setIsSeller(false);
+      });
+  }, [user]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setIsSeller(false);
+    setShowProfileMenu(false);
+  };
+
   return (
     <div className="min-h-screen smooth-bg text-white">
       {/* TOP ROW */}
-      <div className="flex items-center justify-between px-10 pt-10 h-16">
+      <div className="flex items-center justify-between px-4 md:px-10 pt-4 md:pt-10 h-16">
         {/* LEFT: Brand */}
         <div className="text-2xl font-bold tracking-wide">BEETA</div>
 
         {/* CENTER: Buttons */}
-        <div className="flex font-thin items-center gap-8">
+        <div className="hidden md:flex font-thin items-center gap-8">
           {/* ✅ FINAL ATTRACTIVE ALL CATEGORIES DROPDOWN */}
           <div
             className="relative"
@@ -125,26 +167,147 @@ export default function Home() {
           <button className="hover:text-blue-400 transition">New</button>
           <button className="hover:text-blue-400 transition">Trending</button>
           <button className="hover:text-blue-400 transition">Support</button>
-          <button className="hover:text-blue-400 transition">About</button>
+          <button onClick={() => navigate("/about")} className="hover:text-blue-400 transition">About</button>
         </div>
 
-        {/* RIGHT: Auth Buttons */}
-        <div className="flex items-center font-thin gap-4">
-          <button
-            onClick={() => navigate("/login")}
-            className="hover:text-blue-400 transition"
-          >
-            Login
-          </button>
+        {/* RIGHT: Auth Buttons or Profile */}
+        <div className="flex items-center font-thin gap-2 md:gap-4 z-50">
+          {user ? (
+            <div
+              className="relative flex items-center gap-3 cursor-pointer"
+              onMouseEnter={() => setShowProfileMenu(true)}
+              onMouseLeave={() => setShowProfileMenu(false)}
+            >
+              <span className="hover:text-blue-400 transition hidden md:block">
+                My Account
+              </span>
+              <img
+                src={user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.firstName || user.name || user.email || "User")}&background=0D8ABC&color=fff`}
+                alt="Profile"
+                className="w-10 h-10 rounded-full border-2 border-white/30 object-cover bg-white"
+                referrerPolicy="no-referrer"
+              />
 
-          <button className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
-            Sign Up
-          </button>
+              {/* Dropdown */}
+              {showProfileMenu && (
+                <div className="absolute right-0 top-full pt-3 z-50">
+                  <div
+                    className="
+                      w-48
+                      rounded-xl
+                      overflow-hidden
+                      backdrop-blur-lg
+                      bg-gradient-to-b
+                      from-[#0b1c2d]
+                      via-[#0f2a44]
+                      to-[#071421]
+                      border
+                      border-white/10
+                      shadow-2xl
+                    "
+                  >
+                    <div className="px-5 py-3 text-sm text-gray-200 border-b border-white/10">
+                      Welcome, <br />
+                      <span className="font-semibold text-white truncate block">{user.firstName || user.name || user.email || "User"}</span>
+                    </div>
+
+                    <div
+                      onClick={() => navigate("/profile")}
+                      className="
+                        px-5
+                        py-3
+                        cursor-pointer
+                        text-sm
+                        text-gray-200
+                        transition-all
+                        duration-300
+                        hover:text-blue-400
+                        hover:bg-white/5
+                      "
+                    >
+                      My Profile
+                    </div>
+
+                    {/* 👇 CONDITIONAL MY SELLER PROFILE (only if user has a seller account) */}
+                    {isSeller && (
+                      <div
+                        onClick={() => navigate("/seller/dashboard")}
+                        className="
+                          px-5
+                          py-3
+                          cursor-pointer
+                          text-sm
+                          text-green-300
+                          font-medium
+                          flex
+                          items-center
+                          gap-2
+                          transition-all
+                          duration-300
+                          hover:text-green-400
+                          hover:bg-white/5
+                        "
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7" />
+                          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+                          <path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4" />
+                          <path d="M2 7h20" />
+                          <path d="M22 7v3a2 2 0 0 1-2 2v0a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12v0a2 2 0 0 1-2-2V7" />
+                        </svg>
+                        My Seller Profile
+                      </div>
+                    )}
+
+                    <div
+                      onClick={handleLogout}
+                      className="
+                        px-5
+                        py-3
+                        cursor-pointer
+                        text-sm
+                        text-gray-200
+                        transition-all
+                        duration-300
+                        hover:text-red-400
+                        hover:bg-white/5
+                      "
+                    >
+                      Logout
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate("/login")}
+                className="hover:text-blue-400 transition"
+              >
+                Login
+              </button>
+
+              <button onClick={() => navigate("/signup")} className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
+                Sign Up
+              </button>
+            </>
+          )}
         </div>
       </div>
 
       {/* HERO SECTION */}
-      <div className="flex flex-col md:flex-row items-center justify-center text-center md:text-left mt-20 px-10 md:px-20 gap-10">
+      <div className="flex flex-col md:flex-row items-center justify-center text-center md:text-left mt-10 md:mt-20 px-4 md:px-20 gap-10">
         <div className="mt-[60px] md:w-1/2">
           <Reveal delay={0}>
             <p className="text-xl pb-8 md:text-lg text-[#4ac6ff] font-regular">
@@ -251,7 +414,7 @@ export default function Home() {
       </div>
 
       <SponsorBar />
-      <SeasonalCarShowcase />
+      <TrendingProductsShowcase />
     </div>
   );
 }

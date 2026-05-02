@@ -1,10 +1,12 @@
 import jwt from "jsonwebtoken";
 
 /**
- * ✅ VERIFY JWT TOKEN
+ * ======================================================
+ * ✅ VERIFY JWT TOKEN (DEFAULT EXPORT)
  * Attaches decoded user to req.user
+ * ======================================================
  */
-export function verifyToken(req, res, next) {
+const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -22,7 +24,8 @@ export function verifyToken(req, res, next) {
     req.user = {
       id: decoded.id,
       role: decoded.role,
-      email: decoded.email
+      email: decoded.email,
+      pendingFace: decoded.pendingFace || false,
     };
 
     next();
@@ -31,13 +34,15 @@ export function verifyToken(req, res, next) {
       message: "Invalid or expired token"
     });
   }
-}
+};
 
 /**
- * ✅ ROLE-BASED AUTHORIZATION
+ * ======================================================
+ * ✅ ROLE-BASED AUTHORIZATION (NAMED EXPORT)
  * Usage: authorizeRoles("admin"), authorizeRoles("seller")
+ * ======================================================
  */
-export function authorizeRoles(...allowedRoles) {
+export const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     if (!req.user || !allowedRoles.includes(req.user.role)) {
       return res.status(403).json({
@@ -46,4 +51,6 @@ export function authorizeRoles(...allowedRoles) {
     }
     next();
   };
-}
+};
+
+export default verifyToken;

@@ -1,55 +1,88 @@
-import mongoose from "mongoose"; // Importing mongoose library
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
-    {
-        email: {
-            type : String,
-            required : true, //mail is essential
-            unique : true //mail should be unique Ekama mail eken account 2k hadanna baa
+  {
+    email: {
+      type: String,
+      required: true,
+      unique: true
+    },
 
-        },
-        firstName: {
-            type : String,
-            required : true,
-        },
-        lastName: {
-            type : String,
-            required : true, //last name is essential
-        },
-            
-        password: {
-            type : String,
-            required : true, //password is essential
-        },
-        role: { //which user act as custtomer or admin
-            type : String,
-            required : true,
-            enum : ["customer", "admin"], //only these 2 values are allowed,role ekata danna puluwan me 2 witharai
-            default : 'customer' //default role is customer
-        },
-        isBlocked :{
-            type : Boolean,
-            default : false, //by default user is not blocked
-            required : true
-        }, 
-        isEmailVerified :{
-            type : Boolean,
-            default : false,
-            required : true 
-        }, 
-        image :{
-            type : String,
-            default : "/images/default-profile.png"
+    firstName: {
+      type: String,
+      required: true
+    },
 
-        },
-        token: {
-            type: String,
-            default: null
-        }
+    lastName: {
+      type: String,
+      trim: true,
+      default: ""
+    },
 
+    password: {
+      type: String,
+      required: true
+    },
+
+    role: {
+      type: String,
+      required: true,
+      enum: ["customer", "seller", "admin", "ceo"],
+      default: "customer"
+    },
+
+    isBlocked: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+
+    isEmailVerified: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+
+    image: {
+      type: String,
+      default: "/images/default-profile.png"
+    },
+
+    phone: { type: String, default: "" },
+    dateOfBirth: { type: String, default: "" },
+    gender: { type: String, enum: ["male", "female", "other", ""], default: "" },
+    address: { type: String, default: "" },
+    addressLocation: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
+      placeId: { type: String, default: "" },
+      provider: { type: String, default: "" },
+      accuracy: { type: Number, default: null },
+      timestamp: { type: String, default: "" },
+      country: { type: String, default: "" },
+      state: { type: String, default: "" },
+      city: { type: String, default: "" },
+      postalCode: { type: String, default: "" },
+      street: { type: String, default: "" },
+      formattedAddress: { type: String, default: "" },
+      verified: { type: Boolean, default: false },
+    },
+    bio: { type: String, default: "" },
+
+    token: {
+      type: String,
+      default: null
+    },
+
+    // Face recognition embedding (admin only, nullable)
+    faceEmbedding: {
+      type: [Number],
+      default: null,
     }
-)
+  },
+  { timestamps: true }
+);
 
-const userModel = mongoose.model("user",userSchema) //user is the collection name,collection ekai backend ekai athara sambandathawaya hadanne userModel eken
+const userModel = mongoose.model("User", userSchema);
 
-export default userModel;//Model kiyanne data vala structure eka
+export default userModel;

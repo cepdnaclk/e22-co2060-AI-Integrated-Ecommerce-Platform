@@ -1,0 +1,28 @@
+Automatic Facebook Page Post Publishing Platform - Implementation Plan
+
+1. Architecture
+- Frontend: Next.js App Router + Tailwind dashboard for auth, Facebook connect, page selection, scheduling, status tracking.
+- Backend: Express REST API with JWT auth, Facebook OAuth, Prisma/PostgreSQL, Cloudinary upload, BullMQ enqueue.
+- Worker: BullMQ consumer publishes scheduled posts and updates status.
+
+2. Core Modules
+- Auth: register/login with bcrypt + JWT.
+- Facebook OAuth: connect/callback, short-lived to long-lived token exchange.
+- Pages: retrieve only pages, persist page tokens encrypted.
+- Posts: create/list/delete scheduled posts with optional image/link.
+- Queue: delayed jobs, retry 3 attempts, backoff and failure logs.
+
+3. Prisma Data Model
+- User, FacebookAccount, Page, Post + status enum (pending/published/failed).
+
+4. Security
+- Encrypt external tokens at rest (AES-256-GCM).
+- Zod input validation.
+- Helmet, CORS, rate limiting.
+- Env-var based secret handling.
+
+5. Deliverables
+- /backend, /frontend, /worker full code.
+- .env.example templates.
+- Setup guide and curl examples.
+- Mocked Facebook API test sample.
