@@ -14,8 +14,8 @@ async def run_pipeline_hourly():
             print("Pipeline completed.")
         except Exception as e:
             print(f"Error running pipeline: {e}")
-        # Wait 1 minute (60 seconds)
-        await asyncio.sleep(60)
+        # Wait 1 hour (3600 seconds)
+        await asyncio.sleep(3600)
 
 @app.on_event("startup")
 async def startup_event():
