@@ -23,7 +23,8 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     outputs:
-      image_name: ${{ steps.image.outputs.name }}
+      image_name: ${{ steps.image.outputs.name}}
+      image_tag: ${{ steps.meta.outputs.tags }}
     permissions:
       contents: read
       packages: write
@@ -76,6 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_NAME: ${{ needs.build-and-push.outputs.image_name }}
+      IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
     
     steps:
       - name: Checkout code
@@ -93,10 +95,12 @@ jobs:
           YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
           GOOGLE_SHEET_ID: ${{ secrets.GOOGLE_SHEET_ID }}
         run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main
+          # Use the SHA tag which is always generated
+          IMAGE_URI="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          docker pull $IMAGE_URI
           docker run --rm \
             -e YOUTUBE_API_KEY=${{ secrets.YOUTUBE_API_KEY }} \
             -e GOOGLE_SHEET_ID=${{ secrets.GOOGLE_SHEET_ID }} \
             -v /tmp/test_output:/app/output \
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:main \
+            $IMAGE_URI \
             python -c "from app.main import app; print('✅ App imports successfully')"
