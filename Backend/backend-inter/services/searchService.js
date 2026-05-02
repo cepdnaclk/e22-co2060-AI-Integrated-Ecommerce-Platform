@@ -56,7 +56,9 @@ async function buildOffersForVariant(variantId) {
  * ───────────────────────────────────────────────────── */
 async function layer1TextSearch(q, category) {
     const textFilter = { $text: { $search: q } };
-    if (category && category !== "null") textFilter.category = category;
+    if (category && category !== "null") {
+        textFilter.category = { $regex: `^${category}$`, $options: "i" };
+    }
 
     const [products, variants] = await Promise.all([
         Product.find(textFilter, { score: { $meta: "textScore" } })
@@ -81,7 +83,9 @@ async function layer1TextSearch(q, category) {
  * LAYER 2 – Fuzzy Search (Fuse.js Bitap Algorithm)
  * ───────────────────────────────────────────────────── */
 async function layer2FuzzySearch(q, category) {
-    const catFilter = category && category !== "null" ? { category } : {};
+    const catFilter = category && category !== "null" 
+        ? { category: { $regex: `^${category}$`, $options: "i" } } 
+        : {};
 
     // 1. Fetch candidates from DB
     const [allProducts, allVariants] = await Promise.all([
@@ -93,7 +97,7 @@ async function layer2FuzzySearch(q, category) {
 
     // Apply category filter to variants manually if category is specified
     const filteredVariants = category && category !== "null" 
-        ? allVariants.filter(v => v.productId && v.productId.category === category)
+        ? allVariants.filter(v => v.productId && v.productId.category?.toLowerCase() === category.toLowerCase())
         : allVariants;
 
     // 2. Setup Fuse for Products
@@ -137,7 +141,9 @@ async function layer3SemanticSearch(q, category) {
         const qVec = await getEmbedding(q);
 
         // Pull a candidate pool from DB
-        const catFilter = category && category !== "null" ? { category } : {};
+        const catFilter = category && category !== "null" 
+            ? { category: { $regex: `^${category}$`, $options: "i" } } 
+            : {};
         const candidates = await Product.find(catFilter)
             .select("productName category brand description image")
             .limit(80)
