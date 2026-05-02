@@ -52,24 +52,19 @@ const TrendingProductsShowcase = () => {
       }
     };
 
-    // Initial fetch
     fetchTrending();
-
-    // Silently refresh data every 1 minute (60,000 ms) to keep the UI feeling live
     const intervalId = setInterval(fetchTrending, 60000);
-
-    // Cleanup interval on unmount
     return () => clearInterval(intervalId);
   }, []);
 
   const baseAnimation = "transition-all duration-700 ease-out transform";
 
-  // Data mapping for structure
+  // Data mapping
   const product1 = trendingData[0] || { Keyword: "Loading..." };
   const product2 = trendingData[1] || { Keyword: "Loading..." };
   const product3 = trendingData[2] || { Keyword: "Loading..." };
 
-  // Placehold.co for dynamic image rendering
+  // Placehold.co - remove text from URL to avoid duplication
   const getSmallImg = (keyword) => `https://placehold.co/400x400/00c3ff/ffffff?text=${encodeURIComponent(keyword)}`;
   const getLargeImg = (keyword) => `https://placehold.co/800x800/111111/ffffff?text=${encodeURIComponent(keyword)}`;
 
@@ -78,14 +73,14 @@ const TrendingProductsShowcase = () => {
       ref={sectionRef}
       className="w-full min-h-screen flex flex-col items-center justify-center mt-32 px-6"
     >
-      {/* 1️⃣ TITLE (same animation style as right box) */}
+      {/* 1️⃣ TITLE */}
       <h2
-        className={`${baseAnimation} text-4xl font-bold mb-12 text-center ${
+        className={`${baseAnimation} text-5xl font-bold mb-12 text-center text-white ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
         style={{ transitionDelay: "0ms" }}
       >
-        Live Top Trends
+        Summer Top Trends
       </h2>
 
       {/* MAIN GRID */}
@@ -94,34 +89,36 @@ const TrendingProductsShowcase = () => {
         <div className="grid grid-rows-2 gap-6">
           {/* 2️⃣ LEFT BOX 1 */}
           <div
-            className={`${baseAnimation} bg-[#00c3ff] rounded-2xl shadow-lg flex flex-col items-center justify-center ${
+            className={`${baseAnimation} bg-gradient-to-br from-[#00c3ff] to-[#0084ff] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
             style={{ transitionDelay: "200ms" }}
           >
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <img
               src={getSmallImg(product1.Keyword)}
               alt={product1.Keyword}
-              className="w-28 h-28 object-contain mb-3 rounded-lg"
+              className="w-32 h-32 object-contain mb-4 rounded-lg shadow-inner brightness-110"
             />
-            <p className="font-semibold text-lg text-white">
+            <p className="font-bold text-xl text-white tracking-wide">
               {product1.Keyword}
             </p>
           </div>
 
           {/* 3️⃣ LEFT BOX 2 */}
           <div
-            className={`${baseAnimation} bg-[#00c3ff] rounded-2xl shadow-lg flex flex-col items-center justify-center ${
+            className={`${baseAnimation} bg-gradient-to-br from-[#00c3ff] to-[#0084ff] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
             style={{ transitionDelay: "400ms" }}
           >
+            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
             <img
               src={getSmallImg(product2.Keyword)}
               alt={product2.Keyword}
-              className="w-28 h-28 object-contain mb-3 rounded-lg"
+              className="w-32 h-32 object-contain mb-4 rounded-lg shadow-inner brightness-110"
             />
-            <p className="font-semibold text-lg text-white">
+            <p className="font-bold text-xl text-white tracking-wide">
               {product2.Keyword}
             </p>
           </div>
@@ -129,21 +126,23 @@ const TrendingProductsShowcase = () => {
 
         {/* 4️⃣ RIGHT BOX (CAR) */}
         <div
-          className={`${baseAnimation} bg-[#111] rounded-2xl shadow-xl flex flex-col items-center justify-center relative overflow-hidden ${
+          className={`${baseAnimation} bg-gradient-to-br from-[#111] via-[#222] to-[#000] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
           style={{ transitionDelay: "600ms" }}
         >
+          <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <img
             src={getLargeImg(product3.Keyword)}
             alt={product3.Keyword}
-            className="w-[75%] object-contain rounded-xl"
+            className="w-[85%] object-contain rounded-2xl shadow-2xl mb-8 group-hover:scale-105 transition-transform duration-500"
           />
 
-          <div className="absolute top-4 right-4 bg-white text-black px-4 py-1 rounded-full text-sm font-semibold shadow">
-            Trending #1
+          <div className="absolute top-6 right-6 bg-white text-black px-5 py-2 rounded-full text-sm font-extrabold shadow-2xl tracking-tighter uppercase">
+            Summer
           </div>
-          <p className="font-semibold text-lg text-white mt-4 absolute bottom-8">
+          
+          <p className="font-bold text-2xl text-white absolute bottom-12 tracking-wide">
             {product3.Keyword}
           </p>
         </div>
@@ -151,15 +150,15 @@ const TrendingProductsShowcase = () => {
 
       {/* Buttons */}
       <div
-        className={`${baseAnimation} flex gap-6 mt-12 ${
+        className={`${baseAnimation} flex gap-8 mt-16 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
         }`}
         style={{ transitionDelay: "800ms" }}
       >
-        <button className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
+        <button className="px-8 py-3 bg-black/80 backdrop-blur-md text-white border border-white/10 rounded-xl hover:bg-black hover:border-blue-500/50 transition-all duration-300 shadow-xl">
           Previous
         </button>
-        <button className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition">
+        <button className="px-8 py-3 bg-black/80 backdrop-blur-md text-white border border-white/10 rounded-xl hover:bg-black hover:border-blue-500/50 transition-all duration-300 shadow-xl">
           Next
         </button>
       </div>
@@ -168,3 +167,4 @@ const TrendingProductsShowcase = () => {
 };
 
 export default TrendingProductsShowcase;
+

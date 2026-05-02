@@ -166,6 +166,8 @@ services:
     restart: unless-stopped
     ports:
       - "8003:8003"
+    volumes:
+      - .\AI-ML\youtube-trending-system:/app
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/')"]
       interval: 20s

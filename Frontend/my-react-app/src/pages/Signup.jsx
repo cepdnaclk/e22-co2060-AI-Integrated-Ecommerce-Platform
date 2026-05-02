@@ -3,6 +3,28 @@ import { useNavigate, Link } from "react-router-dom";
 import { auth } from "../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import SuccessAnimation from "../components/SuccessAnimation";
+import API_BASE_URL from "../config/api";
+
+// Exchange Firebase token for backend JWT
+async function syncBackendSession(idToken) {
+  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => ({}));
+    throw new Error(data.message || `HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  localStorage.setItem("token", data.token);
+  localStorage.setItem("user", JSON.stringify(data.user));
+  return data;
+}
 
 const Signup = () => {
   const [firstName, setFirstName] = useState("");
@@ -28,7 +50,11 @@ const Signup = () => {
         displayName: `${firstName} ${lastName}`
       });
 
-      // 3. Show success
+      // 3. Get ID token and sync with backend
+      const idToken = await userCredential.user.getIdToken();
+      await syncBackendSession(idToken);
+
+      // 4. Show success
       setIsSuccess(true);
     } catch (err) {
       console.error("❌ Signup error:", err);
@@ -42,7 +68,7 @@ const Signup = () => {
     return (
       <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-[#0d1424] via-[#072454] to-[#1945a5]">
         <SuccessAnimation
-          message="Account Created! Redirecting to Login..."
+          message="Account Created! Welcome to BEETA..."
           onDone={() => navigate("/login")}
         />
       </div>
@@ -133,3 +159,4 @@ const Signup = () => {
 };
 
 export default Signup;
+
