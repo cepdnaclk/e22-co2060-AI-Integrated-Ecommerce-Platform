@@ -46,7 +46,6 @@ const S = {
         background: "linear-gradient(135deg, #050B2E, #081A4A, #020617)",
         color: "#fff",
         fontFamily: "'Segoe UI', Arial, sans-serif",
-        padding: "40px 24px",
     },
     card: {
         background: "rgba(255,255,255,0.03)",
@@ -342,7 +341,7 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div style={S.page}>
+        <div style={S.page} className="p-4 md:p-10">
             <style>{`
         @keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes spin{to{transform:rotate(360deg)}}
@@ -394,7 +393,7 @@ export default function CheckoutPage() {
                         <p style={{ color: "#64748b", fontSize: 14 }}>Loading…</p>
                     </div>
                 ) : (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
+                    <div className="flex flex-col lg:grid lg:grid-cols-[1fr_320px] gap-6 items-start">
 
                         {/* Left: Shipping Form */}
                         <div>
@@ -511,7 +510,7 @@ export default function CheckoutPage() {
                                         </div>
 
                                         {/* Name + Phone */}
-                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                                             <div>
                                                 <label style={S.label}>Full Name *</label>
                                                 <input
@@ -553,7 +552,7 @@ export default function CheckoutPage() {
                                         </div>
 
                                         {/* City + Postal */}
-                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <label style={S.label}>City *</label>
                                                 <input
@@ -598,7 +597,7 @@ export default function CheckoutPage() {
                                         <p style={{ fontSize: 12, color: "#64748b", marginBottom: 12 }}>
                                             Complete the remaining details for delivery:
                                         </p>
-                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div>
                                                 <label style={S.label}>City *</label>
                                                 <input

@@ -150,12 +150,30 @@ services:
       FACE_SIMILARITY_THRESHOLD: "0.45"
       RESTOCK_ML_API: http://restock-ml:8001
       RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
+      YOUTUBE_TRENDING_URL: http://youtube-trending:8003
       BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
     volumes:
       - .\Backend\backend-inter:/app
       - /app/node_modules
     ports:
       - "3000:3000"
+
+  youtube-trending:
+    build:
+      context: .\AI-ML\youtube-trending-system
+      dockerfile: Dockerfile
+    container_name: youtube-trending-service
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    volumes:
+      - .\AI-ML\youtube-trending-system:/app
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
 
   frontend:
     image: node:20-slim

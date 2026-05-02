@@ -22,6 +22,8 @@ import adminOrderRouter from "./router/adminOrderRouter.js"; // ✅ Admin Order 
 import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority ML
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
+import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
+
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -74,6 +76,10 @@ app.use("/api/admin/auth", adminAuthRouter);
 
 // AI features
 app.use("/api/ai", aiRouter);
+
+// Trending Products
+app.use("/api/trending", trendingRouter);
+
 
 // Product catalog (browse products)
 app.use("/api/products", productRouter);

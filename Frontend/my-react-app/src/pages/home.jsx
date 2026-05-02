@@ -4,7 +4,7 @@ import SponsorBar from "../components/sponsorbar.jsx";
 import CountUp from "../components/CountUp.jsx";
 import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
-import SeasonalCarShowcase from "../components/SeasonalCar.jsx";
+import TrendingProductsShowcase from "../components/SeasonalCar.jsx";
 import API_BASE_URL from "../config/api";
 
 /* ✅ CATEGORY LIST */
@@ -66,12 +66,12 @@ export default function Home() {
   return (
     <div className="min-h-screen smooth-bg text-white">
       {/* TOP ROW */}
-      <div className="flex items-center justify-between px-10 pt-10 h-16">
+      <div className="flex items-center justify-between px-4 md:px-10 pt-4 md:pt-10 h-16">
         {/* LEFT: Brand */}
         <div className="text-2xl font-bold tracking-wide">BEETA</div>
 
         {/* CENTER: Buttons */}
-        <div className="flex font-thin items-center gap-8">
+        <div className="hidden md:flex font-thin items-center gap-8">
           {/* ✅ FINAL ATTRACTIVE ALL CATEGORIES DROPDOWN */}
           <div
             className="relative"
@@ -167,11 +167,11 @@ export default function Home() {
           <button className="hover:text-blue-400 transition">New</button>
           <button className="hover:text-blue-400 transition">Trending</button>
           <button className="hover:text-blue-400 transition">Support</button>
-          <button className="hover:text-blue-400 transition">About</button>
+          <button onClick={() => navigate("/about")} className="hover:text-blue-400 transition">About</button>
         </div>
 
         {/* RIGHT: Auth Buttons or Profile */}
-        <div className="flex items-center font-thin gap-4 z-50">
+        <div className="flex items-center font-thin gap-2 md:gap-4 z-50">
           {user ? (
             <div
               className="relative flex items-center gap-3 cursor-pointer"
@@ -298,7 +298,7 @@ export default function Home() {
                 Login
               </button>
 
-              <button onClick={() => navigate("/become-seller")} className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
+              <button onClick={() => navigate("/signup")} className="px-4 py-1 rounded border border-white/30 hover:bg-white/10 transition">
                 Sign Up
               </button>
             </>
@@ -307,7 +307,7 @@ export default function Home() {
       </div>
 
       {/* HERO SECTION */}
-      <div className="flex flex-col md:flex-row items-center justify-center text-center md:text-left mt-20 px-10 md:px-20 gap-10">
+      <div className="flex flex-col md:flex-row items-center justify-center text-center md:text-left mt-10 md:mt-20 px-4 md:px-20 gap-10">
         <div className="mt-[60px] md:w-1/2">
           <Reveal delay={0}>
             <p className="text-xl pb-8 md:text-lg text-[#4ac6ff] font-regular">
@@ -414,7 +414,7 @@ export default function Home() {
       </div>
 
       <SponsorBar />
-      <SeasonalCarShowcase />
+      <TrendingProductsShowcase />
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { fetchProducts } from "../services/productService";
 import { smartSearch } from "../services/sellerOfferService";
 import SmartSearchBar from "../components/SmartSearchBar";
@@ -155,11 +155,15 @@ function Skeleton() {
 
 /* ─── Main Page ─── */
 const ProductListing = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlCategory = searchParams.get("category");
+  const urlSearch = searchParams.get("q");
+
   const [products, setProducts] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
 
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState(null);
+  const [search, setSearch] = useState(urlSearch || "");
+  const [category, setCategory] = useState(urlCategory || null);
   const [sort, setSort] = useState("latest");
   const [page, setPage] = useState(1);
 
@@ -167,6 +171,12 @@ const ProductListing = () => {
   const [error, setError] = useState("");
   const [totalResults, setTotalResults] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
+  // Sync state with URL when URL changes
+  useEffect(() => {
+    if (urlCategory !== category) setCategory(urlCategory);
+    if (urlSearch !== search) setSearch(urlSearch || "");
+  }, [urlCategory, urlSearch]);
 
   const loadData = useCallback(async () => {
     try {
@@ -201,6 +211,12 @@ const ProductListing = () => {
   const handleSearch = (val) => {
     setSearch(val);
     setPage(1);
+    if (val) {
+      searchParams.set("q", val);
+    } else {
+      searchParams.delete("q");
+    }
+    setSearchParams(searchParams);
   };
 
   return (
@@ -221,12 +237,21 @@ const ProductListing = () => {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 20 }}>
+      <div className="flex flex-col md:flex-row gap-5">
 
         {/* Sidebar */}
         <FilterSidebar
           setSearch={() => { }}   // SmartSearchBar handles this now
-          setCategory={(val) => { setCategory(val); setPage(1); }}
+          setCategory={(val) => {
+            setCategory(val);
+            setPage(1);
+            if (val) {
+              searchParams.set("category", val);
+            } else {
+              searchParams.delete("category");
+            }
+            setSearchParams(searchParams);
+          }}
         />
 
         {/* Main */}
