@@ -55,7 +55,7 @@ const LeaderCard = () => {
               <div className="relative mb-8">
                 <Quote className="absolute -left-8 -top-4 w-12 h-12 text-white/5" />
                 <p className="text-gray-300 text-lg leading-relaxed italic">
-                  "Arjun leads the team with a vision for building scalable solutions and delivering impactful results. He loves turning complex problems into simple, beautiful designs."
+                  "Yuneth leads the team with a vision for building scalable solutions and delivering impactful results. He loves turning complex problems into simple, beautiful designs."
                 </p>
               </div>
 
