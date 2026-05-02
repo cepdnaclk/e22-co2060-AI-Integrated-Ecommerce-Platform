@@ -167,7 +167,7 @@ export default function Home() {
           <button className="hover:text-blue-400 transition">New</button>
           <button className="hover:text-blue-400 transition">Trending</button>
           <button className="hover:text-blue-400 transition">Support</button>
-          <button className="hover:text-blue-400 transition">About</button>
+          <button onClick={() => navigate("/about")} className="hover:text-blue-400 transition">About</button>
         </div>
 
         {/* RIGHT: Auth Buttons or Profile */}
