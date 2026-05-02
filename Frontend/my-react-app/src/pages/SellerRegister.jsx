@@ -52,6 +52,16 @@ const BecomeSeller = () => {
         });
 
         if (res.ok) {
+          const data = await res.json();
+          if (data.newToken) {
+            localStorage.setItem("token", data.newToken);
+            try {
+              const u = JSON.parse(localStorage.getItem("user") || "{}");
+              u.role = "seller";
+              localStorage.setItem("user", JSON.stringify(u));
+            } catch (e) {}
+          }
+
           // ✅ Seller account now exists — verification complete!
           clearInterval(pollRef.current);
           setPhase("verified");

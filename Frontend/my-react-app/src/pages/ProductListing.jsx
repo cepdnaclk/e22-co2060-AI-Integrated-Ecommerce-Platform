@@ -221,7 +221,7 @@ const ProductListing = () => {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 20 }}>
+      <div className="flex flex-col md:flex-row gap-5">
 
         {/* Sidebar */}
         <FilterSidebar
