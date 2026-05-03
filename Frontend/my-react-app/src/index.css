@@ -1,0 +1,95 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.smooth-bg {
+  background: linear-gradient(
+    120deg,
+    #000000,
+    #011724,
+    #001b27,
+    #032c44,
+    #013955,
+    #02324e,
+    #002130,
+    #001d2d,
+    #01070a
+  );
+  background-size: 400% 400%;
+  animation: smoothGradient 24s ease-in-out infinite;
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient {
+  animation: gradient 12s ease infinite;
+}
+
+
+@keyframes smoothGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* viewport */
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+/* moving track (EXACTLY 200%) */
+.marquee-track {
+  display: flex;
+  width: 200%;
+  animation: marquee 30s linear infinite;
+}
+
+/* each half */
+.marquee-group {
+  display: flex;
+  width: 50%;
+  justify-content: space-around;
+}
+
+/* pause on hover (optional) */
+.marquee-container:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+
+.glass-morphism {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glow-blue {
+  box-shadow: 0 0 20px rgba(77, 163, 255, 0.3);
+}
+
+.glow-blue-hover:hover {
+  box-shadow: 0 0 30px rgba(77, 163, 255, 0.5);
+}
