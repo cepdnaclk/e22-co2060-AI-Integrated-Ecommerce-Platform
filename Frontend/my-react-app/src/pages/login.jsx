@@ -65,18 +65,19 @@ const Login = ({ onClose }) => {
         if (!result) return; // Nothing pending — normal case
         setLoading(true);
         const idToken = await result.user.getIdToken();
-        // Navigate immediately — sync backend in background
+        
+        // Sync backend first
+        await syncBackendSession(idToken);
+
+        // Navigate only if successful
         setIsSuccess(true);
         if (onClose) onClose();
-        syncBackendSession(idToken).catch((err) => {
-          console.warn("⚠️ Background backend sync failed (redirect):", err.message);
-        });
       } catch (err) {
         console.error("❌ Google redirect result error:", err);
         if (err.code === "auth/unauthorized-domain") {
           setError(`Unauthorized domain: Add this IP/domain to Firebase Auth → Authorized Domains.`);
         } else if (err.code !== "auth/null-user") {
-          setError(err.message);
+          setError(err.message || "Failed to authenticate. Please check server connection.");
         }
       } finally {
         setLoading(false);
@@ -86,24 +87,23 @@ const Login = ({ onClose }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // ── Core: Firebase auth → navigate immediately → backend sync in bg ──────
+  // ── Core: Firebase auth → backend sync → navigate ──────
   const handleFirebaseSuccess = useCallback(async (firebaseUser) => {
-    const idToken = await firebaseUser.getIdToken();
+    try {
+      const idToken = await firebaseUser.getIdToken();
 
-    // 1. Navigate home IMMEDIATELY — don't block on the backend call
-    setIsSuccess(true);
-    if (onClose) onClose();
+      // 1. Sync backend JWT FIRST (Prevents race condition where Home loads before user is in localStorage)
+      await syncBackendSession(idToken);
+      console.log("✅ Backend session synced");
 
-    // 2. Sync backend JWT in the background
-    syncBackendSession(idToken)
-      .then(() => {
-        console.log("✅ Backend session synced");
-      })
-      .catch((err) => {
-        console.warn("⚠️ Background backend sync failed:", err.message);
-        // User is already on the home page. They will only be prompted
-        // to re-login when hitting a protected API call — acceptable trade-off.
-      });
+      // 2. Show Success Animation and Navigate
+      setIsSuccess(true);
+      if (onClose) onClose();
+    } catch (err) {
+      console.error("❌ Failed to get Firebase token or sync session:", err);
+      // Give a helpful error if it's the backend sync failing
+      setError(err.message || "Failed to authenticate. Please check server connection.");
+    }
   }, [onClose]);
 
   // ── Email + Password login ───────────────────────────────────────────────
