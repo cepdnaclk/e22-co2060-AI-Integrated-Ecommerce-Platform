@@ -49,21 +49,15 @@ app.use(express.json());
 // CORS configuration
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  "https://frontend-production-159d.up.railway.app",
   "http://localhost:5173",
-  "https://localhost:5173"
+  "https://localhost:5173",
+  "http://localhost:3000"
 ].filter(Boolean);
 
 app.use(
   cors({
-<<<<<<< HEAD
-    origin: [
-      "https://frontend-production-159d.up.railway.app",
-      "http://localhost:5173",
-      "http://localhost:3000"
-    ],
-=======
     origin: allowedOrigins.length > 0 ? allowedOrigins : true,
->>>>>>> upstream/dev
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
