@@ -11,7 +11,7 @@ server {
     location /api/ {
         # Using a variable here prevents Nginx from failing to start if the backend is down
         set $backend_url "${BACKEND_URL}";
-        proxy_pass $backend_url/api/;
+        proxy_pass $backend_url$request_uri;
         
         proxy_http_version 1.1;
         proxy_set_header Host ${BACKEND_HOST};
