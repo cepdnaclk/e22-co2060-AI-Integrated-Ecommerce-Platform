@@ -19,7 +19,7 @@ ENV BACKEND_URL=https://backend-production.up.railway.app
 ENV BACKEND_HOST=backend-production.up.railway.app
 ENV PORT=80
 
-COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
