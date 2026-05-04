@@ -19,4 +19,9 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
+# Define default values for env variables so envsubst doesn't skip them, preventing Nginx startup crashes
+ENV PORT=80
+ENV BACKEND_URL="http://localhost:3000"
+ENV BACKEND_HOST=""
+
 CMD ["nginx", "-g", "daemon off;"]
