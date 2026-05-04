@@ -1,6 +1,8 @@
-// Use the injected env var when available (set at build time via Dockerfile ARG).
-// Falls back to a relative path so the Nginx proxy handles routing in production
-// when the build arg was not provided.
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
+// Force all backend API calls to use relative paths.
+// This guarantees that requests are intercepted by:
+//  - Local Dev: Vite's built-in proxy (vite.config.js -> http://localhost:3000)
+//  - Production: Nginx reverse proxy (nginx.conf -> https://backend.../api/)
+// This flawlessly bypasses CORS checks and preflight failures on Railway.
+const API_BASE_URL = "";
 
 export default API_BASE_URL;
