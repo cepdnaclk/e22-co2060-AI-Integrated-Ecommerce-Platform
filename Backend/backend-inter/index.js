@@ -49,7 +49,6 @@ app.use(express.json());
 // CORS configuration
 const allowedOrigins = [
   process.env.FRONTEND_URL,
-  "https://frontend-production-159d.up.railway.app",
   "http://localhost:5173",
   "https://localhost:5173",
   "http://localhost:3000"
@@ -57,7 +56,19 @@ const allowedOrigins = [
 
 app.use(
   cors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      
+      const isAllowed = allowedOrigins.includes(origin) || 
+                       origin.endsWith(".up.railway.app") || 
+                       /^https?:\/\/localhost:\d+$/.test(origin);
+      
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
