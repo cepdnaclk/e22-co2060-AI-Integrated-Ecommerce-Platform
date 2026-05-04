@@ -47,7 +47,11 @@ app.use(express.json());
 // CORS configuration
 app.use(
   cors({
-    origin: true, // Temporarily allow all for debugging
+    origin: [
+      "https://frontend-production-159d.up.railway.app",
+      "http://localhost:5173",
+      "http://localhost:3000"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
