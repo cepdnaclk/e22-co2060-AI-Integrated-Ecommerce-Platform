@@ -734,8 +734,19 @@ export async function getCenterShipments(req, res) {
     const scoped = withTenantScope(req, filters, {
       branchFields: ["assignedBranchId", "currentBranchId"],
     });
-    const shipments = await DeliveryOrder.find(scoped).sort({ createdAt: -1 }).lean();
-    return res.json({ count: shipments.length, shipments });
+    const shipments = await DeliveryOrder.find(scoped)
+      .populate("sellerId", "fullName address email phone shopName")
+      .populate("currentRiderId", "fullName employeeId phone")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Map sellerId to origin for frontend compatibility if needed
+    const formattedShipments = shipments.map(s => ({
+      ...s,
+      origin: s.sellerId || s.origin
+    }));
+
+    return res.json({ count: formattedShipments.length, shipments: formattedShipments });
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch center shipments", error: error.message });
   }
@@ -760,10 +771,20 @@ export async function getCenterRiderAssignments(req, res) {
 
     const assignments = await DeliveryAssignment.find(filters)
       .sort({ queuePosition: 1, assignedAt: 1 })
-      .populate("deliveryOrderId")
+      .populate({
+        path: "deliveryOrderId",
+        populate: { path: "sellerId", select: "fullName address email phone shopName" }
+      })
       .lean();
 
-    return res.json({ count: assignments.length, assignments });
+    const formattedAssignments = assignments.map(a => {
+      if (a.deliveryOrderId) {
+        a.deliveryOrderId.origin = a.deliveryOrderId.sellerId || a.deliveryOrderId.origin;
+      }
+      return a;
+    });
+
+    return res.json({ count: formattedAssignments.length, assignments: formattedAssignments });
   } catch (error) {
     return res.status(500).json({ message: "Failed to fetch center rider assignments", error: error.message });
   }

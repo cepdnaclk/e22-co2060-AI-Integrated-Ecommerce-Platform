@@ -202,5 +202,12 @@ export const dmsService = {
       body: payload,
     });
   },
+  updateStaffProfile(payload, staffId = null) {
+    const path = staffId ? `/staff/profile/${staffId}` : "/staff/profile";
+    return dmsRequest(path, {
+      method: "PATCH",
+      body: payload,
+    });
+  },
 };
 

@@ -27,6 +27,8 @@ export default function DmsCenterDashboard() {
   const navigate = useNavigate();
   const qrRef = useRef(null);
   const [loading, setLoading] = useState(true);
+  const [editingStaff, setEditingStaff] = useState(null);
+  const [editBusy, setEditBusy] = useState(false);
   const [error, setError] = useState("");
   const [profile, setProfile] = useState(null);
   const [dashboard, setDashboard] = useState({});
@@ -221,6 +223,30 @@ export default function DmsCenterDashboard() {
     }
   };
 
+  const handleUpdateStaff = async (e) => {
+    e.preventDefault();
+    if (!editingStaff) return;
+    setEditBusy(true);
+    try {
+      const payload = {
+        fullName: editingStaff.fullName,
+        phone: editingStaff.phone,
+        email: editingStaff.email,
+        idNumber: editingStaff.idVerification?.idNumber
+      };
+      // If it's the current rider editing themselves, staffId is null in service call
+      const staffId = isRider ? null : editingStaff._id;
+      await dmsService.updateStaffProfile(payload, staffId);
+      setRiderSuccess("Staff profile updated successfully");
+      setEditingStaff(null);
+      load(); // Refresh data
+    } catch (err) {
+      setRiderError(err.message);
+    } finally {
+      setEditBusy(false);
+    }
+  };
+
   const handleExportAsImage = async (trackingNumber) => {
     if (!qrRef.current) return;
     try {
@@ -295,12 +321,22 @@ export default function DmsCenterDashboard() {
             >
               Refresh
             </button>
-            <button 
-              className="px-6 py-3 rounded-xl font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all active:scale-95"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
+            <div className="flex items-center gap-3">
+              {isRider && portal?.staff && (
+                <button 
+                  onClick={() => setEditingStaff(portal.staff)}
+                  className="bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 px-4 py-2 rounded-xl text-xs font-bold transition-all"
+                >
+                  👤 My Profile
+                </button>
+              )}
+              <button 
+                className="px-6 py-3 rounded-xl font-bold bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 transition-all active:scale-95"
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
+            </div>
           </div>
         </div>
 
@@ -419,11 +455,18 @@ export default function DmsCenterDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                  <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Delivery Address</div>
-                  <div className="text-sm font-medium text-slate-300 leading-relaxed">
-                    {selectedAssignment.deliveryOrderId?.destination?.address}<br/>
-                    {selectedAssignment.deliveryOrderId?.destination?.city}, {selectedAssignment.deliveryOrderId?.destination?.province}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                    <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Sender / Seller</div>
+                    <div className="text-sm font-bold text-white">{selectedAssignment.deliveryOrderId?.origin?.fullName}</div>
+                    <div className="text-[10px] text-slate-400 mt-1">{selectedAssignment.deliveryOrderId?.origin?.address}</div>
+                    <div className="text-[10px] text-indigo-400 mt-1">{selectedAssignment.deliveryOrderId?.origin?.email}</div>
+                  </div>
+                  <div className="bg-white/5 rounded-2xl p-4 border border-white/5">
+                    <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Recipient / Customer</div>
+                    <div className="text-sm font-bold text-white">{selectedAssignment.deliveryOrderId?.destination?.fullName}</div>
+                    <div className="text-[10px] text-slate-400 mt-1">{selectedAssignment.deliveryOrderId?.destination?.address}</div>
+                    <div className="text-[10px] text-indigo-400 mt-1">{selectedAssignment.deliveryOrderId?.destination?.email}</div>
                   </div>
                 </div>
 
@@ -555,11 +598,28 @@ export default function DmsCenterDashboard() {
                   </div>
                 </div>
 
-                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 space-y-3">
-                  <div>
-                    <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Recipient & Destination</div>
-                    <div className="text-sm font-bold text-white">{selectedShipment.destination?.fullName}</div>
-                    <div className="text-xs text-slate-400 mt-1">{selectedShipment.destination?.address}, {selectedShipment.destination?.city}</div>
+                <div className="bg-white/5 rounded-2xl p-4 border border-white/5 space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Sender</div>
+                      <div className="text-sm font-bold text-white">{selectedShipment.origin?.fullName}</div>
+                      <div className="text-[10px] text-slate-400">{selectedShipment.origin?.address}</div>
+                      <div className="text-[10px] text-purple-400">{selectedShipment.origin?.email}</div>
+                    </div>
+                    <div>
+                      <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Recipient</div>
+                      <div className="text-sm font-bold text-white">{selectedShipment.destination?.fullName}</div>
+                      <div className="text-[10px] text-slate-400">{selectedShipment.destination?.address}</div>
+                      <div className="text-[10px] text-purple-400">{selectedShipment.destination?.email}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-white/5">
+                    <div className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1">Product / Package</div>
+                    <div className="text-sm font-bold text-white">{selectedShipment.packageDetails?.packageLabel || "Standard Package"}</div>
+                    <div className="text-xs text-slate-400 mt-2">
+                      Contact: <span className="text-purple-400 font-bold">{selectedShipment.destination?.phone || "N/A"}</span>
+                    </div>
                   </div>
                 </div>
 
@@ -599,34 +659,46 @@ export default function DmsCenterDashboard() {
                   </div>
                 )}
 
-                {assignError && <div className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl p-4 text-xs font-bold">{assignError}</div>}
-                {assignSuccess && <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-xl p-4 text-xs font-bold">{assignSuccess}</div>}
-
-                <form onSubmit={handleAssignRider} className="space-y-4 pt-4 border-t border-white/5">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Assign to Rider</label>
-                    <select 
-                      className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:ring-4 focus:ring-purple-500/20"
-                      value={assigningRiderId}
-                      onChange={(e) => setAssigningRiderId(e.target.value)}
-                      required
-                    >
-                      <option value="" className="bg-slate-900">Select a rider...</option>
-                      {riders.map(rider => (
-                        <option key={rider._id} value={rider._id} className="bg-slate-900">
-                          {rider.fullName} ({rider.employeeId || "No ID"})
-                        </option>
-                      ))}
-                    </select>
+                {selectedShipment.currentRiderId ? (
+                  <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-2xl p-4 flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-indigo-500/20 flex items-center justify-center text-xl">
+                      👤
+                    </div>
+                    <div>
+                      <div className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest">Currently Assigned Rider</div>
+                      <div className="text-sm font-bold text-white">{selectedShipment.currentRiderId.fullName}</div>
+                      <div className="text-[10px] text-slate-400">
+                        ID: {selectedShipment.currentRiderId.employeeId} • 📞 {selectedShipment.currentRiderId.phone || "No Phone"}
+                      </div>
+                    </div>
                   </div>
-                  <button 
-                    type="submit" 
-                    disabled={assignBusy || !assigningRiderId}
-                    className="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-4 rounded-2xl shadow-lg shadow-purple-900/40 transition-all active:scale-95 disabled:opacity-50"
-                  >
-                    {assignBusy ? "ASSIGNING..." : "CONFIRM ASSIGNMENT"}
-                  </button>
-                </form>
+                ) : (
+                  <form onSubmit={handleAssignRider} className="space-y-4 pt-4 border-t border-white/5">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Assign to Rider</label>
+                      <select 
+                        className="w-full bg-white/10 border border-white/20 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:ring-4 focus:ring-purple-500/20"
+                        value={assigningRiderId}
+                        onChange={(e) => setAssigningRiderId(e.target.value)}
+                        required
+                      >
+                        <option value="" className="bg-slate-900">Select a rider...</option>
+                        {riders.map(rider => (
+                          <option key={rider._id} value={rider._id} className="bg-slate-900">
+                            {rider.fullName} ({rider.employeeId || "No ID"})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button 
+                      type="submit" 
+                      disabled={assignBusy || !assigningRiderId}
+                      className="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-4 rounded-2xl shadow-lg shadow-purple-900/40 transition-all active:scale-95 disabled:opacity-50"
+                    >
+                      {assignBusy ? "ASSIGNING..." : "CONFIRM ASSIGNMENT"}
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>
@@ -659,18 +731,84 @@ export default function DmsCenterDashboard() {
               <h3 className="text-lg font-bold mb-4 text-slate-300">Registered Center Riders</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {riders.map((rider) => (
-                  <div key={rider._id} className="bg-white/5 border border-white/5 rounded-xl p-4">
-                    <div className="font-bold">{rider.fullName}</div>
-                    <div className="text-xs text-slate-500 mt-1 uppercase tracking-tight truncate">
-                      {rider.employeeId || "No ID"} • {rider.email}
+                  <div key={rider._id} className="bg-white/5 border border-white/5 rounded-xl p-4 flex justify-between items-start">
+                    <div>
+                      <div className="font-bold">{rider.fullName}</div>
+                      <div className="text-xs text-slate-500 mt-1 uppercase tracking-tight truncate">
+                        {rider.employeeId || "No ID"} • {rider.email}
+                      </div>
+                      <div className="mt-2 inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded text-[10px] font-bold uppercase">
+                        {rider.status}
+                      </div>
                     </div>
-                    <div className="mt-2 inline-block px-2 py-0.5 bg-purple-500/20 text-purple-400 rounded text-[10px] font-bold uppercase">
-                      {rider.status}
-                    </div>
+                    <button 
+                      onClick={() => setEditingStaff(rider)}
+                      className="text-[10px] font-bold text-slate-500 hover:text-white uppercase tracking-widest bg-white/5 px-2 py-1 rounded"
+                    >
+                      Edit
+                    </button>
                   </div>
                 ))}
                 {riders.length === 0 && <div className="text-slate-600 text-sm py-4 italic">No riders registered yet</div>}
               </div>
+            </div>
+          </div>
+        )}
+        {/* Staff Edit Modal */}
+        {editingStaff && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md animate-in fade-in duration-300 overflow-y-auto">
+            <div className="bg-slate-900 border border-white/10 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+              <div className="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <h3 className="text-xl font-black">{isRider ? "My Profile Settings" : "Edit Rider Details"}</h3>
+                <button onClick={() => setEditingStaff(null)} className="text-slate-400 hover:text-white">✕</button>
+              </div>
+              <form onSubmit={handleUpdateStaff} className="p-6 space-y-4">
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Full Name</label>
+                  <input 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50"
+                    value={editingStaff.fullName}
+                    onChange={(e) => setEditingStaff({...editingStaff, fullName: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Email Address</label>
+                  <input 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50"
+                    type="email"
+                    value={editingStaff.email}
+                    onChange={(e) => setEditingStaff({...editingStaff, email: e.target.value})}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">Phone Number</label>
+                  <input 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50"
+                    value={editingStaff.phone}
+                    onChange={(e) => setEditingStaff({...editingStaff, phone: e.target.value})}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">NIC / ID Number</label>
+                  <input 
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500/50"
+                    value={editingStaff.idVerification?.idNumber || ""}
+                    onChange={(e) => setEditingStaff({
+                      ...editingStaff, 
+                      idVerification: { ...editingStaff.idVerification, idNumber: e.target.value }
+                    })}
+                  />
+                </div>
+                <button 
+                  type="submit"
+                  disabled={editBusy}
+                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-black py-4 rounded-2xl shadow-lg transition-all disabled:opacity-50 mt-4"
+                >
+                  {editBusy ? "SAVING CHANGES..." : "UPDATE PROFILE"}
+                </button>
+              </form>
             </div>
           </div>
         )}
