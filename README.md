@@ -1,5 +1,5 @@
 ___
-# DELETE THIS INSTRUCTIONS AND ADD AN INTRODUCTION ABOUT YOUR PROJECT
+This project proposes an intelligent e-commerce platform that dynamically identifies and promotes trending electronic products by analyzing real-time online data. The system integrates AI-based trend analysis with automated workflows to improve product visibility and reduce manual effort in content management and marketing.
 ___
 
 # eYY-co2060-project-template
@@ -18,22 +18,27 @@ These projects will be automatically added into [https://projects.ce.pdn.ac.lk](
 
 ```
 {
-  "title": "This is the title of the project",
+  "title": "A.I Integrated eCommerce platform",
   "team": [
     {
-      "name": "Team Member Name 1",
-      "email": "email@eng.pdn.ac.lk",
-      "eNumber": "E/yy/xxx"
+      "name": "Geethma Chandoopa",
+      "email": "e22180@eng.pdn.ac.lk",
+      "eNumber": "E/22/180"
     },
     {
-      "name": "Team Member Name 2",
-      "email": "email@eng.pdn.ac.lk",
-      "eNumber": "E/yy/xxx"
+      "name": "Yuneth Hansira",
+      "email": "e22132@eng.pdn.ac.lk",
+      "eNumber": "E/22/132"
     },
     {
-      "name": "Team Member Name 3",
-      "email": "email@eng.pdn.ac.lk",
-      "eNumber": "E/yy/xxx"
+      "name": "Yasiru Liyanage",
+      "email": "e22288@eng.pdn.ac.lk",
+      "eNumber": "E/22/288"
+    },
+    {
+      "name": "Tharusha Inuwara",
+      "email": "e22154@eng.pdn.ac.lk",
+      "eNumber": "E/22/154"
     }
   ],
   "supervisors": [

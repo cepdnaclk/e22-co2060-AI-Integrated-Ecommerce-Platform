@@ -11,7 +11,6 @@ const S = {
         fontFamily: "'Segoe UI', Arial, sans-serif",
         display: "flex",
         justifyContent: "center",
-        padding: "48px 24px",
     },
     card: {
         background: "rgba(255,255,255,0.03)",
@@ -198,7 +197,7 @@ export default function MySellerOffers() {
 
     /* ─── RENDER ─── */
     return (
-        <div style={S.pg}>
+        <div className="p-4 md:p-12" style={S.pg}>
             <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
         @keyframes toastIn { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
@@ -376,14 +375,14 @@ export default function MySellerOffers() {
             <div className="mso-wrap">
 
                 {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32 }}>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
                     <div>
                         <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0 }}>My Offers</h1>
                         <p style={{ color: "#94a3b8", marginTop: 6, fontSize: 14 }}>
                             Manage your active listings and control pricing
                         </p>
                     </div>
-                    <div style={{ display: "flex", gap: 12 }}>
+                    <div className="flex flex-wrap gap-3">
                         <Link to="/seller/dashboard" style={S.btnGray}>← Dashboard</Link>
                         <Link to="/seller/offers/new" style={{ ...S.btnBlue, textDecoration: "none" }}>+ New Offer</Link>
                     </div>
@@ -459,13 +458,10 @@ export default function MySellerOffers() {
                             return (
                                 <div
                                     key={offer._id}
-                                    className="mso-offer-card"
+                                    className="mso-offer-card flex flex-col sm:flex-row gap-5 items-start"
                                     style={{
                                         ...S.card,
                                         padding: "20px 24px",
-                                        display: "flex",
-                                        gap: 20,
-                                        alignItems: "flex-start",
                                         opacity: offer.isActive ? 1 : 0.55,
                                     }}
                                 >
@@ -543,7 +539,7 @@ export default function MySellerOffers() {
                                     </div>
 
                                     {/* Actions */}
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 8, flexShrink: 0 }}>
+                                    <div className="flex flex-row sm:flex-col gap-2 flex-shrink-0 flex-wrap w-full sm:w-auto">
                                         <button
                                             className="mso-edit-btn"
                                             onClick={() => openEdit(offer)}

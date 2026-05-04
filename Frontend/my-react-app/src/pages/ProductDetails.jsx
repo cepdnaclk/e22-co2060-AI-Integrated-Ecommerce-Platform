@@ -106,7 +106,7 @@ const ProductDetails = () => {
   const { product, offers } = data;
 
   return (
-    <div style={{ minHeight: "100vh", background: "linear-gradient(135deg,#050B2E,#081A4A,#020617)", color: "#fff", fontFamily: "'Segoe UI',Arial,sans-serif", padding: "32px 24px" }}>
+    <div className="min-h-screen bg-gradient-to-br from-[#050B2E] via-[#081A4A] to-[#020617] text-white font-sans p-4 md:p-8">
       <style>{`
         @keyframes spin{to{transform:rotate(360deg)}}
         @keyframes toastIn{from{opacity:0;transform:translateX(60px)}to{opacity:1;transform:translateX(0)}}
@@ -161,7 +161,7 @@ const ProductDetails = () => {
 
       <div className="pd-wrap" style={{ maxWidth: 960, margin: "0 auto" }}>
         {/* Product Info */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, marginBottom: 48 }}>
+        <div className="flex flex-col md:grid md:grid-cols-2 gap-10 mb-12">
           {/* Image */}
           <div>
             <img

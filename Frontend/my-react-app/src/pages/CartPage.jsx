@@ -9,7 +9,6 @@ const S = {
     background: "linear-gradient(135deg, #050B2E, #081A4A, #020617)",
     color: "#fff",
     fontFamily: "'Segoe UI', Arial, sans-serif",
-    padding: "40px 24px",
   },
   card: {
     background: "rgba(255,255,255,0.03)",
@@ -155,7 +154,7 @@ export default function CartPage() {
   const totalItems = items.reduce((s, i) => s + i.quantity, 0);
 
   return (
-    <div style={S.page}>
+    <div style={S.page} className="p-4 md:p-10">
       <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -241,7 +240,7 @@ export default function CartPage() {
 
         {/* Cart Items + Summary */}
         {!loading && items.length > 0 && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
+          <div className="flex flex-col lg:grid lg:grid-cols-[1fr_320px] gap-6 items-start">
 
             {/* Left: Items */}
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

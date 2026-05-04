@@ -20,9 +20,10 @@ function createTransporter() {
  * @param {string} shopName - the seller's shop name
  * @param {string} token    - unique verification token
  */
-export async function sendSellerVerificationEmail(toEmail, shopName, token) {
+export async function sendSellerVerificationEmail(toEmail, shopName, token, origin) {
   const transporter = createTransporter();
-  const verifyUrl = `${process.env.FRONTEND_URL}/verify-seller-email?token=${token}`;
+  const baseUrl = origin || process.env.FRONTEND_URL;
+  const verifyUrl = `${baseUrl}/verify-seller-email?token=${token}`;
 
   await transporter.sendMail({
     from: `"BEETA Marketplace" <${process.env.EMAIL_USER}>`,

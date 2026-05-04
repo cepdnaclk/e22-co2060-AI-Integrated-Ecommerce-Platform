@@ -151,7 +151,7 @@ export default function SellerOrderQr() {
   }
 
   return (
-    <div style={S.pg}>
+    <div className="p-4 md:p-[36px_20px]" style={S.pg}>
       <div style={S.wrap}>
         <div style={S.headerRow}>
           <div>
@@ -212,7 +212,7 @@ export default function SellerOrderQr() {
                           <img src={order.sellerQr.proofImageUrl} alt="Previous rejected proof" style={S.proofImage} />
                         </div>
                       ) : null}
-                      <div style={S.grid2}>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
                         <input
                           type="text"
                           placeholder="Packed product name"
@@ -302,7 +302,6 @@ const S = {
     minHeight: "100vh",
     background: "linear-gradient(135deg, #050B2E, #081A4A, #020617)",
     color: "#fff",
-    padding: "36px 20px",
     fontFamily: "'Segoe UI', Arial, sans-serif",
     display: "flex",
     justifyContent: "center",

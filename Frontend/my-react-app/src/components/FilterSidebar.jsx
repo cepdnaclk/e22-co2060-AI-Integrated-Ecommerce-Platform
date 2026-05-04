@@ -2,7 +2,11 @@ const categories = [
   "All",
   "Electronics",
   "Fashion",
-  "Home & Garden"
+  "Home Appliances",
+  "Sports",
+  "Beauty",
+  "Books",
+  "Others"
 ];
 
 const FilterSidebar = ({ setSearch, setCategory }) => {

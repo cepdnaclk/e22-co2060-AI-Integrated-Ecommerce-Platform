@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { createProduct, createProductVariant } from "../services/productService";
 import ProductNameAutocomplete from "../components/ProductNameAutocomplete";
 import API_BASE_URL from "../config/api";
@@ -19,7 +19,7 @@ const S = {
         background: "rgba(255,255,255,0.03)",
         border: "1px solid rgba(255,255,255,0.08)",
         borderRadius: 16,
-        padding: "32px 36px",
+        padding: "clamp(16px, 5vw, 36px)",
         backdropFilter: "blur(10px)",
         width: "100%",
         maxWidth: 900,
@@ -72,6 +72,11 @@ const S = {
 
 export default function CreateProduct() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    // When a seller comes here from CreateSellerOffer, returnTo will be set
+    // e.g. /seller/offers/new — after creation we redirect back there with ?preselect=<id>
+    const returnTo = searchParams.get("returnTo");
+    const isSellerFlow = Boolean(returnTo);
 
     // Primary product details
     const [product, setProduct] = useState({
@@ -205,9 +210,13 @@ export default function CreateProduct() {
 
             showToast(`Success! Created product with ${validVariants.length} variant(s).`);
 
-            // Navigate to product details page after a short delay
             setTimeout(() => {
-                navigate(`/products/${newProductId}`);
+                if (isSellerFlow) {
+                    // Return to offer creation with the new product pre-selected
+                    navigate(`${returnTo}?preselect=${newProductId}`);
+                } else {
+                    navigate(`/products/${newProductId}`);
+                }
             }, 1500);
 
         } catch (err) {
@@ -227,6 +236,14 @@ export default function CreateProduct() {
         .cp-card { animation: fadeIn .5s ease forwards; }
         .cp-input:focus { border-color: #0582ca !important; }
         .cp-input:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        @media (max-width: 768px) {
+            .cp-grid-auto { grid-template-columns: 1fr !important; }
+            .cp-header { flex-direction: column; align-items: flex-start !important; gap: 16px !important; }
+            .cp-btn-container { width: 100%; flex-direction: column-reverse !important; }
+            .cp-btn-container > * { width: 100% !important; }
+            .cp-variant-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
 
             {/* Toast */}
@@ -246,14 +263,20 @@ export default function CreateProduct() {
 
             <div style={{ width: "100%", maxWidth: 900 }}>
                 {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
+                <div className="cp-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
                     <div>
-                        <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0 }}>Create Catalog Product</h1>
-                        <p style={{ color: "#94a3b8", marginTop: 6, fontSize: 14 }}>
-                            Add a new global product and define its specific configurations (variants)
+                        <h1 style={{ fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, margin: 0 }}>
+                            {isSellerFlow ? "Add New Product to Catalog" : "Create Catalog Product"}
+                        </h1>
+                        <p style={{ color: "#94a3b8", marginTop: 6, fontSize: 13 }}>
+                            {isSellerFlow
+                                ? "Add this product to the catalog so you can create an offer for it"
+                                : "Add a new global product and define its specific configurations (variants)"}
                         </p>
                     </div>
-                    <button type="button" onClick={() => navigate(-1)} style={S.btnGray}>← Back</button>
+                    <button type="button" onClick={() => navigate(returnTo || -1)} style={{ ...S.btnGray, fontSize: 13, padding: "10px 20px" }}>
+                        {isSellerFlow ? "← Back to Offer" : "← Back"}
+                    </button>
                 </div>
 
                 {/* AI Loading Overlay */}
@@ -298,7 +321,7 @@ export default function CreateProduct() {
                             </p>
                         </div>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 20 }}>
+                        <div className="cp-grid-auto" style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 20, marginBottom: 20 }}>
                             <ProductNameAutocomplete
                                 value={product.productName}
                                 onChange={(val) => setProduct((prev) => ({ ...prev, productName: val }))}
@@ -320,7 +343,7 @@ export default function CreateProduct() {
                             </div>
                         </div>
 
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+                        <div className="cp-grid-auto" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
                             <div>
                                 <label style={S.label}>Brand</label>
                                 <input className="cp-input" style={S.input} name="brand" value={product.brand} onChange={handleProductChange} placeholder="e.g. Apple" />
@@ -362,7 +385,7 @@ export default function CreateProduct() {
 
                                 <div style={{ marginBottom: 12, fontSize: 13, fontWeight: 700, color: "#4ac6ff" }}>Variant {index + 1}</div>
 
-                                <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 16, marginBottom: 16 }}>
+                                <div className="cp-variant-grid" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 16, marginBottom: 16 }}>
                                     <div>
                                         <label style={S.label}>Variant Name *</label>
                                         <input className="cp-input" style={S.input} value={variant.variantName} onChange={(e) => handleVariantChange(variant.id, "variantName", e.target.value)} required placeholder="e.g. Natural Titanium 512GB" />
@@ -377,7 +400,7 @@ export default function CreateProduct() {
                                     </div>
                                 </div>
 
-                                <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16 }}>
+                                <div className="cp-variant-grid" style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: 16 }}>
                                     <div>
                                         <label style={S.label}>Size</label>
                                         <input className="cp-input" style={S.input} value={variant.size} onChange={(e) => handleVariantChange(variant.id, "size", e.target.value)} placeholder="e.g. XL" />
@@ -391,8 +414,8 @@ export default function CreateProduct() {
                         ))}
 
                         {/* ── Actions ── */}
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 14, marginTop: 40, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24 }}>
-                            <button type="button" onClick={() => navigate(-1)} style={S.btnGray}>Cancel</button>
+                        <div className="cp-btn-container" style={{ display: "flex", justifyContent: "flex-end", gap: 14, marginTop: 40, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24 }}>
+                            <button type="button" onClick={() => navigate(returnTo || -1)} style={S.btnGray}>Cancel</button>
                             <button
                                 type="submit"
                                 disabled={loading}

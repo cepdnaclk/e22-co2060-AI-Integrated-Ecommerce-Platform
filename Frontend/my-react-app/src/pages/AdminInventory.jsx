@@ -47,6 +47,10 @@ export default function AdminInventory() {
   const [bulkType, setBulkType] = useState("restock");
   const [bulkReason, setBulkReason] = useState("");
 
+  // ─── Edit Product Modal ───
+  const [showEditProductModal, setShowEditProductModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+
   // ─── Loading ───
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
@@ -211,6 +215,38 @@ export default function AdminInventory() {
     } catch (e) { showToast(e.message, "error"); }
   };
 
+  const openEditProduct = (item) => {
+    // item might be from the list (which has productId as object or string)
+    // In the list tab, 'item' has 'productName', 'productImage', etc. directly.
+    // The actual productId is usually item.productId
+    const pId = item.productId?._id || item.productId;
+    setEditingProduct({
+      _id: pId,
+      productName: item.productName || item.productId?.productName,
+      image: item.productImage || item.productId?.image,
+      category: item.category || item.productId?.category,
+      brand: item.brand || item.productId?.brand,
+      description: item.description || item.productId?.description || "",
+    });
+    setShowEditProductModal(true);
+  };
+
+  const handleEditProductSave = async (formData) => {
+    setActionLoading(true);
+    try {
+      await apiFetch(`/api/admin/products/${editingProduct._id}`, {
+        method: "PUT",
+        body: JSON.stringify(formData),
+      });
+      showToast("Product updated successfully");
+      setShowEditProductModal(false);
+      // Refresh data
+      if (tab === "list") loadInventory(currentPage);
+      if (showDetailModal) await loadItemDetail(selectedItem._id);
+    } catch (e) { showToast(e.message, "error"); }
+    setActionLoading(false);
+  };
+
   const toggleBulkSelect = (id) => {
     setBulkSelections(prev => ({ ...prev, [id]: !prev[id] }));
   };
@@ -289,7 +325,8 @@ export default function AdminInventory() {
             sort={sort} setSort={setSort} sellerFilter={sellerFilter}
             setSellerFilter={setSellerFilter} categories={categories} sellers={sellers}
             handlePageChange={handlePageChange} openDetail={openDetail}
-            openStockUpdate={openStockUpdate} handleToggleStatus={handleToggleStatus}
+            openStockUpdate={openStockUpdate} openEditProduct={openEditProduct} 
+            handleToggleStatus={handleToggleStatus}
             bulkSelections={bulkSelections} toggleBulkSelect={toggleBulkSelect}
             selectAll={selectAll} selectedCount={selectedCount}
             setShowBulkModal={setShowBulkModal}
@@ -326,6 +363,15 @@ export default function AdminInventory() {
                       {itemDetail.offer.isActive ? "✅ Active" : "⏸ Inactive"}
                     </span>
                   </div>
+                  <button 
+                    onClick={() => {
+                        setShowDetailModal(false);
+                        openEditProduct(itemDetail.offer);
+                    }} 
+                    style={{ ...S.btnOutlineSm, marginTop: 12, color: "#c084fc", borderColor: "rgba(168,85,247,0.4)" }}
+                  >
+                    ✏️ Edit Catalog Product
+                  </button>
                 </div>
               </div>
               {itemDetail.offer.variantIds?.length > 0 && (
@@ -446,6 +492,16 @@ export default function AdminInventory() {
           </div>
         </Modal>
       )}
+
+      {/* ─── Edit Product Modal ─── */}
+      {showEditProductModal && editingProduct && (
+        <EditProductModal 
+          product={editingProduct} 
+          onSave={handleEditProductSave} 
+          onClose={() => setShowEditProductModal(false)} 
+          loading={actionLoading} 
+        />
+      )}
     </div>
     </div>
   );
@@ -455,14 +511,81 @@ export default function AdminInventory() {
 // SUB-COMPONENTS
 // ═══════════════════════════════════════════════
 
-function Modal({ onClose, children }) {
+function Modal({ onClose, children, maxWidth = 600 }) {
   return (
     <div style={S.overlay} onClick={onClose}>
-      <div style={S.modal} onClick={e => e.stopPropagation()}>
+      <div style={{ ...S.modal, maxWidth }} onClick={e => e.stopPropagation()}>
         <button onClick={onClose} style={S.closeBtn}>✕</button>
         {children}
       </div>
     </div>
+  );
+}
+
+function EditProductModal({ product, onSave, onClose, loading }) {
+  const [form, setForm] = useState({
+    productName: product.productName || "",
+    category: product.category || "",
+    brand: product.brand || "",
+    description: product.description || "",
+    image: product.image || "",
+  });
+
+  const handleChange = (e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+
+  return (
+    <Modal onClose={onClose} maxWidth={540}>
+      <h2 style={S.modalTitle}>✏️ Edit Catalog Product</h2>
+      <p style={{ color: "#94a3b8", fontSize: 13, marginBottom: 24 }}>
+        Updating this will affect all sellers offering this product.
+      </p>
+
+      <div style={{ display: "grid", gap: 16 }}>
+        <div>
+          <label style={S.label}>Product Name *</label>
+          <input style={{ ...S.input, width: "100%" }} name="productName" value={form.productName} onChange={handleChange} />
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+          <div>
+            <label style={S.label}>Category *</label>
+            <select style={{ ...S.input, width: "100%", height: 38 }} name="category" value={form.category} onChange={handleChange}>
+              <option value="">Select...</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Fashion">Fashion</option>
+              <option value="Home">Home</option>
+              <option value="Beauty">Beauty</option>
+              <option value="Sports">Sports</option>
+              <option value="Books">Books</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+          <div>
+            <label style={S.label}>Brand</label>
+            <input style={{ ...S.input, width: "100%" }} name="brand" value={form.brand} onChange={handleChange} placeholder="e.g. Apple" />
+          </div>
+        </div>
+        <div>
+          <label style={S.label}>Image URL</label>
+          <div style={{ display: "flex", gap: 10 }}>
+            <input style={{ ...S.input, flex: 1 }} name="image" value={form.image} onChange={handleChange} placeholder="https://..." />
+            {form.image && (
+              <img src={form.image} alt="" style={{ width: 38, height: 38, borderRadius: 6, objectFit: "cover", background: "#1e293b" }} onError={(e) => { e.target.style.display = "none"; }} />
+            )}
+          </div>
+        </div>
+        <div>
+          <label style={S.label}>Description</label>
+          <textarea style={{ ...S.input, width: "100%", minHeight: 90, resize: "vertical" }} name="description" value={form.description} onChange={handleChange} />
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", marginTop: 32 }}>
+        <button style={S.btnGray} onClick={onClose} disabled={loading}>Cancel</button>
+        <button style={{ ...S.btnPurple, opacity: loading ? 0.6 : 1 }} onClick={() => onSave(form)} disabled={loading}>
+          {loading ? "Saving..." : "Save Changes"}
+        </button>
+      </div>
+    </Modal>
   );
 }
 
@@ -575,7 +698,7 @@ function InventoryListTab({
   category, setCategory, stockStatus, setStockStatus,
   sort, setSort, sellerFilter, setSellerFilter,
   categories, sellers, handlePageChange,
-  openDetail, openStockUpdate, handleToggleStatus,
+  openDetail, openStockUpdate, openEditProduct, handleToggleStatus,
   bulkSelections, toggleBulkSelect, selectAll, selectedCount, setShowBulkModal,
 }) {
   return (
@@ -713,6 +836,7 @@ function InventoryListTab({
                   <td style={S.td}>
                     <div style={{ display: "flex", gap: 6 }}>
                       <button onClick={() => openDetail(item)} style={S.actionBtn} title="View Details">👁</button>
+                      <button onClick={() => openEditProduct(item)} style={S.actionBtn} title="Edit Catalog Product">✏️</button>
                       <button onClick={() => openStockUpdate(item)} style={S.actionBtn} title="Update Stock">📦</button>
                       <button onClick={() => handleToggleStatus(item)} style={S.actionBtn} title={item.isActive ? "Deactivate" : "Activate"}>
                         {item.isActive ? "⏸" : "▶"}

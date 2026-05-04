@@ -22,6 +22,8 @@ import adminOrderRouter from "./router/adminOrderRouter.js"; // ✅ Admin Order 
 import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority ML
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
+import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
+
 
 // ================== CRON JOBS ==================
 import "./cron/dailySendToAI.js";
@@ -45,13 +47,23 @@ const app = express();
 app.use(express.json());
 
 // CORS configuration
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:5173",
+  "https://localhost:5173"
+].filter(Boolean);
+
 app.use(
   cors({
+<<<<<<< HEAD
     origin: [
       "https://frontend-production-159d.up.railway.app",
       "http://localhost:5173",
       "http://localhost:3000"
     ],
+=======
+    origin: allowedOrigins.length > 0 ? allowedOrigins : true,
+>>>>>>> upstream/dev
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
@@ -78,6 +90,10 @@ app.use("/api/admin/auth", adminAuthRouter);
 
 // AI features
 app.use("/api/ai", aiRouter);
+
+// Trending Products
+app.use("/api/trending", trendingRouter);
+
 
 // Product catalog (browse products)
 app.use("/api/products", productRouter);

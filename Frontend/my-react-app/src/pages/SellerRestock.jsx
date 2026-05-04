@@ -61,7 +61,7 @@ const SellerRestock = () => {
   );
 
   return (
-    <div style={styles.pg}>
+    <div className="p-4 md:p-12" style={styles.pg}>
       <style>{`
         @keyframes fadeIn { from {opacity:0; transform:translateY(15px)} to {opacity:1; transform:translateY(0)} }
         @keyframes _spin { to {transform:rotate(360deg)} }
@@ -70,8 +70,8 @@ const SellerRestock = () => {
         .stat-title { font-size:13px; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:8px; font-weight:600; }
         .stat-value { font-size:32px; color:#fff; font-weight:700; }
         .tbl { width:100%; border-collapse:collapse; text-align:left; }
-        .tbl th { color:#94a3b8; font-size:12px; text-transform:uppercase; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.08); font-weight:600; }
-        .tbl td { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); color:#e2e8f0; font-size:14px; }
+        .tbl th { color:#94a3b8; font-size:12px; text-transform:uppercase; padding:12px 16px; border-bottom:1px solid rgba(255,255,255,0.08); font-weight:600; white-space:nowrap; }
+        .tbl td { padding:14px 16px; border-bottom:1px solid rgba(255,255,255,0.04); color:#e2e8f0; font-size:14px; white-space:nowrap; }
         .tbl tr:hover td { background:rgba(255,255,255,0.02); }
         .tier-badge { display:inline-flex; padding:4px 10px; border-radius:9999px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; }
         .score-bar { height:6px; border-radius:3px; background:rgba(255,255,255,0.06); overflow:hidden; min-width:80px; }
@@ -81,7 +81,7 @@ const SellerRestock = () => {
       <div style={{ width: "100%", maxWidth: 1100, animation: "fadeIn .6s ease forwards" }}>
 
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32 }}>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
           <div>
             <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0, color: "#fff" }}>🔄 Restock Priorities</h1>
             <p style={{ color: "#94a3b8", marginTop: 6, fontSize: 15 }}>
@@ -100,7 +100,7 @@ const SellerRestock = () => {
               </span>
             </p>
           </div>
-          <div style={{ display: "flex", gap: 12 }}>
+          <div className="flex flex-wrap gap-3">
             <Link to="/seller/dashboard" style={{ ...styles.btnGray, textDecoration: "none" }}>← Dashboard</Link>
             <Link to="/seller/offers" style={{ ...styles.btnGray, textDecoration: "none" }}>My Offers</Link>
           </div>
@@ -247,7 +247,6 @@ const styles = {
     fontFamily: "'Segoe UI', Arial, sans-serif",
     display: "flex",
     justifyContent: "center",
-    padding: "48px 24px",
   },
   btnBlue: {
     background: "linear-gradient(to right, #006494, #0582ca)",

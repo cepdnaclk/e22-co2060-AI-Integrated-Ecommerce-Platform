@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useSearchParams } from "react-router-dom";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
 import { createSellerOffer } from "../services/sellerOfferService";
@@ -15,13 +15,12 @@ const S = {
         fontFamily: "'Segoe UI', Arial, sans-serif",
         display: "flex",
         justifyContent: "center",
-        padding: "48px 24px",
     },
     card: {
         background: "rgba(255,255,255,0.03)",
         border: "1px solid rgba(255,255,255,0.08)",
         borderRadius: 16,
-        padding: "32px 36px",
+        padding: "clamp(16px, 5vw, 36px)",
         backdropFilter: "blur(10px)",
         width: "100%",
         maxWidth: 760,
@@ -76,6 +75,7 @@ const DELIVERY_OPTIONS = ["Standard", "Express", "Same Day", "Pickup"];
 
 export default function CreateSellerOffer() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [products, setProducts] = useState([]);
     const [search, setSearch] = useState("");
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -104,6 +104,23 @@ export default function CreateSellerOffer() {
 
     useEffect(() => {
         fetchProducts({ limit: 200 }).then((data) => setProducts(data.products || []));
+    }, []);
+
+    /* Auto-select product when returning from CreateProduct with ?preselect=<id> */
+    useEffect(() => {
+        const preselectId = searchParams.get("preselect");
+        if (!preselectId) return;
+        fetch(`${API_BASE_URL}/api/products/${preselectId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.product) {
+                    setSelectedProduct(data.product);
+                    setShowDropdown(false);
+                    showToast(`✅ "${data.product.productName}" selected! Fill in your offer details below.`);
+                }
+            })
+            .catch(err => console.error("Failed to preselect product:", err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     /* Load variants when product is selected */
@@ -247,7 +264,7 @@ export default function CreateSellerOffer() {
     const isSubmitting = loading || uploading;
 
     return (
-        <div style={S.pg}>
+        <div className="p-4 md:p-12" style={S.pg}>
             <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
         @keyframes toastIn { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
@@ -259,6 +276,14 @@ export default function CreateSellerOffer() {
         .cso-del-btn.active { background: rgba(5,130,202,0.2) !important; border-color: #0582ca !important; color: #4ac6ff !important; }
         .cso-upload-zone { transition: border-color 0.2s, background 0.2s; }
         .cso-upload-zone:hover { border-color: #0582ca !important; background: rgba(5,130,202,0.06) !important; cursor: pointer; }
+        
+        @media (max-width: 640px) {
+            .cso-variant-grid { grid-template-columns: 1fr !important; }
+            .cso-header-row { flex-direction: column; align-items: flex-start !important; }
+            .cso-btn-container { width: 100%; flex-direction: column-reverse !important; }
+            .cso-btn-container > * { width: 100% !important; }
+            .cso-pg { padding: 16px !important; }
+        }
       `}</style>
 
             {/* Toast */}
@@ -279,14 +304,14 @@ export default function CreateSellerOffer() {
             <div style={{ width: "100%", maxWidth: 760 }}>
 
                 {/* Header */}
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
+                <div className="cso-header-row flex justify-between items-center gap-4 mb-8">
                     <div>
-                        <h1 style={{ fontSize: 26, fontWeight: 700, margin: 0 }}>Create New Offer</h1>
-                        <p style={{ color: "#94a3b8", marginTop: 6, fontSize: 14 }}>
+                        <h1 style={{ fontSize: "clamp(20px, 5vw, 26px)", fontWeight: 700, margin: 0 }}>Create New Offer</h1>
+                        <p style={{ color: "#94a3b8", marginTop: 6, fontSize: 13 }}>
                             List a product for sale from your seller account
                         </p>
                     </div>
-                    <Link to="/seller/offers" style={S.btnGray}>← My Offers</Link>
+                    <Link to="/seller/offers" style={{ ...S.btnGray, fontSize: 13, padding: "10px 20px" }}>← My Offers</Link>
                 </div>
 
                 {/* Main Card */}
@@ -333,7 +358,7 @@ export default function CreateSellerOffer() {
                                                     <p style={{ color: "#64748b", margin: "0 0 12px 0", fontSize: 13 }}>No products match your search.</p>
                                                     <button
                                                         type="button"
-                                                        onClick={() => navigate("/admin/products/new")}
+                                                        onClick={() => navigate("/seller/products/new?returnTo=/seller/offers/new")}
                                                         style={{ background: "rgba(5,130,202,0.15)", border: "1px solid #0582ca", color: "#4ac6ff", padding: "8px 16px", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s" }}
                                                     >
                                                         + Create New Product
@@ -357,6 +382,23 @@ export default function CreateSellerOffer() {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Hint link — always visible when no product selected */}
+                            {!selectedProduct && (
+                                <div style={{ marginTop: 8, textAlign: "right" }}>
+                                    <button
+                                        type="button"
+                                        onClick={() => navigate("/seller/products/new?returnTo=/seller/offers/new")}
+                                        style={{
+                                            background: "none", border: "none", cursor: "pointer",
+                                            color: "#4ac6ff", fontSize: 12, fontWeight: 600,
+                                            textDecoration: "underline", padding: 0,
+                                        }}
+                                    >
+                                        + Product not in list? Create it
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Selected product preview */}
                             {selectedProduct && (
@@ -387,7 +429,7 @@ export default function CreateSellerOffer() {
                                         (optional – select all you offer)
                                     </span>
                                 </label>
-                                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
+                                <div className="cso-variant-grid" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 10 }}>
                                     {variants.map((v) => {
                                         const isSelected = selectedVariantIds.has(v._id);
                                         return (
@@ -543,7 +585,7 @@ export default function CreateSellerOffer() {
                         </div>
 
                         {/* ── Price & Stock ── */}
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                             <div>
                                 <label style={S.label}>Price (Rs.) *</label>
                                 <input className="cso-input" type="number" min="0" step="0.01" required style={S.input} placeholder="e.g. 12900" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} />
@@ -555,7 +597,7 @@ export default function CreateSellerOffer() {
                         </div>
 
                         {/* ── Warranty & Discount ── */}
-                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
                             <div>
                                 <label style={S.label}>Warranty</label>
                                 <input className="cso-input" style={S.input} placeholder="e.g. 1 Year Official" value={form.warranty} onChange={(e) => setForm({ ...form, warranty: e.target.value })} />
@@ -588,8 +630,8 @@ export default function CreateSellerOffer() {
                         </div>
 
                         {/* ── Actions ── */}
-                        <div style={{ display: "flex", justifyContent: "flex-end", gap: 14 }}>
-                            <Link to="/seller/dashboard" style={S.btnGray}>Cancel</Link>
+                        <div className="cso-btn-container flex justify-end gap-3 mt-4">
+                            <Link to="/seller/dashboard" style={S.btnGray} className="text-center">Cancel</Link>
                             <button
                                 type="submit"
                                 disabled={isSubmitting}

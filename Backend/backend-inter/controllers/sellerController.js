@@ -49,7 +49,8 @@ export async function registerSeller(req, res) {
     });
 
     // 📧 Send verification email
-    await sendSellerVerificationEmail(user.email, shopName, verificationToken);
+    const origin = req.headers.origin || process.env.FRONTEND_URL;
+    await sendSellerVerificationEmail(user.email, shopName, verificationToken, origin);
 
     return res.status(200).json({
       message: "Verification email sent! Please check your inbox to activate your seller account.",
@@ -154,7 +155,21 @@ export async function getMySellerProfile(req, res) {
       return res.status(403).json({ message: "You are not registered as a seller" });
     }
 
-    res.json(seller);
+    const responseObj = seller.toObject();
+
+    // If the frontend is polling with an outdated 'user' token, send them a fresh one
+    if (req.user.role !== "seller") {
+      const user = await User.findById(userId);
+      if (user && user.role === "seller") {
+        responseObj.newToken = jwt.sign(
+          { id: user._id, email: user.email, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" }
+        );
+      }
+    }
+
+    res.json(responseObj);
   } catch (error) {
     console.error("❌ Get seller profile error:", error);
     res.status(500).json({ message: "Failed to fetch seller profile", error: error.message });

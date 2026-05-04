@@ -116,9 +116,9 @@ export async function getAllProducts(req, res) {
       });
     }
 
-    /* 📂 CATEGORY FILTER (FIXED null ISSUE) */
+    /* 📂 CATEGORY FILTER (Case-insensitive) */
     if (category && category !== "null") {
-      pipeline.push({ $match: { category } });
+      pipeline.push({ $match: { category: { $regex: `^${category}$`, $options: "i" } } });
     }
 
     /* 🔗 JOIN SELLER OFFERS */
