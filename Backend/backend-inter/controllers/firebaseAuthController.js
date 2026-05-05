@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import userModel from "../models/user.js";
+import { verifyFirebaseIdToken } from "../services/firebaseTokenVerifier.js";
 
 export function createFirebaseLogin({
-  getAdminClient,
   userRepo,
   signJwt
 }) {
@@ -18,12 +18,26 @@ export function createFirebaseLogin({
       }
 
       const idToken = authHeader.split(" ")[1];
-      const adminClient = await getAdminClient();
-      const decodedToken = await adminClient.auth().verifyIdToken(idToken);
+
+      // Verify the Firebase ID token using Google's public RSA keys.
+      // No service account / FIREBASE_SERVICE_ACCOUNT env var required.
+      let decodedToken;
+      try {
+        decodedToken = await verifyFirebaseIdToken(idToken);
+      } catch (verifyErr) {
+        console.error("❌ Firebase token verification failed:", verifyErr.message);
+        return res.status(401).json({
+          message: "Invalid or expired Firebase token",
+        });
+      }
 
       const email = decodedToken.email;
       const name = decodedToken.name || "";
       const picture = decodedToken.picture || "";
+
+      if (!email) {
+        return res.status(401).json({ message: "Token missing email claim" });
+      }
 
       let user = await userRepo.findOne({ email });
 
@@ -71,25 +85,16 @@ export function createFirebaseLogin({
       });
 
     } catch (error) {
-      return res.status(401).json({
-        message: "Invalid Firebase token",
+      console.error("❌ Unhandled error in firebaseLogin:", error.message, error.stack);
+      return res.status(500).json({
+        message: "Server error during login",
+        detail: error.message,
       });
     }
   };
 }
 
-let cachedAdminClient = null;
-
-async function getAdminClient() {
-  if (!cachedAdminClient) {
-    const module = await import("../config/firebaseAdmin.js");
-    cachedAdminClient = module.default;
-  }
-  return cachedAdminClient;
-}
-
 export const firebaseLogin = createFirebaseLogin({
-  getAdminClient,
   userRepo: userModel,
   signJwt: jwt.sign
 });

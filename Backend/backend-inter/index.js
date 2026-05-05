@@ -168,6 +168,18 @@ app.get("/", (req, res) => {
   res.send("Backend is running 🚀");
 });
 
+// ================== GLOBAL ERROR HANDLER ==================
+// Must be defined AFTER all routes and with 4 arguments so Express treats it as error middleware.
+// This ensures any unhandled async/sync error returns JSON instead of Express's default HTML page.
+app.use((err, req, res, next) => {
+  console.error("🔥 Unhandled Express error:", err.message, err.stack);
+  if (res.headersSent) return next(err);
+  res.status(err.status || 500).json({
+    message: err.message || "Internal server error",
+    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+  });
+});
+
 // ================== DATABASE ==================
 
 mongoose
