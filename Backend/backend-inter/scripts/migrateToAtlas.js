@@ -6,7 +6,7 @@ import sellerOfferModel from '../models/sellerOffer.js';
 
 dotenv.config();
 
-const LOCAL_URI = "mongodb://mongodb:27017/ecommerce";
+const LOCAL_URI = "mongodb://localhost:27018/ecommerce";
 const ATLAS_URI = "mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/ecommerce?retryWrites=true&w=majority&connectTimeoutMS=10000";
 
 async function migrate() {
