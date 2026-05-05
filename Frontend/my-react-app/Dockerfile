@@ -20,7 +20,8 @@ COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 # Defaults for envsubst - ensure BACKEND_URL ends in /api/
-ENV BACKEND_URL="https://backend-production.up.railway.app/api/"
-ENV BACKEND_HOST="backend-production.up.railway.app"
+# Using internal Railway URL as fallback for better reliability
+ENV BACKEND_URL="http://backend.railway.internal:3000/api/"
+ENV BACKEND_HOST="backend.railway.internal"
 
 CMD ["nginx", "-g", "daemon off;"]
