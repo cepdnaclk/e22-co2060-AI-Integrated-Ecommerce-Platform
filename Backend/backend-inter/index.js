@@ -32,7 +32,7 @@ import "./cron/graphRebuildJob.js";
 // ================== CONFIG ==================
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000; // Forced to 3000 to match Nginx proxy config
 
 const mongoURI =
   process.env.MONGO_URI ||

@@ -27,7 +27,9 @@ async function syncBackendSession(idToken) {
 
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
-    throw new Error(data.message || `HTTP ${response.status}`);
+    const error = new Error(data.message || `HTTP ${response.status}`);
+    error.response = response; // Attach response for debugging headers
+    throw error;
   }
 
   const data = await response.json();
@@ -133,7 +135,8 @@ const Login = ({ onClose }) => {
       // Give a user-friendly message based on the type of error
       const msg = err.message || "";
       if (msg.includes("502") || msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
-        setError("⚠️ Server is currently unreachable. Please try again in a moment.");
+        const debugUrl = err.response?.headers?.get("X-Debug-Backend-Url") || "";
+      setError(`⚠️ Server is currently unreachable. ${debugUrl ? `(Proxy: ${debugUrl})` : "Please try again in a moment."}`);
       } else if (msg.includes("503")) {
         setError("⚠️ Server is starting up. Please wait a few seconds and try again.");
       } else {
