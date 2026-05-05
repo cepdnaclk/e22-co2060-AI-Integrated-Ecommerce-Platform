@@ -195,3 +195,5 @@ services:
 
 volumes:
   mongo_data:
+    external: true
+    name: e22-co2060-ai-integrated-ecommerce-platform_mongo_data
