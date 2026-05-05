@@ -20,8 +20,8 @@ COPY --from=build /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 # Defaults for envsubst - ensure BACKEND_URL ends in /api/
-# Using internal Railway URL as fallback for better reliability
-ENV BACKEND_URL="http://backend.railway.internal:3000/api/"
-ENV BACKEND_HOST="backend.railway.internal"
+# Using the exact private name and port shown in your Railway dashboard
+ENV BACKEND_URL="http://e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080/api/"
+ENV BACKEND_HOST="e22-co2060-ai-integrated-ecommerce-platform.railway.internal"
 
 CMD ["nginx", "-g", "daemon off;"]
