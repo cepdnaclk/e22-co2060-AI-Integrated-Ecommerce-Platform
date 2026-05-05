@@ -105,8 +105,15 @@ const Login = ({ onClose }) => {
       if (onClose) onClose();
     } catch (err) {
       console.error("❌ Failed to get Firebase token or sync session:", err);
-      // Give a helpful error if it's the backend sync failing
-      setError(err.message || "Failed to authenticate. Please check server connection.");
+      // Give a user-friendly message based on the type of error
+      const msg = err.message || "";
+      if (msg.includes("502") || msg.includes("Failed to fetch") || msg.includes("NetworkError")) {
+        setError("⚠️ Server is currently unreachable. Please try again in a moment.");
+      } else if (msg.includes("503")) {
+        setError("⚠️ Server is starting up. Please wait a few seconds and try again.");
+      } else {
+        setError(msg || "Failed to authenticate. Please check your connection.");
+      }
     }
   }, [onClose]);
 

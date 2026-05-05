@@ -14,9 +14,14 @@ RUN NODE_OPTIONS=--max-old-space-size=1024 npm run build -- --mode production
 
 FROM nginx:1.27-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install gettext for envsubst
+RUN apk add --no-cache gettext
+
+# Store nginx template — envsubst will fill in $BACKEND_INTERNAL_HOST at startup
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# At startup: substitute env vars into the template, then start nginx
+CMD ["/bin/sh", "-c", "envsubst '${BACKEND_INTERNAL_HOST}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
