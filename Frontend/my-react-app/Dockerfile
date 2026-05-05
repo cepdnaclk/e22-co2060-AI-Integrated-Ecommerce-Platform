@@ -23,5 +23,17 @@ COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-# At startup: substitute env vars into the template, then start nginx
-CMD ["/bin/sh", "-c", "envsubst '${BACKEND_INTERNAL_HOST}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+# At startup:
+# 1. Derive BACKEND_HOST (host:port) from BACKEND_URL env var that Railway already provides.
+#    e.g. BACKEND_URL="http://backend-inter.railway.internal:3000/api/"
+#         → BACKEND_HOST="backend-inter.railway.internal:3000"
+# 2. Substitute it into the nginx template.
+# 3. Start nginx.
+CMD ["/bin/sh", "-c", "\
+  BACKEND_HOST=$(echo \"${BACKEND_URL:-}\" | sed 's|^https\\?://||' | sed 's|/.*||'); \
+  if [ -z \"$BACKEND_HOST\" ]; then BACKEND_HOST=\"backend.railway.internal:3000\"; fi; \
+  echo \"[nginx] Proxying /api/ → http://$BACKEND_HOST/api/\"; \
+  export BACKEND_HOST; \
+  envsubst '${BACKEND_HOST}' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf; \
+  nginx -g 'daemon off;' \
+"]
