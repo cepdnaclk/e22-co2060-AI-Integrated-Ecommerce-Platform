@@ -10,8 +10,9 @@ const SuccessAnimation = ({ message, onDone }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
+      console.log("🚀 Redirection timer fired in SuccessAnimation");
       onDoneRef.current?.();
-    }, 3500);
+    }, 2000);
 
     return () => clearTimeout(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -144,7 +144,7 @@ const Profile = () => {
             <div style={styles.pg}>
                 <div style={{ textAlign: "center" }}>
                     <p style={{ color: "#f87171", marginBottom: 16 }}>{error}</p>
-                    <button style={styles.btnBlue} onClick={() => navigate("/login")}>Go to Login</button>
+                    <button style={styles.btnBlue} onClick={() => navigate("/login", { state: { from: { pathname: "/profile" } } })}>Go to Login</button>
                 </div>
             </div>
         );

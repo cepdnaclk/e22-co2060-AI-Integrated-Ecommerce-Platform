@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import "../index.css";
 
 import { auth } from "../firebase";
@@ -45,6 +45,8 @@ const Login = ({ onClose }) => {
   const [error, setError] = React.useState("");
   const [isSuccess, setIsSuccess] = React.useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   // Stable navigate ref so async callbacks always reach the latest navigate
   const navigateRef = useRef(navigate);
@@ -52,8 +54,10 @@ const Login = ({ onClose }) => {
 
   // Stable onDone for SuccessAnimation — fires navigate once on mount
   const handleLoginDone = useCallback(() => {
-    navigateRef.current("/", { replace: true });
-  }, []);
+    console.log(`🚀 Redirection starting... Target: ${from}`);
+    navigateRef.current(from, { replace: true });
+    console.log(`✅ Navigated to ${from}`);
+  }, [from]);
 
   // ── Handle any leftover redirect result (legacy / fallback) ──────────────
   // We no longer initiate signInWithRedirect, but handle any stored result
