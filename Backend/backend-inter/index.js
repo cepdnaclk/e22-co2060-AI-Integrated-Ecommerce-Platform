@@ -36,7 +36,7 @@ const PORT = process.env.PORT || 3000;
 
 const mongoURI =
   process.env.MONGO_URI ||
-  "mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/?appName=Cluster0";
+  "mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/ecommerce?retryWrites=true&w=majority";
 
 // ================== APP ==================
 const app = express();
