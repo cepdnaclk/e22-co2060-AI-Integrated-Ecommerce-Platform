@@ -14,13 +14,9 @@ RUN npm run build -- --mode production
 
 FROM nginx:1.27-alpine
 
-COPY nginx.conf.template /etc/nginx/templates/default.conf.template
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
-
-# Define default values for env variables so envsubst doesn't skip them, preventing Nginx startup crashes
-ENV PORT=80
-ENV BACKEND_URL="http://localhost:3000"
 
 CMD ["nginx", "-g", "daemon off;"]
