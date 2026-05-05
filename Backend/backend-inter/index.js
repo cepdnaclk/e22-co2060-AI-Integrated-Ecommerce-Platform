@@ -182,14 +182,24 @@ app.use((err, req, res, next) => {
 
 // ================== DATABASE ==================
 
+// Obfuscate URI for logging
+const loggableUri = mongoURI.replace(/\/\/.*@/, "//****:****@").split("?")[0];
+console.log(`🔌 Attempting to connect to MongoDB: ${loggableUri}`);
+
+if (mongoURI.includes("${{")) {
+  console.error("⚠️ CRITICAL: MONGO_URI appears to contain an unresolved Railway variable: " + mongoURI);
+  console.error("Please ensure your MONGO_URI environment variable is set to a real connection string.");
+}
+
 mongoose
   .connect(mongoURI)
   .then(() => {
     console.log("✅ Connected to MongoDB");
-    startServer();
   })
   .catch((err) => {
     console.error("❌ MongoDB connection error:", err.message);
+    // In production, we might want to exit, but for debugging 502s, 
+    // let's keep the process alive so Nginx can at least reach it.
   });
 
 // ================== SERVER ==================
@@ -199,6 +209,10 @@ function startServer() {
     console.log("=================================");
     console.log("🚀 Server started successfully");
     console.log(`🌐 Local URL: http://localhost:${PORT}`);
+    console.log(`📡 Port: ${PORT}`);
     console.log("=================================");
   });
 }
+
+// Start server immediately so Nginx doesn't 502 while waiting for DB
+startServer();
