@@ -23,11 +23,13 @@ try {
   }
 
   if (serviceAccount) {
+  if (serviceAccount) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
+    console.log("✅ Firebase Admin: Initialized successfully");
   } else {
-    console.warn("⚠️ Firebase Admin: No credentials found. Authentication may fail.");
+    console.error("❌ Firebase Admin: No credentials found! Login will NOT work until FIREBASE_SERVICE_ACCOUNT is added to Railway.");
   }
 } catch (error) {
   console.error("❌ Firebase Admin Initialization Error:", error.message);
