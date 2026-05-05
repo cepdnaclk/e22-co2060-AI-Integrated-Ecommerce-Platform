@@ -14,8 +14,9 @@ router.get("/", async (req, res) => {
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    console.error("Error fetching trending data:", error);
-    res.status(500).json({ error: "Failed to fetch trending products" });
+    console.error("⚠️ Graceful fallback: Trending service unavailable:", error.message);
+    // Return an empty array instead of 500 to keep the frontend running smoothly
+    res.json([]);
   }
 });
 
