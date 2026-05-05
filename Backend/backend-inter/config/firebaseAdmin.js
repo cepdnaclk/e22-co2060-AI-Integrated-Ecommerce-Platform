@@ -5,34 +5,32 @@ import { fileURLToPath } from "url";
 
 let serviceAccount;
 
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  try {
+try {
+  if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+    // Priority 1: Use environment variable (for Railway/Cloud)
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  } catch (err) {
-    console.error("❌ Failed to parse FIREBASE_SERVICE_ACCOUNT env var:", err.message);
-  }
-}
-
-if (!serviceAccount) {
-  try {
+    console.log("✅ Firebase Admin: Using service account from environment variable");
+  } else {
+    // Priority 2: Use local file (for Local Docker/Dev)
     const __dirname = path.dirname(fileURLToPath(import.meta.url));
-    const keyPath = path.join(__dirname, "..", "serviceAccountKey.json");
-
-    if (fs.existsSync(keyPath)) {
-      serviceAccount = JSON.parse(fs.readFileSync(keyPath));
+    const serviceAccountPath = path.join(__dirname, '..', 'serviceAccountKey.json');
+    
+    if (fs.existsSync(serviceAccountPath)) {
+      const fileData = fs.readFileSync(serviceAccountPath, 'utf8');
+      serviceAccount = JSON.parse(fileData);
+      console.log("✅ Firebase Admin: Using service account from local file");
     }
-  } catch (err) {
-    console.warn("⚠️ serviceAccountKey.json not found or invalid. Ensure FIREBASE_SERVICE_ACCOUNT env var is set.");
   }
-}
 
-if (serviceAccount) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-  });
-} else {
-  console.error("❌ Firebase Admin could not be initialized: Missing service account credentials.");
+  if (serviceAccount) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+    });
+  } else {
+    console.warn("⚠️ Firebase Admin: No credentials found. Authentication may fail.");
+  }
+} catch (error) {
+  console.error("❌ Firebase Admin Initialization Error:", error.message);
 }
 
 export default admin;
-
