@@ -1,5 +1,7 @@
 import admin from "firebase-admin";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
 let serviceAccount;
 
@@ -13,7 +15,9 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
 
 if (!serviceAccount) {
   try {
-    const keyPath = new URL("../serviceAccountKey.json", import.meta.url);
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const keyPath = path.join(__dirname, "..", "serviceAccountKey.json");
+
     if (fs.existsSync(keyPath)) {
       serviceAccount = JSON.parse(fs.readFileSync(keyPath));
     }
