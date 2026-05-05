@@ -6,9 +6,13 @@ server {
     index index.html;
 
     location /api/ {
-        # This will be replaced by envsubst with a hardcoded string at container startup
-        proxy_pass ${BACKEND_URL}/api/;
+        # envsubst will replace this with a hardcoded string at startup.
+        # This is the most stable way to handle dynamic URLs in Nginx.
+        proxy_pass ${BACKEND_URL};
         
+        # Add debug header to help us find the right URL
+        add_header X-Proxied-To ${BACKEND_URL} always;
+
         proxy_http_version 1.1;
         proxy_set_header Host ${BACKEND_HOST};
         proxy_set_header X-Real-IP $remote_addr;
