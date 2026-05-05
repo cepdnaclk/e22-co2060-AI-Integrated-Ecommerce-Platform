@@ -31,6 +31,10 @@ EXPOSE 80
 # 3. Start nginx.
 CMD ["/bin/sh", "-c", "\
   BACKEND_HOST=$(echo \"${BACKEND_URL:-}\" | sed 's|^https\\?://||' | sed 's|/.*||'); \
+  # AUTO-CORRECT: If user used backend-inter but service is named backend
+  if echo \"$BACKEND_HOST\" | grep -q \"backend-inter\"; then \
+    BACKEND_HOST=$(echo \"$BACKEND_HOST\" | sed 's/backend-inter/backend/'); \
+  fi; \
   if [ -z \"$BACKEND_HOST\" ]; then BACKEND_HOST=\"backend.railway.internal:3000\"; fi; \
   echo \"[nginx] Proxying /api/ → http://$BACKEND_HOST/api/\"; \
   export BACKEND_HOST; \
