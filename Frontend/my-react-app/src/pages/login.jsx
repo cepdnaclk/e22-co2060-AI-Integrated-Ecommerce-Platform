@@ -31,8 +31,17 @@ async function syncBackendSession(idToken) {
   }
 
   const data = await response.json();
+  console.log("📥 Backend session sync successful:", data);
+
+  if (!data.token || !data.user) {
+    console.error("❌ Backend response is missing critical fields:", data);
+    throw new Error("Invalid session data from server");
+  }
+
   localStorage.setItem("token", data.token);
   localStorage.setItem("user", JSON.stringify(data.user));
+  
+  console.log("💾 Auth data saved to localStorage. Token exists:", !!data.token);
   return data;
 }
 
@@ -54,10 +63,26 @@ const Login = ({ onClose }) => {
 
   // Stable onDone for SuccessAnimation — fires navigate once on mount
   const handleLoginDone = useCallback(() => {
-    console.log(`🚀 Redirection starting... Target: ${from}`);
-    navigateRef.current(from, { replace: true });
-    console.log(`✅ Navigated to ${from}`);
-  }, [from]);
+    console.log("🚀 REDIRECTION STARTING...");
+    const from = location.state?.from?.pathname || "/";
+    console.log(`📍 Target destination: ${from}`);
+
+    try {
+      // Primary: React Router navigation
+      navigate(from, { replace: true });
+      
+      // Secondary: Hard fallback if React Router is stalled/buggy
+      setTimeout(() => {
+        if (window.location.pathname !== from && window.location.pathname !== "/dashboard") {
+          console.warn("⚠️ React Router navigation seems stalled. Forcing hard reload to:", from);
+          window.location.href = from;
+        }
+      }, 500);
+    } catch (err) {
+      console.error("❌ Navigation error, forcing hard redirect:", err);
+      window.location.href = from;
+    }
+  }, [navigate, location.state]);
 
   // ── Handle any leftover redirect result (legacy / fallback) ──────────────
   // We no longer initiate signInWithRedirect, but handle any stored result
