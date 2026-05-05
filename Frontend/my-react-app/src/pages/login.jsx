@@ -17,34 +17,48 @@ import API_BASE_URL from "../config/api";
 // a backend JWT and writes it to localStorage. Non-blocking — navigation
 // to "/" happens BEFORE this resolves so the user is never stuck.
 async function syncBackendSession(idToken) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${idToken}`,
-    },
-  });
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+    });
 
-  if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    const error = new Error(data.message || `HTTP ${response.status}`);
-    error.response = response; // Attach response for debugging headers
+    if (!response.ok) {
+      const data = await response.json().catch(() => ({}));
+      let errorMsg = data.message || `HTTP ${response.status}`;
+
+      if (response.status === 502) {
+        errorMsg = "Backend service is unreachable. Please check if the server is running.";
+      } else if (response.status === 503) {
+        errorMsg = "Backend service is temporarily unavailable. Please try again.";
+      }
+
+      const error = new Error(errorMsg);
+      error.response = response; // Attach response for debugging headers
+      throw error;
+    }
+
+    const data = await response.json();
+    console.log("📥 Backend session sync successful:", data);
+
+    if (!data.token || !data.user) {
+      console.error("❌ Backend response is missing critical fields:", data);
+      throw new Error("Invalid session data from server");
+    }
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    console.log("💾 Auth data saved to localStorage. Token exists:", !!data.token);
+    return data;
+  } catch (error) {
+    if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
+      throw new Error("Cannot connect to backend API. Check network connectivity and server address.");
+    }
     throw error;
   }
-
-  const data = await response.json();
-  console.log("📥 Backend session sync successful:", data);
-
-  if (!data.token || !data.user) {
-    console.error("❌ Backend response is missing critical fields:", data);
-    throw new Error("Invalid session data from server");
-  }
-
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("user", JSON.stringify(data.user));
-  
-  console.log("💾 Auth data saved to localStorage. Token exists:", !!data.token);
-  return data;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────
