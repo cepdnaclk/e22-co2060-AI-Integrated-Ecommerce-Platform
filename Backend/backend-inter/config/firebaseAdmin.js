@@ -23,7 +23,6 @@ try {
   }
 
   if (serviceAccount) {
-  if (serviceAccount) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     });
