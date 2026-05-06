@@ -1,33 +1,38 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import userModel from "../models/user.js";
-import { verifyFirebaseIdToken } from "../services/firebaseTokenVerifier.js";
+import admin from "../config/firebaseAdmin.js"; // Use the fixed admin SDK
 
 export function createFirebaseLogin({
   userRepo,
   signJwt
 }) {
   return async function firebaseLogin(req, res) {
+    console.log("📥 [Login] Firebase sync request received");
     try {
       const authHeader = req.headers.authorization;
 
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        console.warn("⚠️ [Login] Missing or malformed Authorization header");
         return res.status(401).json({
           message: "Missing Firebase token",
         });
       }
 
       const idToken = authHeader.split(" ")[1];
+      console.log("🔑 [Login] Verifying Firebase Token...");
 
-      // Verify the Firebase ID token using Google's public RSA keys.
-      // No service account / FIREBASE_SERVICE_ACCOUNT env var required.
+      // STEP 1: Verify the token using the OFFICIAL Admin SDK
+      // This is much faster and more reliable than manual JWT verification.
       let decodedToken;
       try {
-        decodedToken = await verifyFirebaseIdToken(idToken);
+        decodedToken = await admin.auth().verifyIdToken(idToken);
+        console.log("✅ [Login] Token Verified for:", decodedToken.email);
       } catch (verifyErr) {
-        console.error("❌ Firebase token verification failed:", verifyErr.message);
+        console.error("❌ [Login] Firebase token verification failed:", verifyErr.message);
         return res.status(401).json({
           message: "Invalid or expired Firebase token",
+          detail: verifyErr.message
         });
       }
 
@@ -36,12 +41,15 @@ export function createFirebaseLogin({
       const picture = decodedToken.picture || "";
 
       if (!email) {
+        console.warn("⚠️ [Login] Token missing email claim");
         return res.status(401).json({ message: "Token missing email claim" });
       }
 
+      console.log("🔍 [Login] Looking up user in Database...");
       let user = await userRepo.findOne({ email });
 
       if (!user) {
+        console.log("🆕 [Login] User not found. Creating new account...");
         user = await userRepo.create({
           email,
           firstName: name.split(" ")[0] || "User",
@@ -50,13 +58,19 @@ export function createFirebaseLogin({
           image: picture,
           isEmailVerified: true,
         });
+        console.log("✅ [Login] New user created ID:", user._id);
+      } else {
+        console.log("👤 [Login] Existing user found ID:", user._id);
       }
 
       if (user.isBlocked) {
+        console.warn("🚫 [Login] Blocked user attempt:", email);
         return res.status(403).json({
           message: "Account blocked",
         });
       }
+
+      console.log("✍️ [Login] Signing Backend JWT...");
 
       const appToken = signJwt(
         {
