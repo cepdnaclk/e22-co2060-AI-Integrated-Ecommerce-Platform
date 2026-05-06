@@ -140,7 +140,7 @@ services:
     env_file:
       - .\Backend\backend-inter\.env
     environment:
-      PORT: 3000
+      PORT: 8080
 
       JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
       FRONTEND_URL: https://localhost:5173
@@ -158,7 +158,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "3000:3000"
+      - "8080:8080"
 
   youtube-trending:
     build:

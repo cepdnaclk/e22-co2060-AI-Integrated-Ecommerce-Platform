@@ -44,7 +44,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         // Use 'backend' for Docker networking, fallback to localhost for local dev.
-        target: process.env.VITE_PROXY_TARGET || 'http://backend:3000',
+        target: process.env.VITE_PROXY_TARGET || 'http://backend:8080',
         changeOrigin: true,
         // secure: false is required because the frontend is now HTTPS
         // (self-signed cert). Without this, Vite refuses to forward

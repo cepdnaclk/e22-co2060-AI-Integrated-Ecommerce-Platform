@@ -9,10 +9,10 @@ The `nginx.conf` template was trying to proxy requests to the backend using `$BA
 ## Solution
 
 ### 1. Updated nginx.conf (Frontend)
-- Added a **fallback default** for `BACKEND_INTERNAL_HOST` to `backend:3000`
+- Added a **fallback default** for `BACKEND_INTERNAL_HOST` to `e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080`
 - Added missing `X-Forwarded-Auth` header to forward Authorization headers properly
 - Added proxy timeouts to handle slow backend responses
-- Environment variable syntax: `${BACKEND_INTERNAL_HOST:-backend:3000}`
+- Environment variable syntax: `${BACKEND_INTERNAL_HOST:-e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080}`
 
 ### 2. Improved Login Error Handling (Frontend)
 - Better error messages for 502/503 errors
@@ -30,25 +30,25 @@ The `nginx.conf` template was trying to proxy requests to the backend using `$BA
 
 2. **Environment Variables** (set these in Railway dashboard):
    ```
-   BACKEND_INTERNAL_HOST=<backend-service-host>:3000
+   BACKEND_INTERNAL_HOST=<backend-service-host>:8080
    ```
    
    **To find the correct value:**
    - Go to your Backend service in Railway
    - Get the internal hostname from the "Connect" tab
-   - Format: `backend-internal-hostname:3000`
-   - Example: `backend.railway.internal:3000`
+   - Format: `backend-internal-hostname:8080`
+   - Example: `e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080`
 
 ### For Backend Service:
 1. **Build & Deploy**
    - Source: `Backend/backend-inter`
    - Build command: `npm install --legacy-peer-deps`
    - Start command: `npm start`
-   - Port: `3000`
+   - Port: `8080`
 
 2. **Required Environment Variables:**
    ```
-   PORT=3000
+   PORT=8080
    JWT_SECRET=<your-jwt-secret>
    MONGO_URI=<your-mongodb-connection-string>
    FRONTEND_URL=https://<your-frontend-domain>
@@ -59,7 +59,7 @@ The `nginx.conf` template was trying to proxy requests to the backend using `$BA
 ### Locally (Docker Compose):
 ```
 Browser → Frontend (Vite dev server)
-       → Vite proxy → http://backend:3000
+       → Vite proxy → http://backend:8080
        → Backend API responses
 ```
 
