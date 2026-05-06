@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import ParticleCanvas from "../components/ParticleCanvas";
+import AdminMobileNav from "../components/AdminMobileNav";
 import {
   fetchAllOrders,
   fetchOrderStats,
@@ -155,140 +156,170 @@ export default function AdminOrders() {
 
   // ── Render ──
   return (
-    <div style={S.pg}>
+    <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e1b4b] text-white font-sans relative overflow-x-hidden p-4 sm:p-6 lg:p-10">
       <ParticleCanvas />
-      <div style={{ width: "100%", maxWidth: 1200, position: "relative", zIndex: 1 }}>
-        <style>{`
-          @keyframes fadeIn { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-          .ao-card { animation: fadeIn 0.5s ease forwards; }
-          .ao-row { transition: background 0.15s; cursor: pointer; }
-          .ao-row:hover { background: rgba(168,85,247,0.06) !important; }
-        `}</style>
 
-        {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 32 }}>
-          <div>
-            <button onClick={() => navigate("/admin/dashboard")} style={S.backBtn}>← Dashboard</button>
-            <h1 style={S.title}>📋 Order Management</h1>
-            <p style={{ color: "#94a3b8", fontSize: 14, margin: 0 }}>
-              View, track, and manage all platform orders
-            </p>
+      <style>{`
+        @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes slideIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+        .ao-card { animation: fadeIn 0.4s ease forwards; }
+        .ao-row:hover { background: rgba(168,85,247,0.06); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* ── Header ── */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8 border-b border-white/10 pb-8">
+          <div className="text-center md:text-left">
+            <button 
+              onClick={() => navigate("/admin/dashboard")} 
+              className="text-purple-400 text-xs font-bold uppercase tracking-widest hover:text-purple-300 transition-colors mb-2 block w-full md:w-auto"
+            >
+              ← Dashboard
+            </button>
+            <h1 className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
+              Order Management
+            </h1>
+            <p className="text-slate-400 text-sm mt-2">Track, verify, and fulfill customer shipments platform-wide.</p>
           </div>
         </div>
 
-        {/* Stats Row */}
+        {/* ── Stats Strip (Horizontal Scroll on Mobile) ── */}
         {stats && (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 14, marginBottom: 28 }}>
+          <div className="flex overflow-x-auto gap-4 pb-4 mb-8 no-scrollbar snap-x">
             {[
-              { label: "Total", value: stats.total, icon: "📊", color: "#e2e8f0" },
-              { label: "Pending", value: stats.pending, icon: "⏳", color: "#facc15" },
-              { label: "Confirmed", value: stats.confirmed, icon: "✅", color: "#60a5fa" },
-              { label: "Shipped", value: stats.shipped, icon: "🚚", color: "#c084fc" },
-              { label: "Delivered", value: stats.delivered, icon: "📦", color: "#4ade80" },
-              { label: "Cancelled", value: stats.cancelled, icon: "❌", color: "#f87171" },
-              { label: "Revenue", value: formatCurrency(stats.revenue), icon: "💰", color: "#34d399" },
+              { label: "Total", value: stats.total, icon: "📊", color: "text-slate-200" },
+              { label: "Pending", value: stats.pending, icon: "⏳", color: "text-yellow-400" },
+              { label: "Confirmed", value: stats.confirmed, icon: "✅", color: "text-blue-400" },
+              { label: "Shipped", value: stats.shipped, icon: "🚚", color: "text-purple-400" },
+              { label: "Delivered", value: stats.delivered, icon: "📦", color: "text-emerald-400" },
+              { label: "Revenue", value: formatCurrency(stats.revenue), icon: "💰", color: "text-emerald-400" },
             ].map((s, i) => (
-              <div key={i} className="ao-card" style={{ ...S.statCard, animationDelay: `${i * 0.05}s` }}>
-                <span style={{ fontSize: 22 }}>{s.icon}</span>
-                <span style={{ fontSize: 22, fontWeight: 700, color: s.color }}>{s.value}</span>
-                <span style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1 }}>{s.label}</span>
+              <div key={i} className="ao-card flex-shrink-0 w-36 sm:w-44 bg-white/5 backdrop-blur-xl border border-white/10 p-5 rounded-2xl flex flex-col items-center gap-2 snap-center">
+                <span className="text-2xl">{s.icon}</span>
+                <span className={`text-xl sm:text-2xl font-black ${s.color}`}>{s.value}</span>
+                <span className="text-[10px] text-slate-500 uppercase tracking-widest font-black">{s.label}</span>
               </div>
             ))}
           </div>
         )}
 
-        {/* Filters */}
-        <div style={{ display: "flex", gap: 10, marginBottom: 20, flexWrap: "wrap", alignItems: "center" }}>
-          {STATUSES.map((s) => (
-            <button
-              key={s}
-              onClick={() => { setFilter(s); setPage(1); }}
-              style={{
-                ...S.pill,
-                background: filter === s ? "rgba(168,85,247,0.2)" : "rgba(255,255,255,0.04)",
-                border: filter === s ? "1px solid rgba(168,85,247,0.5)" : "1px solid rgba(255,255,255,0.08)",
-                color: filter === s ? "#c084fc" : "#94a3b8",
-              }}
-            >
-              {s === "all" ? "All" : `${STATUS_ICONS[s]} ${s.charAt(0).toUpperCase() + s.slice(1)}`}
-            </button>
-          ))}
-          <input
-            type="text"
-            placeholder="Search by email, shop, or order ID…"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            style={S.searchInput}
-          />
+        {/* ── Filter Bar ── */}
+        <div className="flex flex-col lg:flex-row gap-4 mb-8 items-center">
+          <div className="flex overflow-x-auto gap-2 w-full lg:w-auto pb-2 lg:pb-0 no-scrollbar">
+            {STATUSES.map((s) => (
+              <button
+                key={s}
+                onClick={() => { setFilter(s); setPage(1); }}
+                className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold border transition-all
+                  ${filter === s ? "bg-purple-500/20 border-purple-500/50 text-purple-300" : "bg-white/5 border-white/10 text-slate-400 hover:bg-white/10"}
+                `}
+              >
+                {s === "all" ? "All" : `${STATUS_ICONS[s]} ${s.charAt(0).toUpperCase() + s.slice(1)}`}
+              </button>
+            ))}
+          </div>
+          <div className="relative w-full lg:flex-1">
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
+            <input
+              type="text"
+              placeholder="Search by email, shop, or ID…"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 pl-12 pr-4 text-sm text-white outline-none focus:border-purple-500/50 transition-all placeholder-slate-600"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            />
+          </div>
         </div>
 
-        {/* Content Area */}
-        <div style={{ display: "flex", gap: 20 }}>
+        {/* ── Main Layout ── */}
+        <div className="flex flex-col lg:flex-row gap-8">
+          
           {/* Order List */}
-          <div style={{ flex: selectedOrder ? "0 0 55%" : "1 1 100%", transition: "flex 0.3s" }}>
+          <div className={`flex-1 transition-all ${selectedOrder ? "hidden lg:block lg:w-3/5" : "w-full"}`}>
             {loading ? (
-              <div style={S.emptyState}>Loading orders…</div>
+              <div className="text-center py-24 bg-white/5 rounded-3xl border border-white/10">
+                <div className="w-12 h-12 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-slate-500">Syncing orders...</p>
+              </div>
             ) : orders.length === 0 ? (
-              <div style={S.emptyState}>No orders found</div>
+              <div className="text-center py-24 bg-white/5 rounded-3xl border border-white/10">
+                <div className="text-5xl mb-4 opacity-30">📭</div>
+                <p className="text-slate-500 font-bold">No orders match your criteria.</p>
+              </div>
             ) : (
-              <div style={S.tableWrap}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr>
-                      {["Order ID", "Customer", "Seller", "Total", "Status", "Seller QR", "Date"].map((h) => (
-                        <th key={h} style={S.th}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {orders.map((order) => (
-                      <tr
-                        key={order._id}
-                        className="ao-row"
-                        onClick={() => setSelectedOrder(order)}
-                        style={{
-                          background: selectedOrder?._id === order._id ? "rgba(168,85,247,0.08)" : "transparent",
-                        }}
-                      >
-                        <td style={S.td}>
-                          <span style={{ fontFamily: "monospace", fontSize: 12, color: "#a78bfa" }}>
-                            {order._id.slice(-8)}
-                          </span>
-                        </td>
-                        <td style={S.td}>{order.userId?.email || "N/A"}</td>
-                        <td style={S.td}>{order.sellerId?.shopName || "N/A"}</td>
-                        <td style={{ ...S.td, fontWeight: 600 }}>{formatCurrency(order.totalAmount)}</td>
-                        <td style={S.td}>
-                          <StatusBadge status={order.status} />
-                        </td>
-                        <td style={S.td}>
-                          <SellerQrBadge status={order.sellerQr?.verificationStatus || "not_submitted"} />
-                        </td>
-                        <td style={{ ...S.td, fontSize: 12, color: "#64748b" }}>{formatDate(order.createdAt)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl overflow-hidden shadow-2xl">
+                
+                {/* Desktop Header */}
+                <div className="hidden lg:grid grid-cols-[100px_1fr_120px_120px_140px] gap-4 px-8 py-5 bg-white/5 border-b border-white/10">
+                  {["ID", "Customer", "Total", "Status", "Date"].map((h, i) => (
+                    <span key={i} className="text-[10px] uppercase tracking-widest font-black text-slate-500">{h}</span>
+                  ))}
+                </div>
+
+                {/* Rows / Cards */}
+                <div className="flex flex-col">
+                  {orders.map((order) => (
+                    <div
+                      key={order._id}
+                      onClick={() => setSelectedOrder(order)}
+                      className={`flex flex-col lg:grid lg:grid-cols-[100px_1fr_120px_120px_140px] gap-4 px-8 py-6 lg:py-5 border-b border-white/5 transition-all ao-row cursor-pointer
+                        ${selectedOrder?._id === order._id ? "bg-purple-500/10 border-l-4 border-l-purple-500" : ""}
+                      `}
+                    >
+                      <div className="flex justify-between items-center lg:block">
+                        <span className="font-mono text-purple-400 text-sm font-bold">#{order._id.slice(-8)}</span>
+                        <div className="lg:hidden">
+                           <StatusBadge status={order.status} />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-white truncate max-w-[200px]">{order.userId?.email || "Guest"}</span>
+                        <span className="text-[10px] text-slate-500 uppercase font-black mt-1">{order.sellerId?.shopName || "Unknown Seller"}</span>
+                      </div>
+
+                      <div className="flex justify-between items-center lg:block">
+                        <span className="lg:hidden text-[9px] uppercase font-black text-slate-600">Total</span>
+                        <span className="text-base lg:text-sm font-black text-emerald-400">{formatCurrency(order.totalAmount)}</span>
+                      </div>
+
+                      <div className="hidden lg:flex items-center">
+                        <StatusBadge status={order.status} />
+                      </div>
+
+                      <div className="flex justify-between items-center lg:block">
+                        <span className="lg:hidden text-[9px] uppercase font-black text-slate-600">Date</span>
+                        <span className="text-xs text-slate-500">{formatDate(order.createdAt)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16 }}>
+              <div className="flex justify-center items-center gap-6 mt-10 pb-10">
                 <button
                   disabled={page <= 1}
                   onClick={() => setPage((p) => p - 1)}
-                  style={{ ...S.pageBtn, opacity: page <= 1 ? 0.4 : 1 }}
+                  className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all border
+                    ${page <= 1 ? "opacity-30 border-white/5" : "bg-white/5 border-white/10 hover:bg-white/10 active:scale-95"}
+                  `}
                 >
                   ← Prev
                 </button>
-                <span style={{ color: "#94a3b8", fontSize: 13, padding: "8px 12px" }}>
-                  Page {page} of {totalPages}
+                <span className="text-slate-500 text-xs font-bold">
+                  Page <span className="text-white">{page}</span> of {totalPages}
                 </span>
                 <button
                   disabled={page >= totalPages}
                   onClick={() => setPage((p) => p + 1)}
-                  style={{ ...S.pageBtn, opacity: page >= totalPages ? 0.4 : 1 }}
+                  className={`px-6 py-2.5 rounded-xl text-xs font-bold transition-all border
+                    ${page >= totalPages ? "opacity-30 border-white/5" : "bg-white/5 border-white/10 hover:bg-white/10 active:scale-95"}
+                  `}
                 >
                   Next →
                 </button>
@@ -296,184 +327,158 @@ export default function AdminOrders() {
             )}
           </div>
 
-          {/* Order Detail Panel */}
+          {/* Detail Panel */}
           {selectedOrder && (
-            <div className="ao-card" style={S.detailPanel}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
-                <h3 style={{ margin: 0, fontSize: 18, color: "#fff" }}>Order Details</h3>
-                <button onClick={() => setSelectedOrder(null)} style={S.closeBtn}>✕</button>
-              </div>
-
-              {/* Order ID & Date */}
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>Order ID</div>
-                <div style={{ fontFamily: "monospace", fontSize: 13, color: "#a78bfa" }}>{selectedOrder._id}</div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-                <InfoBlock label="Created" value={formatDate(selectedOrder.createdAt)} />
-                <InfoBlock label="Updated" value={formatDate(selectedOrder.updatedAt)} />
-                <InfoBlock label="Customer" value={selectedOrder.userId?.email || "N/A"} />
-                <InfoBlock label="Seller" value={selectedOrder.sellerId?.shopName || "N/A"} />
-              </div>
-
-              {/* Status Tracking */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
-                  Status Tracking
-                </div>
-                <OrderTimeline status={selectedOrder.status} />
-              </div>
-
-              {/* Update Status */}
-              {NEXT_STATUS[selectedOrder.status]?.length > 0 && (
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-                    Update Status
-                  </div>
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                    {NEXT_STATUS[selectedOrder.status].map((s) => (
-                      <button
-                        key={s}
-                        disabled={updating}
-                        onClick={() => handleStatusChange(selectedOrder._id, s)}
-                        style={{
-                          ...S.statusBtn,
-                          background: STATUS_COLORS[s].bg,
-                          color: STATUS_COLORS[s].color,
-                          border: `1px solid ${STATUS_COLORS[s].border}`,
-                          opacity: updating ? 0.5 : 1,
-                        }}
-                      >
-                        {STATUS_ICONS[s]} Mark as {s.charAt(0).toUpperCase() + s.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Items */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-                  Items ({selectedOrder.items.length})
-                </div>
-                {selectedOrder.items.map((item, i) => (
-                  <div key={i} style={S.itemRow}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ color: "#e2e8f0", fontSize: 13 }}>
-                        {item.productId?.productName || item.productId?.name || "Product"}
-                      </div>
-                      <div style={{ color: "#64748b", fontSize: 12 }}>Qty: {item.quantity}</div>
-                    </div>
-                    <div style={{ color: "#a78bfa", fontWeight: 600, fontSize: 14 }}>
-                      {formatCurrency(item.price * item.quantity)}
-                    </div>
-                  </div>
-                ))}
-                <div style={{ display: "flex", justifyContent: "space-between", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 10, marginTop: 8 }}>
-                  <span style={{ color: "#94a3b8", fontSize: 13 }}>Total</span>
-                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>
-                    {formatCurrency(selectedOrder.totalAmount)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Shipping Address */}
-              {selectedOrder.shippingAddress && (
-                <div style={{ marginBottom: 20 }}>
-                  <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-                    Shipping Address
-                  </div>
-                  <div style={S.addressBox}>
-                    <div style={{ color: "#e2e8f0", fontWeight: 600, marginBottom: 4 }}>
-                      {selectedOrder.shippingAddress.fullName}
-                    </div>
-                    <div style={{ color: "#94a3b8", fontSize: 13, lineHeight: 1.5 }}>
-                      {selectedOrder.shippingAddress.street}<br />
-                      {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.postalCode}<br />
-                      📞 {selectedOrder.shippingAddress.phone}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Seller QR Verification */}
-              <div>
-                <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 8 }}>
-                  Seller QR Verification
-                </div>
-                <div style={{ marginBottom: 10 }}>
-                  <SellerQrBadge status={selectedOrder.sellerQr?.verificationStatus || "not_submitted"} />
-                </div>
-
-                {selectedOrder.sellerQr?.proofImageUrl ? (
+            <div className="fixed inset-0 lg:relative lg:inset-auto z-[100] lg:z-0 lg:flex-1 animate-slideIn">
+              <div className="absolute inset-0 lg:hidden bg-slate-950/80 backdrop-blur-sm" onClick={() => setSelectedOrder(null)} />
+              
+              <div className="relative h-full lg:h-auto bg-slate-900 lg:bg-white/5 lg:backdrop-blur-xl border-l lg:border border-white/10 lg:rounded-3xl shadow-2xl flex flex-col max-w-2xl ml-auto">
+                
+                {/* Detail Header */}
+                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/5 lg:bg-transparent">
                   <div>
-                    <div style={{ ...S.infoLine, marginBottom: 6 }}>
-                      <span style={S.infoLabel}>Packed product:</span>
-                      <span style={S.infoValue}>{selectedOrder.sellerQr?.packingProductName || "N/A"}</span>
-                    </div>
-                    <div style={{ ...S.infoLine, marginBottom: 6 }}>
-                      <span style={S.infoLabel}>SKU/IMEI:</span>
-                      <span style={S.infoValue}>{selectedOrder.sellerQr?.packingSkuOrImei || "N/A"}</span>
-                    </div>
-                    <div style={{ ...S.infoLine, marginBottom: 10 }}>
-                      <span style={S.infoLabel}>Submitted:</span>
-                      <span style={S.infoValue}>
-                        {selectedOrder.sellerQr?.proofSubmittedAt
-                          ? formatDate(selectedOrder.sellerQr.proofSubmittedAt)
-                          : "N/A"}
-                      </span>
-                    </div>
-                    <img
-                      src={selectedOrder.sellerQr.proofImageUrl}
-                      alt="Seller packing proof"
-                      style={S.proofImage}
-                    />
-                    <textarea
-                      placeholder="Verification notes (optional)"
-                      value={verificationNote}
-                      onChange={(e) => setVerificationNote(e.target.value)}
-                      style={S.noteInput}
-                    />
-                    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-                      <button
-                        disabled={updating}
-                        onClick={() => handleSellerQrVerification(selectedOrder._id, "approve")}
-                        style={{ ...S.statusBtn, background: "rgba(34,197,94,0.15)", color: "#4ade80", border: "1px solid rgba(34,197,94,0.35)" }}
-                      >
-                        ✅ Approve seller QR
-                      </button>
-                      <button
-                        disabled={updating}
-                        onClick={() => handleSellerQrVerification(selectedOrder._id, "reject")}
-                        style={{ ...S.statusBtn, background: "rgba(239,68,68,0.15)", color: "#f87171", border: "1px solid rgba(239,68,68,0.35)" }}
-                      >
-                        ❌ Reject proof
-                      </button>
+                    <h3 className="text-lg font-bold text-white">Order Details</h3>
+                    <p className="text-[10px] font-mono text-purple-400">ID: {selectedOrder._id}</p>
+                  </div>
+                  <button onClick={() => setSelectedOrder(null)} className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-all">✕</button>
+                </div>
+
+                <div className="p-6 overflow-y-auto max-h-screen lg:max-h-[70vh]">
+                  
+                  {/* Order Overview Grid */}
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <InfoBlock label="Date" value={formatDate(selectedOrder.createdAt)} />
+                    <InfoBlock label="Customer" value={selectedOrder.userId?.email || "N/A"} />
+                    <div className="col-span-2">
+                       <InfoBlock label="Store" value={selectedOrder.sellerId?.shopName || "N/A"} />
                     </div>
                   </div>
-                ) : (
-                  <div style={{ color: "#64748b", fontSize: 13 }}>
-                    Seller has not submitted packing proof yet.
+
+                  {/* Tracking Section */}
+                  <div className="mb-10">
+                    <h4 className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-6">Tracking Timeline</h4>
+                    <OrderTimeline status={selectedOrder.status} />
                   </div>
-                )}
+
+                  {/* Action Row */}
+                  {NEXT_STATUS[selectedOrder.status]?.length > 0 && (
+                    <div className="mb-10 p-5 bg-purple-500/5 border border-purple-500/20 rounded-2xl">
+                      <h4 className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-4">Advance Order Lifecycle</h4>
+                      <div className="flex flex-wrap gap-3">
+                        {NEXT_STATUS[selectedOrder.status].map((s) => (
+                          <button
+                            key={s}
+                            disabled={updating}
+                            onClick={() => handleStatusChange(selectedOrder._id, s)}
+                            className="flex-1 min-w-[140px] px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-lg active:scale-95"
+                            style={{
+                              background: STATUS_COLORS[s].bg,
+                              color: STATUS_COLORS[s].color,
+                              border: `1px solid ${STATUS_COLORS[s].border}`,
+                              opacity: updating ? 0.5 : 1,
+                            }}
+                          >
+                            {STATUS_ICONS[s]} Mark as {s}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Items List */}
+                  <div className="mb-10">
+                    <h4 className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-4">Line Items</h4>
+                    <div className="space-y-4">
+                      {selectedOrder.items.map((item, i) => (
+                        <div key={i} className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                          <div className="flex-grow">
+                            <p className="text-sm font-bold text-slate-200">{item.productId?.productName || "Product"}</p>
+                            <p className="text-xs text-slate-500">Qty: {item.quantity} × {formatCurrency(item.price)}</p>
+                          </div>
+                          <span className="text-sm font-black text-purple-400">{formatCurrency(item.price * item.quantity)}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center mt-6 p-4 bg-emerald-500/5 rounded-2xl border border-emerald-500/20">
+                      <span className="text-xs font-bold text-slate-400">Grand Total</span>
+                      <span className="text-xl font-black text-emerald-400">{formatCurrency(selectedOrder.totalAmount)}</span>
+                    </div>
+                  </div>
+
+                  {/* Shipping Address */}
+                  {selectedOrder.shippingAddress && (
+                    <div className="mb-10">
+                      <h4 className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-4">Shipping Destination</h4>
+                      <div className="bg-white/5 p-5 rounded-2xl border border-white/5 space-y-2">
+                        <p className="text-sm font-black text-white">{selectedOrder.shippingAddress.fullName}</p>
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.city}<br />
+                          {selectedOrder.shippingAddress.postalCode}<br />
+                          <span className="text-purple-400 font-bold">📞 {selectedOrder.shippingAddress.phone}</span>
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Seller QR Section */}
+                  <div className="mb-6">
+                    <h4 className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-4">Seller Compliance</h4>
+                    <SellerQrBadge status={selectedOrder.sellerQr?.verificationStatus || "not_submitted"} />
+                    
+                    {selectedOrder.sellerQr?.proofImageUrl ? (
+                      <div className="mt-6 space-y-6">
+                        <div className="bg-white/5 p-4 rounded-2xl border border-white/5 text-[11px] space-y-2">
+                           <div className="flex justify-between"><span className="text-slate-500">Packed:</span> <span className="text-white font-bold">{selectedOrder.sellerQr?.packingProductName}</span></div>
+                           <div className="flex justify-between"><span className="text-slate-500">SKU/IMEI:</span> <span className="text-white font-mono">{selectedOrder.sellerQr?.packingSkuOrImei}</span></div>
+                        </div>
+                        <img src={selectedOrder.sellerQr.proofImageUrl} alt="Proof" className="w-full rounded-2xl border border-white/10 shadow-2xl" />
+                        
+                        <textarea
+                          placeholder="Verification notes..."
+                          value={verificationNote}
+                          onChange={(e) => setVerificationNote(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm text-white outline-none focus:border-purple-500/50 min-h-[100px]"
+                        />
+                        
+                        <div className="flex gap-3">
+                          <button
+                            disabled={updating}
+                            onClick={() => handleSellerQrVerification(selectedOrder._id, "approve")}
+                            className="flex-1 py-4 bg-emerald-600 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-500 shadow-lg shadow-emerald-500/20 transition-all"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            disabled={updating}
+                            onClick={() => handleSellerQrVerification(selectedOrder._id, "reject")}
+                            className="flex-1 py-4 bg-rose-600 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-rose-500 shadow-lg shadow-rose-500/20 transition-all"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-4 text-xs text-slate-500 italic">No packing proof submitted by seller.</div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
         </div>
       </div>
+      <AdminMobileNav />
     </div>
   );
 }
 
-// ── Sub-components ──
-
 function StatusBadge({ status }) {
   const c = STATUS_COLORS[status] || STATUS_COLORS.pending;
   return (
-    <span style={{
-      padding: "3px 10px", borderRadius: 10, fontSize: 11, fontWeight: 600,
-      background: c.bg, color: c.color, border: `1px solid ${c.border}`,
-    }}>
+    <span 
+      className="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border whitespace-nowrap"
+      style={{ background: c.bg, color: c.color, borderColor: c.border }}
+    >
       {STATUS_ICONS[status]} {status}
     </span>
   );
@@ -481,9 +486,9 @@ function StatusBadge({ status }) {
 
 function InfoBlock({ label, value }) {
   return (
-    <div>
-      <div style={{ fontSize: 11, color: "#64748b", textTransform: "uppercase", letterSpacing: 1, marginBottom: 2 }}>{label}</div>
-      <div style={{ fontSize: 13, color: "#e2e8f0" }}>{value}</div>
+    <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+      <p className="text-[9px] uppercase tracking-widest font-black text-slate-500 mb-1">{label}</p>
+      <p className="text-xs text-white font-bold truncate">{value}</p>
     </div>
   );
 }
@@ -492,15 +497,10 @@ function SellerQrBadge({ status }) {
   const key = SELLER_QR_COLORS[status] ? status : "not_submitted";
   const c = SELLER_QR_COLORS[key];
   return (
-    <span style={{
-      padding: "3px 10px",
-      borderRadius: 10,
-      fontSize: 11,
-      fontWeight: 600,
-      background: c.bg,
-      color: c.color,
-      border: `1px solid ${c.border}`,
-    }}>
+    <span 
+      className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border"
+      style={{ background: c.bg, color: c.color, borderColor: c.border }}
+    >
       🧾 {SELLER_QR_LABELS[key]}
     </span>
   );
@@ -512,164 +512,33 @@ function OrderTimeline({ status }) {
   const isCancelled = status === "cancelled";
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+    <div className="flex justify-between items-center px-4">
       {steps.map((step, i) => {
         const isActive = !isCancelled && i <= currentIdx;
         const c = isActive ? STATUS_COLORS[step] : { bg: "rgba(255,255,255,0.04)", color: "#475569", border: "rgba(255,255,255,0.08)" };
         return (
           <React.Fragment key={step}>
-            <div style={{
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 4, flex: 1,
-            }}>
-              <div style={{
-                width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                background: c.bg, border: `2px solid ${c.border}`, fontSize: 14,
-              }}>
+            <div className="flex flex-col items-center gap-2 relative z-10">
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-500 shadow-xl"
+                style={{ background: c.bg, borderColor: c.border }}
+              >
                 {STATUS_ICONS[step]}
               </div>
-              <span style={{ fontSize: 10, color: c.color, textTransform: "capitalize" }}>{step}</span>
+              <span className="text-[8px] font-black uppercase tracking-tighter" style={{ color: c.color }}>{step}</span>
             </div>
             {i < steps.length - 1 && (
-              <div style={{
-                flex: 1, height: 2, maxWidth: 40,
-                background: !isCancelled && i < currentIdx ? "rgba(168,85,247,0.5)" : "rgba(255,255,255,0.08)",
-              }} />
+              <div className="flex-1 h-0.5 mx-[-10px] mb-4 bg-white/10 relative overflow-hidden">
+                 <div 
+                    className="absolute inset-0 bg-purple-500 transition-all duration-1000" 
+                    style={{ width: !isCancelled && i < currentIdx ? "100%" : "0%" }}
+                 />
+              </div>
             )}
           </React.Fragment>
         );
       })}
-      {isCancelled && (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 4, marginLeft: 16 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-            background: STATUS_COLORS.cancelled.bg, border: `2px solid ${STATUS_COLORS.cancelled.border}`, fontSize: 14,
-          }}>
-            ❌
-          </div>
-          <span style={{ fontSize: 10, color: STATUS_COLORS.cancelled.color }}>Cancelled</span>
-        </div>
-      )}
     </div>
   );
 }
 
-// ── Styles ──
-
-const S = {
-  pg: {
-    minHeight: "100vh",
-    background: "linear-gradient(135deg, #020617, #0f172a, #1e1b4b)",
-    color: "#fff",
-    fontFamily: "'Segoe UI', Arial, sans-serif",
-    display: "flex",
-    justifyContent: "center",
-    padding: "40px 32px",
-    position: "relative",
-    overflow: "hidden",
-  },
-  title: {
-    fontSize: 28, fontWeight: 700, margin: "8px 0 4px",
-    background: "linear-gradient(to right, #fff, #c084fc)",
-    WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-  },
-  backBtn: {
-    background: "none", border: "none", color: "#a78bfa", cursor: "pointer",
-    fontSize: 13, padding: 0, fontWeight: 600,
-  },
-  statCard: {
-    background: "rgba(255,255,255,0.03)", backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12,
-    padding: "16px 18px", display: "flex", flexDirection: "column",
-    alignItems: "center", gap: 4,
-  },
-  pill: {
-    padding: "6px 14px", borderRadius: 20, fontSize: 12, fontWeight: 600,
-    cursor: "pointer", transition: "all 0.2s",
-  },
-  searchInput: {
-    background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 10, padding: "8px 14px", color: "#e2e8f0", fontSize: 13,
-    outline: "none", flex: 1, minWidth: 200,
-  },
-  tableWrap: {
-    background: "rgba(255,255,255,0.02)", backdropFilter: "blur(12px)",
-    border: "1px solid rgba(255,255,255,0.06)", borderRadius: 14,
-    overflow: "hidden",
-  },
-  th: {
-    textAlign: "left", padding: "12px 14px", fontSize: 11, fontWeight: 700,
-    color: "#64748b", textTransform: "uppercase", letterSpacing: 1,
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
-  },
-  td: {
-    padding: "12px 14px", fontSize: 13, color: "#e2e8f0",
-    borderBottom: "1px solid rgba(255,255,255,0.04)",
-  },
-  pageBtn: {
-    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 8, padding: "6px 14px", color: "#e2e8f0",
-    fontSize: 12, cursor: "pointer",
-  },
-  detailPanel: {
-    flex: "0 0 42%", background: "rgba(255,255,255,0.03)",
-    backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.08)",
-    borderRadius: 16, padding: "24px 22px", maxHeight: "calc(100vh - 120px)",
-    overflowY: "auto", position: "sticky", top: 40,
-  },
-  closeBtn: {
-    background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-    borderRadius: 8, color: "#94a3b8", cursor: "pointer", fontSize: 14,
-    width: 30, height: 30, display: "flex", alignItems: "center", justifyContent: "center",
-  },
-  statusBtn: {
-    padding: "8px 16px", borderRadius: 10, fontSize: 12, fontWeight: 600,
-    cursor: "pointer", transition: "opacity 0.2s",
-  },
-  infoLine: {
-    display: "flex",
-    gap: 8,
-    alignItems: "baseline",
-  },
-  infoLabel: {
-    color: "#64748b",
-    fontSize: 12,
-    minWidth: 100,
-  },
-  infoValue: {
-    color: "#e2e8f0",
-    fontSize: 13,
-  },
-  proofImage: {
-    width: "100%",
-    maxHeight: 220,
-    objectFit: "cover",
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.12)",
-    marginBottom: 10,
-  },
-  noteInput: {
-    width: "100%",
-    minHeight: 70,
-    background: "rgba(255,255,255,0.04)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    borderRadius: 10,
-    padding: "10px 12px",
-    color: "#e2e8f0",
-    fontSize: 13,
-    marginBottom: 10,
-    outline: "none",
-    resize: "vertical",
-  },
-  itemRow: {
-    display: "flex", justifyContent: "space-between", alignItems: "center",
-    padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.04)",
-  },
-  addressBox: {
-    background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-    borderRadius: 10, padding: "12px 14px",
-  },
-  emptyState: {
-    textAlign: "center", padding: "60px 20px", color: "#64748b",
-    fontSize: 15,
-  },
-};

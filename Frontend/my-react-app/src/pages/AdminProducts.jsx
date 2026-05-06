@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import AdminMobileNav from "../components/AdminMobileNav";
 import {
   fetchAdminProducts,
   updateProduct,
@@ -416,26 +417,22 @@ export default function AdminProducts() {
   const LIMIT = 20;
 
   return (
-    <div style={S.pg}>
+    <div className="min-h-screen bg-gradient-to-br from-[#020617] via-[#0f172a] to-[#1e1b4b] text-white font-sans p-4 sm:p-8 md:p-12 relative overflow-x-hidden">
+      
       <style>{`
         @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
         @keyframes toastIn { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
-        .ap-row:hover { background: rgba(168,85,247,0.04) !important; }
-        .ap-input:focus { border-color: rgba(168,85,247,0.5) !important; }
+        .ap-row:hover { background: rgba(168,85,247,0.04); }
         select option { background: #1e1b4b; color: #fff; }
       `}</style>
 
       {/* Toast */}
       {toast && (
-        <div style={{
-          position: "fixed", top: 24, right: 24, zIndex: 9999,
-          background: toast.type === "success" ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.12)",
-          border: `1px solid ${toast.type === "success" ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`,
-          borderRadius: 12, padding: "12px 20px",
-          color: toast.type === "success" ? "#4ade80" : "#f87171",
-          fontWeight: 600, fontSize: 14, backdropFilter: "blur(12px)",
-          animation: "toastIn 0.3s ease forwards", maxWidth: 340,
-        }}>{toast.msg}</div>
+        <div className={`fixed top-6 right-6 z-[9999] px-5 py-3 rounded-xl border backdrop-blur-xl animate-toastIn shadow-xl
+          ${toast.type === "success" ? "bg-green-500/10 border-green-500/30 text-green-400" : "bg-red-500/10 border-red-500/30 text-red-400"}
+        `}>
+          {toast.msg}
+        </div>
       )}
 
       {/* Modals */}
@@ -446,44 +443,52 @@ export default function AdminProducts() {
         <DeleteModal name={deletingProduct.productName} onConfirm={handleDeleteConfirm} onClose={() => setDeletingProduct(null)} loading={actionLoading} />
       )}
 
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <div className="max-w-6xl mx-auto">
         {/* ── Header ── */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 32, borderBottom: "1px solid rgba(255,255,255,0.08)", paddingBottom: 24 }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-              <span style={{ fontSize: 26 }}>📦</span>
-              <h1 style={{ fontSize: 28, fontWeight: 700, margin: 0, background: "linear-gradient(to right,#fff,#c084fc)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+        <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8 pb-8 border-b border-white/10">
+          <div className="text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+              <span className="text-2xl sm:text-3xl">📦</span>
+              <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent">
                 Product Management
               </h1>
             </div>
-            <p style={{ color: "#64748b", fontSize: 14, margin: 0 }}>
-              {total} product{total !== 1 ? "s" : ""} in catalog — create, edit, delete and manage variants
+            <p className="text-slate-400 text-sm">
+              {total} product{total !== 1 ? "s" : ""} in catalog — manage master items and variants.
             </p>
           </div>
-          <div style={{ display: "flex", gap: 10 }}>
-            <button style={S.btnGray} onClick={() => navigate("/admin/dashboard")}>← Dashboard</button>
-            <button style={S.btnPurple} onClick={() => navigate("/admin/products/new")}>+ Create Product</button>
+          <div className="flex gap-3 justify-center">
+            <button 
+              onClick={() => navigate("/admin/dashboard")}
+              className="px-4 py-2.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl text-xs font-bold hover:bg-white/10 transition-all"
+            >
+              ← Dashboard
+            </button>
+            <button 
+              onClick={() => navigate("/admin/products/new")}
+              className="px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl text-xs font-bold hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-purple-500/20"
+            >
+              + Create Product
+            </button>
           </div>
         </div>
 
         {/* ── Filters ── */}
-        <div style={{ ...S.card, marginBottom: 20 }}>
-          <form onSubmit={handleSearch} style={{ display: "flex", gap: 12, alignItems: "flex-end", flexWrap: "wrap" }}>
-            <div style={{ flex: 1, minWidth: 200 }}>
-              <label style={S.label}>Search</label>
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 mb-6">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 items-end">
+            <div className="w-full flex-1">
+              <label className="block text-[10px] uppercase tracking-widest font-black text-slate-500 mb-2 ml-1">Search Catalog</label>
               <input
-                className="ap-input"
-                style={{ ...S.input, width: "100%" }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-500 focus:border-purple-500/50 transition-all outline-none"
                 placeholder="Product name, brand…"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
               />
             </div>
-            <div style={{ minWidth: 160 }}>
-              <label style={S.label}>Category</label>
+            <div className="w-full sm:w-48">
+              <label className="block text-[10px] uppercase tracking-widest font-black text-slate-500 mb-2 ml-1">Category</label>
               <select
-                className="ap-input"
-                style={{ ...S.input, width: "100%" }}
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-purple-500/50 transition-all outline-none"
                 value={categoryFilter}
                 onChange={(e) => { setCategoryFilter(e.target.value); setCurrentPage(1); }}
               >
@@ -491,78 +496,108 @@ export default function AdminProducts() {
                 {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            <button type="submit" style={S.btnPurple}>Search</button>
-            {(search || categoryFilter !== "all") && (
-              <button type="button" style={S.btnGray} onClick={() => { setSearchInput(""); setSearch(""); setCategoryFilter("all"); }}>Clear</button>
-            )}
+            <div className="flex gap-2 w-full sm:w-auto">
+              <button type="submit" className="flex-1 sm:flex-none px-6 py-3 bg-purple-600 text-white rounded-xl text-sm font-bold hover:bg-purple-500 transition-all">
+                Search
+              </button>
+              {(search || categoryFilter !== "all") && (
+                <button 
+                  type="button" 
+                  onClick={() => { setSearchInput(""); setSearch(""); setCategoryFilter("all"); }}
+                  className="px-4 py-3 bg-white/5 border border-white/10 text-slate-400 rounded-xl text-sm hover:bg-white/10"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </form>
         </div>
 
-        {/* ── Products Table ── */}
-        <div style={S.card}>
+        {/* ── Products List/Table ── */}
+        <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden">
           {loading ? (
-            <div style={{ textAlign: "center", padding: "48px 0", color: "#64748b" }}>
-              <div style={{ width: 40, height: 40, border: "3px solid rgba(168,85,247,0.2)", borderTopColor: "#a855f7", borderRadius: "50%", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
-              Loading products…
+            <div className="text-center py-24 text-slate-500">
+              <div className="w-10 h-10 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+              Loading catalog…
             </div>
           ) : products.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "48px 0", color: "#64748b" }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>📭</div>
-              <p>No products found.</p>
+            <div className="text-center py-24 text-slate-500">
+              <div className="text-5xl mb-4">📭</div>
+              <p className="font-medium">No products found.</p>
             </div>
           ) : (
-            <>
-              {/* Table Header */}
-              <div style={{ display: "grid", gridTemplateColumns: "48px 1fr 120px 120px 80px 80px 130px", gap: 12, padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.07)", marginBottom: 4 }}>
+            <div className="flex flex-col">
+              {/* Desktop Table Header */}
+              <div className="hidden lg:grid grid-cols-[60px_1fr_140px_120px_100px_100px_150px] gap-4 px-6 py-4 bg-white/5 border-b border-white/10">
                 {["", "Product", "Category", "Brand", "Variants", "Sales", "Actions"].map((h, i) => (
-                  <span key={i} style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: "0.06em", color: "#64748b", fontWeight: 700 }}>{h}</span>
+                  <span key={i} className="text-[10px] uppercase tracking-widest font-black text-slate-500">{h}</span>
                 ))}
               </div>
 
-              {/* Product Rows */}
+              {/* Product Rows/Cards */}
               {products.map((p) => (
-                <div key={p._id} style={{ animation: "fadeIn 0.3s ease forwards" }}>
+                <div key={p._id} className="animate-fadeIn">
                   <div
-                    className="ap-row"
-                    style={{ display: "grid", gridTemplateColumns: "48px 1fr 120px 120px 80px 80px 130px", gap: 12, padding: "14px 16px", borderBottom: "1px solid rgba(255,255,255,0.04)", alignItems: "center", cursor: "pointer", borderRadius: 8, transition: "background 0.15s" }}
+                    className="flex flex-col lg:grid lg:grid-cols-[60px_1fr_140px_120px_100px_100px_150px] gap-4 px-6 py-6 lg:py-4 border-b border-white/5 transition-all ap-row group"
                     onClick={() => toggleExpand(p._id)}
                   >
-                    {/* Image */}
-                    <div>
-                      {p.image ? (
-                        <img src={p.image} alt={p.productName} style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 6 }} onError={(e) => { e.target.style.display = "none"; }} />
-                      ) : (
-                        <div style={{ width: 40, height: 40, background: "rgba(168,85,247,0.1)", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>📦</div>
-                      )}
+                    {/* Image & Main Info (Stacked on Mobile) */}
+                    <div className="flex items-center gap-4 lg:contents">
+                      <div className="flex-shrink-0">
+                        {p.image ? (
+                          <img src={p.image} alt={p.productName} className="w-12 h-12 lg:w-10 lg:h-10 object-cover rounded-xl shadow-lg shadow-black/20" />
+                        ) : (
+                          <div className="w-12 h-12 lg:w-10 lg:h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-xl">📦</div>
+                        )}
+                      </div>
+
+                      <div className="flex-grow">
+                        <div className="text-base lg:text-sm font-bold text-white group-hover:text-purple-400 transition-colors">{p.productName}</div>
+                        <div className="text-[10px] text-slate-500 font-mono mt-1">ID: {p._id.slice(-8)}</div>
+                      </div>
                     </div>
 
-                    {/* Name */}
-                    <div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#e2e8f0", marginBottom: 2 }}>{p.productName}</div>
-                      <div style={{ fontSize: 11, color: "#64748b" }}>ID: {p._id.slice(-8)}</div>
-                    </div>
-
-                    {/* Category */}
-                    <div>
-                      <span style={{ fontSize: 12, background: "rgba(168,85,247,0.1)", color: "#c084fc", border: "1px solid rgba(168,85,247,0.2)", borderRadius: 6, padding: "3px 8px" }}>
+                    {/* Metadata (Columns on Desktop, Labels on Mobile) */}
+                    <div className="flex items-center gap-2 lg:block">
+                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Category</span>
+                      <span className="text-xs px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg">
                         {p.category}
                       </span>
                     </div>
 
-                    {/* Brand */}
-                    <div style={{ fontSize: 13, color: "#94a3b8" }}>{p.brand || "—"}</div>
+                    <div className="flex items-center gap-2 lg:block">
+                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Brand</span>
+                      <span className="text-sm text-slate-300 font-medium">{p.brand || "—"}</span>
+                    </div>
 
-                    {/* Variants */}
-                    <div style={{ fontSize: 13, color: "#94a3b8", textAlign: "center" }}>{p.variantCount ?? "—"}</div>
+                    <div className="flex items-center gap-2 lg:block">
+                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Variants</span>
+                      <span className="text-sm text-slate-400">{p.variantCount ?? 0}</span>
+                    </div>
 
-                    {/* Sales */}
-                    <div style={{ fontSize: 13, color: "#94a3b8", textAlign: "center" }}>{p.howManyProductsSold ?? 0}</div>
+                    <div className="flex items-center gap-2 lg:block">
+                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Sales</span>
+                      <span className="text-sm text-emerald-400 font-bold">{p.howManyProductsSold ?? 0}</span>
+                    </div>
 
                     {/* Actions */}
-                    <div style={{ display: "flex", gap: 6 }} onClick={(e) => e.stopPropagation()}>
-                      <button style={S.btnBlue} onClick={() => setEditingProduct(p)} title="Edit product">✏️</button>
-                      <button style={S.btnRed} onClick={() => setDeletingProduct(p)} title="Delete product">🗑️</button>
-                      <button style={{ ...S.btnGray, fontSize: 11, padding: "6px 8px" }} onClick={() => toggleExpand(p._id)} title="Manage variants">
+                    <div className="flex gap-2 mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-white/5" onClick={(e) => e.stopPropagation()}>
+                      <button 
+                        onClick={() => setEditingProduct(p)}
+                        className="flex-1 lg:flex-none p-2.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl hover:bg-blue-500 hover:text-white transition-all text-sm"
+                      >
+                        ✏️ <span className="lg:hidden ml-1">Edit</span>
+                      </button>
+                      <button 
+                        onClick={() => setDeletingProduct(p)}
+                        className="flex-1 lg:flex-none p-2.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all text-sm"
+                      >
+                        🗑️ <span className="lg:hidden ml-1">Delete</span>
+                      </button>
+                      <button 
+                        onClick={() => toggleExpand(p._id)}
+                        className="p-2.5 bg-white/5 text-slate-400 border border-white/10 rounded-xl hover:bg-white/10 text-sm"
+                      >
                         {expandedProduct === p._id ? "▲" : "▼"}
                       </button>
                     </div>
@@ -570,25 +605,42 @@ export default function AdminProducts() {
 
                   {/* Expanded Variant Panel */}
                   {expandedProduct === p._id && (
-                    <div style={{ padding: "0 16px 16px 76px", background: "rgba(168,85,247,0.02)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                      <VariantPanel productId={p._id} onToast={showToast} />
+                    <div className="bg-purple-500/5 px-6 pb-6 pt-2 border-b border-white/5 animate-fadeIn">
+                      <div className="lg:ml-[60px]">
+                        <VariantPanel productId={p._id} onToast={showToast} />
+                      </div>
                     </div>
                   )}
                 </div>
               ))}
-            </>
+            </div>
           )}
         </div>
 
         {/* ── Pagination ── */}
         {totalPages > 1 && (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: 10, marginTop: 24 }}>
-            <button style={{ ...S.btnGray, opacity: currentPage === 1 ? 0.4 : 1 }} disabled={currentPage === 1} onClick={() => loadProducts(currentPage - 1)}>← Prev</button>
-            <span style={{ color: "#94a3b8", fontSize: 14 }}>Page {currentPage} of {totalPages} · {total} total</span>
-            <button style={{ ...S.btnGray, opacity: currentPage === totalPages ? 0.4 : 1 }} disabled={currentPage === totalPages} onClick={() => loadProducts(currentPage + 1)}>Next →</button>
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8">
+            <button 
+              className={`px-6 py-2.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl text-xs font-bold transition-all ${currentPage === 1 ? "opacity-30 cursor-not-allowed" : "hover:bg-white/10"}`}
+              disabled={currentPage === 1} 
+              onClick={() => loadProducts(currentPage - 1)}
+            >
+              ← Previous
+            </button>
+            <span className="text-slate-500 text-xs font-medium">
+              Page <span className="text-white">{currentPage}</span> of {totalPages} • {total} items
+            </span>
+            <button 
+              className={`px-6 py-2.5 bg-white/5 border border-white/10 text-slate-300 rounded-xl text-xs font-bold transition-all ${currentPage === totalPages ? "opacity-30 cursor-not-allowed" : "hover:bg-white/10"}`}
+              disabled={currentPage === totalPages} 
+              onClick={() => loadProducts(currentPage + 1)}
+            >
+              Next →
+            </button>
           </div>
         )}
       </div>
+      <AdminMobileNav />
     </div>
   );
 }
