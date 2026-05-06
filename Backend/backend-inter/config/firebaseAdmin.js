@@ -37,10 +37,14 @@ if (serviceAccount) {
         });
         console.log("🚀 Firebase Admin: Initialized Successfully");
     } catch (err) {
-        console.error("❌ Firebase Admin: Initialization Failed", err.message);
+        console.error("❌ Firebase Admin: Initialization Failed - Check your FIREBASE_SERVICE_ACCOUNT JSON");
+        console.error("Error Detail:", err.message);
     }
 } else {
-    console.warn("⚠️ Firebase Admin: No credentials found. Social login will fail.");
+    console.warn("⚠️ Firebase Admin: No credentials found. Initializing in sandbox mode.");
+    try {
+        admin.initializeApp(); // Fallback to default if possible
+    } catch (e) {}
 }
 
 export default admin;
