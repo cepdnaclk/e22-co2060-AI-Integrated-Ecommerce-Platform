@@ -51,7 +51,10 @@ async function syncBackendSession(idToken) {
 
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
-    console.log("💾 Auth data saved to localStorage. Token exists:", !!data.token);
+    
+    // Explicitly update global auth state if needed here
+    window.dispatchEvent(new Event("storage")); 
+    
     return data;
   } catch (error) {
     if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
