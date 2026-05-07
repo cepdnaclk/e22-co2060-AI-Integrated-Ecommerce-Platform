@@ -14,7 +14,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const CEO_EMAIL = "admin@icomputers.com";
+const CEO_EMAIL = "admin@icomputors.com";
 const CEO_PASSWORD = "Admin@123";  // Change this!
 const CEO_FIRST_NAME = "System";
 const CEO_LAST_NAME = "CEO";
@@ -59,9 +59,9 @@ async function createCEO() {
       const hashedPassword = await bcrypt.hash(CEO_PASSWORD, salt);
       await User.updateOne(
         { _id: existingCEO._id },
-        { $set: { password: hashedPassword } }
+        { $set: { password: hashedPassword, email: CEO_EMAIL } }
       );
-      console.log("✅ CEO password updated");
+      console.log(`✅ CEO account updated (Email: ${CEO_EMAIL})`);
     } else {
       // Check if email exists with different role — upgrade to CEO
       const existingUser = await User.findOne({ email: CEO_EMAIL });
