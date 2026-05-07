@@ -8,6 +8,8 @@ import {
   buildSellerQrText,
   isLatestSellerQrPayload
 } from "../services/sellerQrPayloadService.js";
+import { findClosestBranch, getOrderDeliveryCharge } from "../services/deliveryChargeService.js";
+import User from "../models/user.js";
 
 /**
  * ======================================================
@@ -28,6 +30,38 @@ async function getSellerFromAuthUser(user) {
   }
 
   return Seller.findOne({ userId: user.id });
+}
+
+function serializeDeliveryCenter(branch) {
+  if (!branch) return null;
+
+  return {
+    branchId: branch._id?.toString() || null,
+    branchCode: branch.branchCode || "",
+    branchName: branch.branchName || "",
+    address: branch.address || "",
+    city: branch.city || "",
+    district: branch.district || "",
+    province: branch.province || "",
+    postalCode: branch.postalCode || "",
+    phone: branch.phone || "",
+    email: branch.email || "",
+    location: {
+      lat: Number.isFinite(Number(branch.location?.lat)) ? Number(branch.location.lat) : null,
+      lng: Number.isFinite(Number(branch.location?.lng)) ? Number(branch.location.lng) : null
+    }
+  };
+}
+
+async function resolveRecommendedDeliveryCenterForSeller(seller) {
+  const lat = Number(seller?.addressLocation?.lat);
+  const lng = Number(seller?.addressLocation?.lng);
+  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+    return null;
+  }
+
+  const closestBranch = await findClosestBranch({ lat, lng });
+  return serializeDeliveryCenter(closestBranch);
 }
 
 
@@ -78,6 +112,18 @@ export async function createOrder(req, res) {
         0
       );
 
+      /**
+       * Calculate Delivery Charge for this seller
+       */
+      const seller = await Seller.findById(sellerId);
+      const sellerLocation = seller?.addressLocation || null;
+      const customerLocation = shippingAddress ? { 
+        lat: shippingAddress.lat, 
+        lng: shippingAddress.lng 
+      } : null;
+
+      const deliveryCharge = await getOrderDeliveryCharge(sellerLocation, customerLocation);
+
       const order = await Order.create({
         userId: req.user.id,
         sellerId,
@@ -87,7 +133,9 @@ export async function createOrder(req, res) {
           price: item.price,
           quantity: item.quantity
         })),
-        totalAmount,
+        productTotal: totalAmount,
+        deliveryCharge,
+        totalAmount: totalAmount + deliveryCharge,
         ...(shippingAddress && { shippingAddress })
       });
 
@@ -173,17 +221,62 @@ export async function getMySellerOrders(req, res) {
       return res.status(403).json({ message: "Access denied. Seller account required." });
     }
 
+    const recommendedDeliveryCenter = await resolveRecommendedDeliveryCenterForSeller(seller);
+
     const orders = await Order.find({ sellerId: seller._id })
       .populate("userId", "email firstName lastName phone")
       .populate("sellerId", "shopName email")
       .populate("items.productId", "productName")
       .sort({ createdAt: -1 });
 
-    res.json(orders);
+    const ordersWithCenter = orders.map((order) => ({
+      ...order.toObject(),
+      recommendedDeliveryCenter
+    }));
+
+    res.json(ordersWithCenter);
   } catch (error) {
     console.error("❌ Get authenticated seller orders error:", error);
     res.status(500).json({
       message: "Failed to fetch seller orders",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * ======================================================
+ * GET AUTHENTICATED SELLER ORDER BY ID
+ * GET /api/orders/seller/me/:orderId
+ * ======================================================
+ */
+export async function getMySellerOrderById(req, res) {
+  try {
+    const seller = await getSellerFromAuthUser(req.user);
+
+    if (!seller) {
+      return res.status(403).json({ message: "Access denied. Seller account required." });
+    }
+
+    const order = await Order.findOne({ _id: req.params.orderId, sellerId: seller._id })
+      .populate("userId", "email firstName lastName phone")
+      .populate("sellerId", "shopName email")
+      .populate("items.productId", "productName");
+
+    if (!order) {
+      return res.status(404).json({ message: "Order not found for this seller." });
+    }
+
+    const recommendedDeliveryCenter = await resolveRecommendedDeliveryCenterForSeller(seller);
+
+    res.json({
+      ...order.toObject(),
+      recommendedDeliveryCenter
+    });
+  } catch (error) {
+    console.error("❌ Get authenticated seller order by ID error:", error);
+    res.status(500).json({
+      message: "Failed to fetch seller order details",
       error: error.message
     });
   }
@@ -355,6 +448,60 @@ export async function getSellerOrders(req, res) {
     console.error("❌ Get seller orders error:", error);
     res.status(500).json({
       message: "Failed to fetch seller orders",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * ======================================================
+ * GET DELIVERY CHARGE PREVIEW
+ * POST /api/orders/preview-delivery
+ * ======================================================
+ */
+export async function getDeliveryChargePreview(req, res) {
+  try {
+    const { shippingAddress } = req.body;
+    
+    // 1️⃣ Get user's cart
+    const cart = await Cart.findOne({ userId: req.user.id });
+    if (!cart || cart.items.length === 0) {
+      return res.status(400).json({ message: "Cart is empty" });
+    }
+
+    // 2️⃣ Group items by seller to calculate fee per seller
+    const sellerIds = [...new Set(cart.items.map(item => item.sellerId.toString()))];
+    
+    const previews = [];
+    let totalDeliveryCharge = 0;
+
+    for (const sellerId of sellerIds) {
+      const seller = await Seller.findById(sellerId);
+      const sellerLocation = seller?.addressLocation || null;
+      const customerLocation = shippingAddress ? { 
+        lat: shippingAddress.lat, 
+        lng: shippingAddress.lng 
+      } : null;
+
+      const fee = await getOrderDeliveryCharge(sellerLocation, customerLocation);
+      
+      previews.push({
+        sellerId,
+        shopName: seller?.shopName || "Unknown Seller",
+        deliveryCharge: fee
+      });
+      totalDeliveryCharge += fee;
+    }
+
+    res.json({
+      previews,
+      totalDeliveryCharge
+    });
+
+  } catch (error) {
+    console.error("❌ Preview delivery charge error:", error);
+    res.status(500).json({
+      message: "Failed to calculate delivery charge",
       error: error.message
     });
   }

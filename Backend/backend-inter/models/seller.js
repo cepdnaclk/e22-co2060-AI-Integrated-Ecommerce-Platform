@@ -55,6 +55,15 @@ const sellerSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+    addressLocation: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
+      city: { type: String, default: "" },
+      postalCode: { type: String, default: "" },
+      state: { type: String, default: "" },
+      country: { type: String, default: "" },
+      formattedAddress: { type: String, default: "" },
+    },
 
     // 📞 Contact number
     phone: {

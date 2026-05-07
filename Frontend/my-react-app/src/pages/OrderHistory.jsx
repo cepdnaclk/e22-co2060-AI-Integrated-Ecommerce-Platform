@@ -205,6 +205,11 @@ export default function OrderHistory() {
                                             {order.status === "cancelled" && "❌ This order was cancelled"}
                                         </div>
                                         <div style={{ textAlign:"right" }}>
+                                            {order.deliveryCharge > 0 && (
+                                                <div style={{ fontSize:11, color:"#64748b", marginBottom: 2 }}>
+                                                    Subtotal: Rs. {order.productTotal?.toLocaleString()} | Delivery: Rs. {order.deliveryCharge?.toLocaleString()}
+                                                </div>
+                                            )}
                                             <div style={{ fontSize:11, color:"#64748b" }}>Order Total</div>
                                             <div style={{ fontSize:20, fontWeight:800, color:"#4ade80" }}>Rs. {order.totalAmount?.toLocaleString()}</div>
                                         </div>

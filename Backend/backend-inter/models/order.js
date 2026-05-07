@@ -92,7 +92,15 @@ const orderSchema = new mongoose.Schema(
       required: true
     },
 
-    // 💰 Total price for THIS seller
+    // 💰 Pricing breakdown
+    productTotal: {
+      type: Number,
+      required: true
+    },
+    deliveryCharge: {
+      type: Number,
+      default: 0
+    },
     totalAmount: {
       type: Number,
       required: true

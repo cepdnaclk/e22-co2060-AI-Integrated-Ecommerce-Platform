@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getCart } from "../services/cartService";
-import { placeOrder } from "../services/orderService";
+import { placeOrder, getDeliveryChargePreview } from "../services/orderService";
 import GoogleMapAddressPicker from "../components/GoogleMapAddressPicker";
 import API_BASE_URL from "../config/api";
 
@@ -118,6 +118,8 @@ export default function CheckoutPage() {
     const [success, setSuccess] = useState(false);
     const [bookkeepingDelayed, setBookkeepingDelayed] = useState(false);
     const [toast, setToast] = useState(null);
+    const [deliveryCharge, setDeliveryCharge] = useState(0);
+    const [deliveryLoading, setDeliveryLoading] = useState(false);
 
     // Address source: "profile" = use saved address, "custom" = enter new one
     const [addressSource, setAddressSource] = useState("profile");
@@ -192,6 +194,43 @@ export default function CheckoutPage() {
     }, [token]);
 
     useEffect(() => { load(); fetchProfile(); }, [load, fetchProfile]);
+
+    // Fetch delivery charge when address or cart changes
+    useEffect(() => {
+        if (!cart || !token) return;
+
+        const updateDeliveryCharge = async () => {
+            setDeliveryLoading(true);
+            try {
+                const activePhone = phoneSource === "profile" ? (profileAddress?.phone || "") : otherPhone;
+                const shippingData = {
+                    ...form,
+                    phone: activePhone,
+                };
+
+                if (addressSource === "profile" && profileAddress?.addressLocation?.verified) {
+                    applyLocationToShippingData(shippingData, profileAddress.addressLocation);
+                } else if (addressSource === "custom" && mapLocation?.verified) {
+                    applyLocationToShippingData(shippingData, mapLocation);
+                }
+
+                // Only fetch if we have a verified location or at least a city/postalCode
+                if (shippingData.verified || (shippingData.city && shippingData.postalCode)) {
+                    const res = await getDeliveryChargePreview(token, shippingData);
+                    setDeliveryCharge(res.totalDeliveryCharge);
+                } else {
+                    setDeliveryCharge(0);
+                }
+            } catch (err) {
+                console.error("Delivery charge error:", err);
+            } finally {
+                setDeliveryLoading(false);
+            }
+        };
+
+        const timer = setTimeout(updateDeliveryCharge, 800); // Debounce
+        return () => clearTimeout(timer);
+    }, [cart, token, addressSource, profileAddress, mapLocation, form.city, form.postalCode, phoneSource, otherPhone]);
 
     const set = (k, v) => {
         setForm((p) => ({ ...p, [k]: v }));
@@ -768,14 +807,21 @@ export default function CheckoutPage() {
                             </div>
 
                             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, fontSize: 13 }}>
-                                <span style={{ color: "#94a3b8" }}>Shipping</span>
-                                <span style={{ color: "#4ade80", fontWeight: 600 }}>Free</span>
+                                <span style={{ color: "#94a3b8" }}>Subtotal</span>
+                                <span style={{ fontWeight: 600 }}>Rs. {totalPrice.toLocaleString()}</span>
                             </div>
 
-                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, fontSize: 13 }}>
+                                <span style={{ color: "#94a3b8" }}>Delivery Fee</span>
+                                <span style={{ color: "#4ade80", fontWeight: 600 }}>
+                                    {deliveryLoading ? "Calculating..." : `Rs. ${deliveryCharge.toLocaleString()}`}
+                                </span>
+                            </div>
+
+                            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24, marginTop: 12 }}>
                                 <span style={{ fontWeight: 700, fontSize: 16 }}>Total</span>
                                 <span style={{ fontWeight: 800, fontSize: 18, color: "#4ade80" }}>
-                                    Rs. {totalPrice.toLocaleString()}
+                                    Rs. {(totalPrice + deliveryCharge).toLocaleString()}
                                 </span>
                             </div>
 

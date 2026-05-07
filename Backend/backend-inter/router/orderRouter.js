@@ -4,9 +4,11 @@ import {
   createOrder,
   getMyOrders,
   getMySellerOrders,
+  getMySellerOrderById,
   getSellerOrderQr,
   submitSellerPackingProof,
-  getSellerOrders
+  getSellerOrders,
+  getDeliveryChargePreview
 } from "../controllers/orderController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -15,6 +17,16 @@ const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 3 * 1024 * 1024 }
 });
+
+/**
+ * 📦 PREVIEW DELIVERY CHARGE
+ * POST /api/orders/preview-delivery
+ */
+router.post(
+  "/preview-delivery",
+  authMiddleware,
+  getDeliveryChargePreview
+);
 
 /**
  * ======================================================
@@ -54,6 +66,16 @@ router.get(
   "/seller/me",
   authMiddleware,
   getMySellerOrders
+);
+
+/**
+ * 📄 GET AUTH SELLER ORDER DETAILS
+ * GET /api/orders/seller/me/:orderId
+ */
+router.get(
+  "/seller/me/:orderId",
+  authMiddleware,
+  getMySellerOrderById
 );
 
 /**

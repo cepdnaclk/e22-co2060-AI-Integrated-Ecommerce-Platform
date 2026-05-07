@@ -50,6 +50,10 @@ const courierBranchSchema = new mongoose.Schema(
     approvedAt: { type: Date, default: null },
     disabledAt: { type: Date, default: null },
     managerStaffId: { type: mongoose.Schema.Types.ObjectId, ref: "CourierStaff", default: null },
+    location: {
+      lat: { type: Number, default: null },
+      lng: { type: Number, default: null },
+    },
     createdByUserId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   },
   { timestamps: true }

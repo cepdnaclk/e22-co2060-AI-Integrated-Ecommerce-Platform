@@ -21,6 +21,23 @@ export const placeOrder = async (token, shippingAddress) => {
 };
 
 // ─────────────────────────────────────
+// 💰 PREVIEW DELIVERY CHARGE
+// ─────────────────────────────────────
+export const getDeliveryChargePreview = async (token, shippingAddress) => {
+    const res = await fetch(`${BASE_URL}/preview-delivery`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ shippingAddress }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Failed to calculate delivery charge");
+    return data;
+};
+
+// ─────────────────────────────────────
 // 📋 GET MY ORDERS (BUYER)
 // ─────────────────────────────────────
 export const getMyOrders = async (token) => {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { useNavigate, Link } from "react-router-dom";
 import { getMySellerProfile } from "../services/sellerService";
+import { getMySellerOrderDetails } from "../services/sellerOrderQrService";
 import "./sellerDashboard.css";
 
 import API_BASE_URL from "../config/api";
@@ -14,6 +15,25 @@ const SellerDashboard = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [detailsLoadingId, setDetailsLoadingId] = useState("");
+  const [detailsError, setDetailsError] = useState("");
+
+  const formatMoney = (amount) =>
+    `Rs. ${Number(amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+
+  const handleOpenOrderDetails = async (orderId) => {
+    try {
+      setDetailsError("");
+      setDetailsLoadingId(orderId);
+      const orderDetails = await getMySellerOrderDetails(orderId);
+      setSelectedOrder(orderDetails);
+    } catch (err) {
+      setDetailsError(err.message || "Failed to load order details");
+    } finally {
+      setDetailsLoadingId("");
+    }
+  };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -169,7 +189,10 @@ const SellerDashboard = () => {
 
         {/* ── RECENT ORDERS TABLE ── */}
         <div className="dcard" style={{ padding: "28px 0" }}>
-          <h3 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 20, padding: "0 24px" }}>Recent Orders</h3>
+          <h3 style={{ fontSize: 18, fontWeight: 600, color: "#fff", marginBottom: 8, padding: "0 24px" }}>Recent Orders</h3>
+          <p style={{ color: "#64748b", fontSize: 12, margin: "0 0 14px", padding: "0 24px" }}>
+            Click a row to view full order details and delivery center handover info.
+          </p>
           <div style={{ overflowX: "auto" }}>
             <table className="tbl">
               <thead>
@@ -190,11 +213,18 @@ const SellerDashboard = () => {
                   </tr>
                 ) : (
                   data.recentOrders.map(order => (
-                    <tr key={order._id}>
+                    <tr
+                      key={order._id}
+                      onClick={() => handleOpenOrderDetails(order._id)}
+                      style={{
+                        cursor: "pointer",
+                        background: selectedOrder?._id === order._id ? "rgba(59,130,246,0.08)" : "transparent"
+                      }}
+                    >
                       <td style={{ fontFamily: "monospace", color: "#94a3b8" }}>#{order._id.slice(-6).toUpperCase()}</td>
                       <td>{order.userId?.firstName} {order.userId?.lastName}</td>
                       <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-                      <td style={{ fontWeight: 600 }}>${(order.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</td>
+                      <td style={{ fontWeight: 600 }}>{formatMoney(order.totalAmount)}</td>
                       <td>
                         <span className="status-badge" style={{
                           background: order.status === "delivered" ? "rgba(34,197,94,0.1)" : order.status === "shipped" ? "rgba(59,130,246,0.1)" : "rgba(251,191,36,0.1)",
@@ -212,10 +242,198 @@ const SellerDashboard = () => {
           </div>
         </div>
 
+        {(detailsLoadingId || detailsError || selectedOrder) ? (
+          <div className="dcard mt-6 border border-white/10 shadow-2xl relative overflow-hidden" style={{ padding: "28px" }}>
+            {/* Background Accent */}
+            <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/5 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+            
+            {/* Header Area */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 pb-6 border-b border-white/10 relative z-10">
+              <div>
+                <h3 className="text-xl font-black text-white m-0 tracking-wide">Order Details</h3>
+                {selectedOrder && (
+                  <p className="text-xs font-mono text-blue-400 mt-1">ID: {selectedOrder._id}</p>
+                )}
+              </div>
+              {selectedOrder && (
+                <span className="px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg" style={{
+                  background: selectedOrder.status === "delivered" ? "rgba(34,197,94,0.15)" : selectedOrder.status === "shipped" ? "rgba(59,130,246,0.15)" : "rgba(251,191,36,0.15)",
+                  color: selectedOrder.status === "delivered" ? "#4ade80" : selectedOrder.status === "shipped" ? "#60a5fa" : "#fbbf24",
+                  border: `1px solid ${selectedOrder.status === "delivered" ? "rgba(34,197,94,0.3)" : selectedOrder.status === "shipped" ? "rgba(59,130,246,0.3)" : "rgba(251,191,36,0.3)"}`
+                }}>
+                  {selectedOrder.status || "Pending"}
+                </span>
+              )}
+            </div>
+
+            {detailsLoadingId ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-400"></div>
+              </div>
+            ) : null}
+
+            {!detailsLoadingId && detailsError ? (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-5 text-red-400 text-sm font-bold flex items-center gap-3">
+                <span className="text-xl">⚠️</span> {detailsError}
+              </div>
+            ) : null}
+
+            {!detailsLoadingId && !detailsError && selectedOrder ? (
+              <div className="space-y-8 relative z-10">
+                
+                {/* Info Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <InfoBox label="Customer" value={`${selectedOrder.userId?.firstName || ""} ${selectedOrder.userId?.lastName || ""}`.trim() || "N/A"} icon="👤" />
+                  <InfoBox label="Contact" value={selectedOrder.userId?.email || "N/A"} subValue={selectedOrder.shippingAddress?.phone || selectedOrder.userId?.phone || "N/A"} icon="📧" />
+                  <InfoBox label="Order Date" value={new Date(selectedOrder.createdAt).toLocaleDateString()} subValue={new Date(selectedOrder.createdAt).toLocaleTimeString()} icon="📅" />
+                  <div className="bg-gradient-to-br from-emerald-500/10 to-teal-500/5 rounded-2xl p-4 border border-emerald-500/20 flex flex-col justify-center">
+                    <p className="text-[10px] uppercase tracking-widest text-emerald-500 font-black mb-1">Grand Total</p>
+                    <p className="text-2xl font-black text-emerald-400 drop-shadow-md">{formatMoney(selectedOrder.totalAmount)}</p>
+                  </div>
+                </div>
+
+                {/* Main Content Area */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  
+                  {/* Left Column: Items & Financials */}
+                  <div className="lg:col-span-2 space-y-6">
+                    <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+                      <div className="p-5 border-b border-white/10 bg-white/5">
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-300 flex items-center gap-2 m-0">
+                          <span className="text-base">🛍️</span> Order Items
+                        </h4>
+                      </div>
+                      
+                      {(selectedOrder.items || []).length > 0 ? (
+                        <div className="divide-y divide-white/5">
+                          {selectedOrder.items.map((item, index) => (
+                            <div key={`${selectedOrder._id}-itm-${index}`} className="p-5 flex justify-between items-center hover:bg-white/5 transition-colors">
+                              <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center text-xl shadow-inner border border-white/10">📦</div>
+                                <div>
+                                  <p className="text-sm font-bold text-slate-200">{item.productId?.productName || "Product"}</p>
+                                  <p className="text-xs text-slate-500 font-medium mt-1">Qty: {Number(item.quantity || 0)}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-base font-black text-white">{formatMoney(Number(item.price || 0) * Number(item.quantity || 0))}</p>
+                                <p className="text-xs text-slate-500 font-medium mt-1">{formatMoney(item.price)} each</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-8 text-center text-slate-500 text-sm font-medium">No item details available.</div>
+                      )}
+                      
+                      {/* Summary Footer */}
+                      <div className="bg-slate-900/50 p-6 space-y-3">
+                        <div className="flex justify-between text-sm font-medium text-slate-400">
+                          <span>Product Total</span>
+                          <span>{formatMoney(selectedOrder.productTotal)}</span>
+                        </div>
+                        <div className="flex justify-between text-sm font-medium text-slate-400">
+                          <span>Delivery Charge</span>
+                          <span>{formatMoney(selectedOrder.deliveryCharge)}</span>
+                        </div>
+                        <div className="flex justify-between items-center pt-4 border-t border-white/10 mt-4">
+                          <span className="text-sm font-black uppercase tracking-widest text-slate-300">Total Amount</span>
+                          <span className="text-xl font-black text-emerald-400 drop-shadow-md">{formatMoney(selectedOrder.totalAmount)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Handover Details */}
+                  <div className="space-y-6">
+                    <div className="bg-white/5 rounded-2xl border border-white/10 h-full overflow-hidden shadow-xl flex flex-col">
+                      <div className="p-5 border-b border-white/10 bg-white/5">
+                        <h4 className="text-xs font-black uppercase tracking-widest text-slate-300 flex items-center gap-2 m-0">
+                          <span className="text-base">🏢</span> Delivery Handover
+                        </h4>
+                      </div>
+                      
+                      <div className="p-6 flex-1 flex flex-col">
+                        {selectedOrder.recommendedDeliveryCenter ? (
+                          <div className="space-y-5 flex-1">
+                            <div>
+                              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1.5">Center Name</p>
+                              <p className="text-sm font-bold text-blue-400 flex items-center gap-2">
+                                {selectedOrder.recommendedDeliveryCenter.branchName || "N/A"}
+                                {selectedOrder.recommendedDeliveryCenter.branchCode && (
+                                  <span className="px-2 py-0.5 rounded-md bg-blue-500/10 border border-blue-500/20 text-[10px]">
+                                    {selectedOrder.recommendedDeliveryCenter.branchCode}
+                                  </span>
+                                )}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1.5">Address</p>
+                              <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                                {[
+                                  selectedOrder.recommendedDeliveryCenter.address,
+                                  selectedOrder.recommendedDeliveryCenter.city,
+                                  selectedOrder.recommendedDeliveryCenter.district,
+                                  selectedOrder.recommendedDeliveryCenter.province,
+                                  selectedOrder.recommendedDeliveryCenter.postalCode,
+                                ].filter(Boolean).join(", ") || "N/A"}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[10px] uppercase tracking-widest text-slate-500 font-black mb-1.5">Contact</p>
+                              <p className="text-sm font-mono text-slate-300 font-medium">
+                                {selectedOrder.recommendedDeliveryCenter.phone || "N/A"}
+                              </p>
+                            </div>
+                            
+                            {/* Spacer to push button to bottom if needed */}
+                            <div className="flex-1"></div>
+                            
+                            <div className="pt-5 border-t border-white/10 mt-auto">
+                               <button 
+                                 className="w-full py-3 bg-gradient-to-r from-blue-600/20 to-blue-500/20 hover:from-blue-600/40 hover:to-blue-500/40 text-blue-400 rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg border border-blue-500/20 active:scale-[0.98]"
+                                 onClick={() => window.open(`https://maps.google.com/?q=${selectedOrder.recommendedDeliveryCenter.lat},${selectedOrder.recommendedDeliveryCenter.lng}`)}
+                               >
+                                 View on Map 🗺️
+                               </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-full text-center space-y-4 py-8">
+                            <div className="text-4xl opacity-40 mb-2">📍</div>
+                            <p className="text-sm font-bold text-slate-300">
+                              Delivery center is unavailable.
+                            </p>
+                            <p className="text-xs font-medium text-slate-500 leading-relaxed px-4">
+                              Add a seller location to get nearest center guidance for your handovers.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
       </div>
     </div>
   );
 };
+
+const InfoBox = ({ label, value, subValue, icon }) => (
+  <div className="bg-white/5 rounded-2xl p-4 border border-white/10 flex items-start gap-4 transition-all hover:bg-white/10 hover:border-white/20 shadow-lg">
+    <div className="text-3xl mt-1 opacity-90">{icon}</div>
+    <div className="overflow-hidden">
+      <p className="text-[10px] uppercase tracking-widest text-slate-400 font-black mb-1">{label}</p>
+      <p className="text-sm font-bold text-white truncate">{value}</p>
+      {subValue && <p className="text-xs font-medium text-slate-500 mt-1 truncate">{subValue}</p>}
+    </div>
+  </div>
+);
 
 const styles = {
   pg: {

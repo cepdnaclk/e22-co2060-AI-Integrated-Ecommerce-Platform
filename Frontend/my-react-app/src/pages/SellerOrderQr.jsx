@@ -45,6 +45,11 @@ function getQrDisplayData(qrInfo) {
   };
 }
 
+function getOrderItemName(item = {}) {
+  const product = item.productId || {};
+  return product.productName || product.name || "Product";
+}
+
 export default function SellerOrderQr() {
   const [seller, setSeller] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -91,7 +96,17 @@ export default function SellerOrderQr() {
   };
 
   const replaceOrder = (nextOrder) => {
-    setOrders((prev) => prev.map((o) => (o._id === nextOrder._id ? nextOrder : o)));
+    setOrders((prev) =>
+      prev.map((o) =>
+        o._id === nextOrder._id
+          ? {
+              ...nextOrder,
+              recommendedDeliveryCenter:
+                nextOrder.recommendedDeliveryCenter || o.recommendedDeliveryCenter || null,
+            }
+          : o
+      )
+    );
   };
 
   const handleSubmitProof = async (order) => {
@@ -196,6 +211,51 @@ export default function SellerOrderQr() {
                     <span style={{ ...S.badge, background: qrMeta.bg, color: qrMeta.color, border: `1px solid ${qrMeta.border}` }}>
                       🧾 {qrMeta.label}
                     </span>
+                  </div>
+
+                  <div style={S.section}>
+                    <div style={S.sectionTitle}>Order details</div>
+                    {(order.items || []).length > 0 ? (
+                      <div style={{ display: "grid", gap: 6 }}>
+                        {order.items.map((item, idx) => (
+                          <div key={`${order._id}-item-${idx}`} style={S.infoText}>
+                            • {getOrderItemName(item)} × {Number(item.quantity || 0)} — Rs. {Number(item.price || 0).toLocaleString()}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div style={S.infoText}>No item details available.</div>
+                    )}
+                  </div>
+
+                  <div style={S.section}>
+                    <div style={S.sectionTitle}>Delivery center handover</div>
+                    {order.recommendedDeliveryCenter ? (
+                      <>
+                        <div style={S.infoText}>
+                          Center: <strong>{order.recommendedDeliveryCenter.branchName || "N/A"}</strong>
+                          {order.recommendedDeliveryCenter.branchCode ? ` (${order.recommendedDeliveryCenter.branchCode})` : ""}
+                        </div>
+                        <div style={S.infoText}>
+                          Address: {[
+                            order.recommendedDeliveryCenter.address,
+                            order.recommendedDeliveryCenter.city,
+                            order.recommendedDeliveryCenter.district,
+                            order.recommendedDeliveryCenter.province,
+                            order.recommendedDeliveryCenter.postalCode,
+                          ]
+                            .filter(Boolean)
+                            .join(", ") || "N/A"}
+                        </div>
+                        <div style={S.infoText}>
+                          Contact: {order.recommendedDeliveryCenter.phone || "N/A"}
+                        </div>
+                      </>
+                    ) : (
+                      <div style={S.infoText}>
+                        Delivery center is unavailable. Add a verified seller location to get nearest center guidance.
+                      </div>
+                    )}
                   </div>
 
                   {canSubmitProof ? (
