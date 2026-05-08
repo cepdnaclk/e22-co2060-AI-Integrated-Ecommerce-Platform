@@ -4,6 +4,7 @@ import {
   registerSeller,
   verifySellerEmail,
   getMySellerProfile,
+  getSellerStatus,
   updateSellerProfile,
   getSellerById,
 } from "../controllers/sellerController.js";
@@ -148,6 +149,14 @@ router.get("/verify-email", verifySellerEmail);
  * ======================================================
  */
 router.post("/register", authMiddleware, registerSeller);
+
+/**
+ * ======================================================
+ * GET SELLER STATUS (AUTHENTICATED)
+ * GET /api/sellers/check-status
+ * ======================================================
+ */
+router.get("/check-status", authMiddleware, getSellerStatus);
 
 /**
  * ======================================================

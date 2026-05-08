@@ -56,7 +56,7 @@ export default function CustomerNavbar() {
     };
   }, []);
 
-  // ✅ Sync role from backend profile to avoid /api/sellers/me 403 on non-seller accounts.
+  // ✅ Check seller status using dedicated endpoint (never 403 for non-seller users).
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -64,7 +64,7 @@ export default function CustomerNavbar() {
       return;
     }
 
-    fetch(`${API_BASE_URL}/api/users/profile`, {
+    fetch(`${API_BASE_URL}/api/sellers/check-status`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Cache-Control": "no-cache",
@@ -78,24 +78,23 @@ export default function CustomerNavbar() {
           return;
         }
 
-        const profile = await res.json().catch(() => null);
-        if (!profile) return;
+        const status = await res.json().catch(() => null);
+        if (!status) return;
 
         setUser((prev) => {
-          const updated = { ...(prev || {}), ...profile };
-          const prevRaw = JSON.stringify(prev || null);
-          const nextRaw = JSON.stringify(updated);
-          if (prevRaw !== nextRaw) {
-            localStorage.setItem("user", nextRaw);
+          if (!prev) return prev;
+          if (status.role && prev.role !== status.role) {
+            const updated = { ...prev, role: status.role };
+            localStorage.setItem("user", JSON.stringify(updated));
             return updated;
           }
           return prev;
         });
 
-        setIsSeller(profile.role === "seller");
+        setIsSeller(Boolean(status.isSeller));
       })
       .catch((err) => {
-        console.warn("Role sync failed:", err.message);
+        console.warn("Seller status check failed:", err.message);
         setIsSeller(user?.role === "seller");
       });
   }, [user?.email]);

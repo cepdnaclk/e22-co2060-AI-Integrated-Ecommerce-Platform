@@ -178,6 +178,42 @@ export async function getMySellerProfile(req, res) {
 
 /**
  * ======================================================
+ * 3.5️⃣ GET SELLER STATUS (no 403 for non-sellers)
+ * GET /api/sellers/check-status
+ * ======================================================
+ */
+export async function getSellerStatus(req, res) {
+  try {
+    const userId = req.user.id;
+
+    const [seller, user] = await Promise.all([
+      Seller.findOne({ userId }).select("_id"),
+      User.findById(userId).select("role"),
+    ]);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const hasSellerProfile = Boolean(seller);
+    const isSeller = hasSellerProfile || user.role === "seller";
+
+    return res.status(200).json({
+      isSeller,
+      hasSellerProfile,
+      role: user.role,
+    });
+  } catch (error) {
+    console.error("❌ Get seller status error:", error);
+    return res.status(500).json({
+      message: "Failed to fetch seller status",
+      error: error.message,
+    });
+  }
+}
+
+/**
+ * ======================================================
  * 4️⃣ UPDATE SELLER PROFILE
  * PUT /api/sellers/me
  * ======================================================
