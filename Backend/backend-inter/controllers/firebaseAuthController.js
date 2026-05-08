@@ -82,8 +82,9 @@ export function createFirebaseLogin({
         { expiresIn: "8h" }
       );
 
-      user.token = appToken;
-      await user.save();
+      // Use updateOne instead of save() to avoid re-triggering
+      // Mongoose date validators on migrated legacy records.
+      await userModel.updateOne({ _id: user._id }, { $set: { token: appToken } });
 
       return res.json({
         message: "Login successful",
@@ -152,8 +153,9 @@ export async function userPasswordLogin(req, res) {
       { expiresIn: "8h" }
     );
 
-    user.token = appToken;
-    await user.save();
+    // Use updateOne instead of save() to avoid re-triggering
+    // Mongoose date validators on migrated legacy records.
+    await userModel.updateOne({ _id: user._id }, { $set: { token: appToken } });
 
     return res.json({
       message: "Login successful",
