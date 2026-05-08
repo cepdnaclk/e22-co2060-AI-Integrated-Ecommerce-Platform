@@ -12,6 +12,36 @@ import {
 import SuccessAnimation from "../components/SuccessAnimation";
 import API_BASE_URL from "../config/api";
 
+async function hydrateSellerStatus(token, user) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/sellers/check-status`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+      cache: "no-store",
+    });
+
+    console.debug("[SellerStatus] post-login response", { status: res.status });
+
+    if (!res.ok) return user;
+
+    const status = await res.json().catch(() => null);
+    if (!status) return user;
+
+    console.debug("[SellerStatus] post-login data", status);
+
+    return {
+      ...user,
+      role: status.role || (status.isSeller ? "seller" : user.role),
+    };
+  } catch (err) {
+    console.warn("[SellerStatus] post-login check failed:", err.message);
+    return user;
+  }
+}
+
 // ─── Background JWT sync ───────────────────────────────────────────────────
 // Called after Firebase auth succeeds. Exchanges the Firebase ID token for
 // a backend JWT and writes it to localStorage. Non-blocking — navigation
@@ -49,13 +79,15 @@ async function syncBackendSession(idToken) {
       throw new Error("Invalid session data from server");
     }
 
+    const hydratedUser = await hydrateSellerStatus(data.token, data.user);
+
     localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
+    localStorage.setItem("user", JSON.stringify(hydratedUser));
     
     // Explicitly update global auth state if needed here
     window.dispatchEvent(new Event("storage")); 
     
-    return data;
+    return { ...data, user: hydratedUser };
   } catch (error) {
     if (error instanceof TypeError && error.message.includes("Failed to fetch")) {
       throw new Error("Cannot connect to backend API. Check network connectivity and server address.");
