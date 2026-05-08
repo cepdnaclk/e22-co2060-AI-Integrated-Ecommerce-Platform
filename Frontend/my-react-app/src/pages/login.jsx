@@ -58,16 +58,19 @@ async function syncBackendSession(idToken) {
 
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
-      let errorMsg = data.message || `HTTP ${response.status}`;
+      let errorMsg = data.detail || data.message || `HTTP ${response.status}`;
 
-      if (response.status === 502) {
+      if (response.status === 500) {
+        console.error("🔥 [Server Error 500]", data);
+        errorMsg = `Server error: ${data.detail || 'Internal Server Error'}`;
+      } else if (response.status === 502) {
         errorMsg = "Backend service is unreachable. Please check if the server is running.";
       } else if (response.status === 503) {
         errorMsg = "Backend service is temporarily unavailable. Please try again.";
       }
 
       const error = new Error(errorMsg);
-      error.response = response; // Attach response for debugging headers
+      error.response = response; 
       throw error;
     }
 
