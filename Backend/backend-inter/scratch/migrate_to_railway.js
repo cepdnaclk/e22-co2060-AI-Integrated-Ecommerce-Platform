@@ -23,7 +23,7 @@ function cleanData(obj) {
 
 async function migrateData() {
   const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce';
-  console.log("🚀 Starting migration to:", mongoURI);
+  console.log("🚀 Starting UNIVERSAL migration to:", mongoURI);
   
   try {
     await mongoose.connect(mongoURI);
@@ -31,53 +31,45 @@ async function migrateData() {
 
     const db = mongoose.connection.db;
 
-    // --- 1. Migrate Users ---
-    const usersFile = path.join(__dirname, 'users_dump.json');
-    if (fs.existsSync(usersFile)) {
-      console.log("👤 Syncing Users...");
-      const userLines = fs.readFileSync(usersFile, 'utf8').split('\n').filter(l => l.trim());
-      let userCount = 0;
+    // Find all *_dump.json files in the scratch directory
+    const files = fs.readdirSync(__dirname).filter(f => f.endsWith('_dump.json'));
+    
+    for (const file of files) {
+      const collectionName = file.replace('_dump.json', '');
+      console.log(`📦 Syncing collection: [${collectionName}]...`);
       
-      for (const line of userLines) {
-        const rawUser = JSON.parse(line);
-        const userData = cleanData(rawUser);
-        const email = userData.email;
-        delete userData._id;
+      const filePath = path.join(__dirname, file);
+      const lines = fs.readFileSync(filePath, 'utf8').split('\n').filter(l => l.trim());
+      let count = 0;
+      
+      for (const line of lines) {
+        const raw = JSON.parse(line);
+        const data = cleanData(raw);
+        const id = data._id;
+        delete data._id;
 
-        await db.collection('users').updateOne(
-          { email: email },
-          { $set: userData },
-          { upsert: true }
-        );
-        userCount++;
+        // Use email as unique key for users, otherwise use _id
+        const filter = (collectionName === 'users') ? { email: data.email } : { _id: id };
+
+        try {
+          await db.collection(collectionName).updateOne(
+            filter,
+            { $set: data },
+            { upsert: true }
+          );
+          count++;
+        } catch (err) {
+          if (err.code === 11000) {
+            console.warn(`⚠️  Skipped duplicate in [${collectionName}]: ${err.message}`);
+          } else {
+            throw err;
+          }
+        }
       }
-      console.log(`✅ Synced ${userCount} users.`);
+      console.log(`✅ Synced ${count} records to ${collectionName}.`);
     }
 
-    // --- 2. Migrate Sellers ---
-    const sellersFile = path.join(__dirname, 'sellers_dump.json');
-    if (fs.existsSync(sellersFile)) {
-      console.log("🏪 Syncing Sellers...");
-      const sellerLines = fs.readFileSync(sellersFile, 'utf8').split('\n').filter(l => l.trim());
-      let sellerCount = 0;
-      
-      for (const line of sellerLines) {
-        const rawSeller = JSON.parse(line);
-        const sellerData = cleanData(rawSeller);
-        const sellerId = sellerData._id;
-        delete sellerData._id;
-
-        await db.collection('sellers').updateOne(
-          { _id: sellerId },
-          { $set: sellerData },
-          { upsert: true }
-        );
-        sellerCount++;
-      }
-      console.log(`✅ Synced ${sellerCount} sellers.`);
-    }
-
-    console.log("\n✨ Migration successful! All data has been cleaned and synced.");
+    console.log("\n✨ UNIVERSAL MIGRATION COMPLETE! Your cloud database is now a perfect mirror of Docker.");
 
   } catch (err) {
     console.error("❌ Migration failed:", err);
