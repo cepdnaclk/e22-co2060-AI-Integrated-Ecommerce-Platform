@@ -60,9 +60,15 @@ export default function CustomerNavbar() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
+      console.debug("[SellerStatus] no token; skip check", { source: "navbar" });
       setIsSeller(false);
       return;
     }
+
+    console.debug("[SellerStatus] checking status", {
+      source: "navbar",
+      hasUser: Boolean(user),
+    });
 
     fetch(`${API_BASE_URL}/api/sellers/check-status`, {
       headers: {
@@ -73,6 +79,11 @@ export default function CustomerNavbar() {
       cache: "no-store",
     })
       .then(async (res) => {
+        console.debug("[SellerStatus] response", {
+          source: "navbar",
+          status: res.status,
+        });
+
         if (!res.ok) {
           setIsSeller(user?.role === "seller");
           return;
@@ -80,6 +91,13 @@ export default function CustomerNavbar() {
 
         const status = await res.json().catch(() => null);
         if (!status) return;
+
+        console.debug("[SellerStatus] data", {
+          source: "navbar",
+          isSeller: status.isSeller,
+          hasSellerProfile: status.hasSellerProfile,
+          role: status.role,
+        });
 
         setUser((prev) => {
           if (!prev) return prev;
@@ -94,7 +112,7 @@ export default function CustomerNavbar() {
         setIsSeller(Boolean(status.isSeller));
       })
       .catch((err) => {
-        console.warn("Seller status check failed:", err.message);
+        console.warn("[SellerStatus] check failed (navbar)", err.message);
         setIsSeller(user?.role === "seller");
       });
   }, [user?.email]);

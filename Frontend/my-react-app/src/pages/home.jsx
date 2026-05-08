@@ -67,9 +67,15 @@ export default function Home() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
+      console.debug("[SellerStatus] no token; skip check", { source: "home" });
       setIsSeller(false);
       return;
     }
+
+    console.debug("[SellerStatus] checking status", {
+      source: "home",
+      hasUser: Boolean(user),
+    });
 
     fetch(`${API_BASE_URL}/api/sellers/check-status`, {
       headers: {
@@ -80,6 +86,11 @@ export default function Home() {
       cache: "no-store",
     })
       .then(async (res) => {
+        console.debug("[SellerStatus] response", {
+          source: "home",
+          status: res.status,
+        });
+
         if (!res.ok) {
           setIsSeller(user?.role === "seller");
           return;
@@ -87,6 +98,13 @@ export default function Home() {
 
         const status = await res.json().catch(() => null);
         if (!status) return;
+
+        console.debug("[SellerStatus] data", {
+          source: "home",
+          isSeller: status.isSeller,
+          hasSellerProfile: status.hasSellerProfile,
+          role: status.role,
+        });
 
         setUser((prev) => {
           if (!prev) return prev;
@@ -101,7 +119,7 @@ export default function Home() {
         setIsSeller(Boolean(status.isSeller));
       })
       .catch((err) => {
-        console.warn("Seller status check failed (may be HTTPS proxy issue):", err.message);
+        console.warn("[SellerStatus] check failed (home)", err.message);
         setIsSeller(user?.role === "seller");
       });
   }, [user?.email]);
