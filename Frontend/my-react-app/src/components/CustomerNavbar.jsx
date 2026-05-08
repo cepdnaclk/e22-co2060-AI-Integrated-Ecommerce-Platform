@@ -16,7 +16,15 @@ export default function CustomerNavbar() {
   const navigate = useNavigate();
   const [showCategories, setShowCategories] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [isSeller, setIsSeller] = useState(false);
+  const [isSeller, setIsSeller] = useState(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      const parsed = stored ? JSON.parse(stored) : null;
+      return parsed?.role === "seller";
+    } catch {
+      return false;
+    }
+  });
   const [isMenuOpen, setIsMenuOpen] = useState(false); // For mobile hamburger
 
   const [user, setUser] = useState(() => {
@@ -66,7 +74,7 @@ export default function CustomerNavbar() {
     })
       .then(async (res) => {
         if (!res.ok) {
-          setIsSeller(false);
+          setIsSeller(user?.role === "seller");
           return;
         }
 
@@ -85,7 +93,7 @@ export default function CustomerNavbar() {
       })
       .catch((err) => {
         console.warn("Seller check failed:", err.message);
-        setIsSeller(false);
+        setIsSeller(user?.role === "seller");
       });
   }, [user]);
 

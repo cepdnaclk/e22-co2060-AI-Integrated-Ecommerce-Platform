@@ -33,7 +33,15 @@ export default function Home() {
   });
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [isSeller, setIsSeller] = useState(false);
+  const [isSeller, setIsSeller] = useState(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      const parsed = stored ? JSON.parse(stored) : null;
+      return parsed?.role === "seller";
+    } catch {
+      return false;
+    }
+  });
 
   // Keep navbar auth state synced with localStorage updates (login/logout/token refresh).
   useEffect(() => {
@@ -74,7 +82,7 @@ export default function Home() {
     })
       .then(async (res) => {
         if (!res.ok) {
-          setIsSeller(false);
+          setIsSeller(user?.role === "seller");
           return;
         }
 
@@ -99,7 +107,7 @@ export default function Home() {
       })
       .catch((err) => {
         console.warn("Seller check failed (may be HTTPS proxy issue):", err.message);
-        setIsSeller(false);
+        setIsSeller(user?.role === "seller");
       });
   }, [user]);
 
