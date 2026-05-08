@@ -27,27 +27,75 @@ export default function Home() {
     try {
       const stored = localStorage.getItem("user");
       return stored ? JSON.parse(stored) : null;
-    } catch { return null; }
+    } catch {
+      return null;
+    }
   });
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isSeller, setIsSeller] = useState(false);
 
-  // ✅ Check if current user has a registered seller account
-  // Re-runs when user changes (e.g. after login navigates here)
+  // Keep navbar auth state synced with localStorage updates (login/logout/token refresh).
+  useEffect(() => {
+    const syncUserFromStorage = () => {
+      try {
+        const stored = localStorage.getItem("user");
+        setUser(stored ? JSON.parse(stored) : null);
+      } catch {
+        setUser(null);
+      }
+    };
+
+    window.addEventListener("storage", syncUserFromStorage);
+    window.addEventListener("focus", syncUserFromStorage);
+
+    return () => {
+      window.removeEventListener("storage", syncUserFromStorage);
+      window.removeEventListener("focus", syncUserFromStorage);
+    };
+  }, []);
+
+  // ✅ Check if current user has a registered seller account.
+  // Uses token presence (not only user object) to avoid login race conditions.
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token || !user) {
+    if (!token) {
       setIsSeller(false);
       return;
     }
 
     fetch(`${API_BASE_URL}/api/sellers/me`, {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache",
+      },
+      cache: "no-store",
     })
-      .then((res) => {
-        if (res.ok) setIsSeller(true);
-        else setIsSeller(false);
+      .then(async (res) => {
+        if (!res.ok) {
+          setIsSeller(false);
+          return;
+        }
+
+        const data = await res.json().catch(() => null);
+
+        // Backend may return a refreshed JWT when token role is stale.
+        if (data?.newToken) {
+          localStorage.setItem("token", data.newToken);
+        }
+
+        // Keep user role in sync once seller profile is confirmed.
+        if (data?.newToken) {
+          setUser((prev) => {
+            if (!prev || prev.role === "seller") return prev;
+            const updated = { ...prev, role: "seller" };
+            localStorage.setItem("user", JSON.stringify(updated));
+            return updated;
+          });
+        }
+
+        setIsSeller(true);
       })
       .catch((err) => {
         console.warn("Seller check failed (may be HTTPS proxy issue):", err.message);
