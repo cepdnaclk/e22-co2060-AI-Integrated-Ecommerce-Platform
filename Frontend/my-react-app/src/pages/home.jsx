@@ -63,8 +63,7 @@ export default function Home() {
     };
   }, []);
 
-  // ✅ Check if current user has a registered seller account.
-  // Uses token presence (not only user object) to avoid login race conditions.
+  // ✅ Sync role from backend profile to avoid /api/sellers/me 403 on non-seller accounts.
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -72,7 +71,7 @@ export default function Home() {
       return;
     }
 
-    fetch(`${API_BASE_URL}/api/sellers/me`, {
+    fetch(`${API_BASE_URL}/api/users/profile`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Cache-Control": "no-cache",
@@ -86,30 +85,27 @@ export default function Home() {
           return;
         }
 
-        const data = await res.json().catch(() => null);
+        const profile = await res.json().catch(() => null);
+        if (!profile) return;
 
-        // Backend may return a refreshed JWT when token role is stale.
-        if (data?.newToken) {
-          localStorage.setItem("token", data.newToken);
-        }
-
-        // Keep user role in sync once seller profile is confirmed.
-        if (data?.newToken) {
-          setUser((prev) => {
-            if (!prev || prev.role === "seller") return prev;
-            const updated = { ...prev, role: "seller" };
-            localStorage.setItem("user", JSON.stringify(updated));
+        setUser((prev) => {
+          const updated = { ...(prev || {}), ...profile };
+          const prevRaw = JSON.stringify(prev || null);
+          const nextRaw = JSON.stringify(updated);
+          if (prevRaw !== nextRaw) {
+            localStorage.setItem("user", nextRaw);
             return updated;
-          });
-        }
+          }
+          return prev;
+        });
 
-        setIsSeller(true);
+        setIsSeller(profile.role === "seller");
       })
       .catch((err) => {
-        console.warn("Seller check failed (may be HTTPS proxy issue):", err.message);
+        console.warn("Role sync failed (may be HTTPS proxy issue):", err.message);
         setIsSeller(user?.role === "seller");
       });
-  }, [user]);
+  }, [user?.email]);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
