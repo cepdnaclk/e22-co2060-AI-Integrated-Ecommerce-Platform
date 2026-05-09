@@ -5,8 +5,8 @@
 BACKEND_HOST=${BACKEND_INTERNAL_HOST:-e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080}
 echo "Starting Nginx with backend host: $BACKEND_HOST"
 
-# Extract the DNS resolver from /etc/resolv.conf (works for both Docker and Railway)
-RESOLVER=$(awk 'BEGIN{ORS=" "} $1=="nameserver" {print $2}' /etc/resolv.conf)
+# Extract the DNS resolver from /etc/resolv.conf (works for both Docker and Railway IPv4/IPv6)
+RESOLVER=$(awk 'BEGIN{ORS=" "} $1=="nameserver" { if ($2 ~ /:/) print "["$2"]"; else print $2 }' /etc/resolv.conf)
 echo "Using DNS resolvers: $RESOLVER"
 
 # Write the nginx config
