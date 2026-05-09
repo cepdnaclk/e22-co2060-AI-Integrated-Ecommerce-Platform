@@ -27,11 +27,12 @@ RUN NODE_OPTIONS=--max-old-space-size=1024 npm run build -- --mode production
 
 FROM nginx:1.27-alpine
 
-# Directly copy our fixed nginx.conf to the correct Nginx location.
-# This prevents the complex startup script from overwriting our settings.
-COPY --from=build /app/nginx.conf /etc/nginx/conf.d/default.conf
+# Use custom start script to dynamically set backend proxy URL
+COPY --from=build /app/start-nginx.sh /app/start-nginx.sh
+RUN chmod +x /app/start-nginx.sh
+
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/app/start-nginx.sh"]

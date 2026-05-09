@@ -24,7 +24,7 @@ function cleanData(obj) {
 async function migrateData() {
   const mongoURI = process.env.MONGO_URI || 'mongodb://localhost:27017/ecommerce';
   console.log("🚀 Starting UNIVERSAL migration to:", mongoURI);
-  
+
   try {
     await mongoose.connect(mongoURI);
     console.log("✅ Connected to Database.");
@@ -33,15 +33,15 @@ async function migrateData() {
 
     // Find all *_dump.json files in the scratch directory
     const files = fs.readdirSync(__dirname).filter(f => f.endsWith('_dump.json'));
-    
+
     for (const file of files) {
       const collectionName = file.replace('_dump.json', '');
       console.log(`📦 Syncing collection: [${collectionName}]...`);
-      
+
       const filePath = path.join(__dirname, file);
       const lines = fs.readFileSync(filePath, 'utf8').split('\n').filter(l => l.trim());
       let count = 0;
-      
+
       for (const line of lines) {
         const raw = JSON.parse(line);
         const data = cleanData(raw);

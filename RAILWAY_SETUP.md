@@ -9,13 +9,13 @@ The `nginx.conf` template was trying to proxy requests to the backend using `$BA
 ## Solution
 
 ### 1. Updated nginx.conf (Frontend)
-- Added a **fallback default** for `BACKEND_INTERNAL_HOST` to `e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080`
-- Added missing `X-Forwarded-Auth` header to forward Authorization headers properly
-- Added proxy timeouts to handle slow backend responses
-- Environment variable syntax: `${BACKEND_INTERNAL_HOST:-e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080}`
+- Switched to a custom `start-nginx.sh` entrypoint script.
+- Added a **fallback default** for `BACKEND_INTERNAL_HOST` to `e22-co2060-ai-integrated-ecommerce-platform.railway.internal:8080`.
+- Implemented **Dynamic DNS Resolution** in Nginx by extracting Railway's nameserver from `/etc/resolv.conf`. This prevents Nginx from caching stale backend IPs if the backend is redeployed, which is the primary cause of HTTP 502/504 errors on Railway!
+- Added missing `X-Forwarded-Auth` header to forward Authorization headers properly.
 
 ### 2. Improved Login Error Handling (Frontend)
-- Better error messages for 502/503 errors
+- Better error messages for 502/503/504 errors
 - Clearer feedback about connection issues
 - Helpful hints for troubleshooting
 
