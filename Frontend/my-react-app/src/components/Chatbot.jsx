@@ -6,7 +6,10 @@ const API = `${API_BASE_URL}/api/chat`;
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState([
-        { role: "model", text: "Hi! I'm the I-Computers assistant. How can I help you today?" }
+        {
+            role: "model",
+            text: "Hi! I'm the I-Computers Weather + Shopping assistant. Ask about weather-ready product choices, delivery, or returns.",
+        }
     ]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
@@ -61,7 +64,7 @@ const Chatbot = () => {
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <div style={styles.avatar}>🤖</div>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: 16 }}>I-Computers Support</h3>
+                                <h3 style={{ margin: 0, fontSize: 16 }}>I-Computers Weather RAG</h3>
                                 <p style={{ margin: 0, fontSize: 12, color: "#94a3b8", display: "flex", alignItems: "center", gap: 4 }}>
                                     <span style={{ width: 8, height: 8, background: "#4ade80", borderRadius: "50%", display: "inline-block" }} />
                                     Online

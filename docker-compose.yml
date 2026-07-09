@@ -73,6 +73,46 @@ services:
       retries: 5
       start_period: 45s
 
+  weather-rag-service:
+    build:
+      context: .\AI-ML\rag_chatbot
+      dockerfile: Dockerfile
+    container_name: weather-rag-service
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      NOMIC_API_KEY: ${NOMIC_API_KEY}
+      NOMIC_EMBED_MODEL: ${NOMIC_EMBED_MODEL:-nomic-embed-text-v1.5}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:1b}
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:-ollama}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-models/gemini-2.0-flash}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/ecommerce}
+      RAG_TOP_K: ${RAG_TOP_K:-4}
+      RAG_COLLECTION: ${RAG_COLLECTION:-chatbot_knowledge}
+      RAG_DB_DIR: /app/chroma_db
+      RAG_DATA_DIR: /app/data
+    command: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8010"]
+    volumes:
+      - .\AI-ML\rag_chatbot:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8010:8010"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8010/health')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
   bookkeeping-service:
     build:
       context: .\Backend\bookkeeping-service
@@ -135,6 +175,8 @@ services:
         condition: service_healthy
       face-service:
         condition: service_healthy
+      weather-rag-service:
+        condition: service_started
       bookkeeping-service:
         condition: service_healthy
     env_file:
@@ -152,6 +194,12 @@ services:
       RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
       YOUTUBE_TRENDING_URL: http://youtube-trending:8003
       BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
+      RAG_CHAT_ENABLED: "true"
+      RAG_SERVICE_URL: http://weather-rag-service:8010
+      RAG_CHAT_TIMEOUT_MS: ${RAG_CHAT_TIMEOUT_MS:-60000}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      GEMINI_FALLBACK_ENABLED: ${GEMINI_FALLBACK_ENABLED:-false}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
     volumes:
       - .\Backend\backend-inter:/app
       - /app/node_modules
