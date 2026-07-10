@@ -6,6 +6,28 @@ import Reveal from "../components/Reveal.jsx";
 import PopupReveal from "../components/Popup Reveal.jsx";
 import TrendingProductsShowcase from "../components/SeasonalCar.jsx";
 import API_BASE_URL from "../config/api";
+import CustomerFooter from "../components/CustomerFooter.jsx";
+
+// ── Home Sections ──────────────────────────────────────────────────────────────
+import FlashDeals from "../components/home/FlashDeals.jsx";
+import RecommendedForYou from "../components/home/RecommendedForYou.jsx";
+import ShopByCategory from "../components/home/ShopByCategory.jsx";
+import TopBrands from "../components/home/TopBrands.jsx";
+import BestSellers from "../components/home/BestSellers.jsx";
+import TrendingThisWeek from "../components/home/TrendingThisWeek.jsx";
+import RecentlyAdded from "../components/home/RecentlyAdded.jsx";
+import SpecialCollections from "../components/home/SpecialCollections.jsx";
+import WhyShopBeeta from "../components/home/WhyShopBeeta.jsx";
+import CustomerTestimonials from "../components/home/CustomerTestimonials.jsx";
+import AiShoppingAssistant from "../components/home/AiShoppingAssistant.jsx";
+import RecentlyViewed from "../components/home/RecentlyViewed.jsx";
+import UpcomingDeals from "../components/home/UpcomingDeals.jsx";
+import Newsletter from "../components/home/Newsletter.jsx";
+import AppPromotion from "../components/home/AppPromotion.jsx";
+import MarketplaceStats from "../components/home/MarketplaceStats.jsx";
+import DeliveryPartners from "../components/home/DeliveryPartners.jsx";
+import PaymentMethods from "../components/home/PaymentMethods.jsx";
+import ProductGallery from "../components/home/ProductGallery.jsx";
 
 /* ✅ CATEGORY LIST */
 const categories = [
@@ -232,8 +254,8 @@ export default function Home() {
             )}
           </div>
 
-          <button className="hover:text-blue-400 transition">Deals</button>
-          <button className="hover:text-blue-400 transition">New</button>
+          <button onClick={() => navigate("/deals")} className="hover:text-blue-400 transition">Deals</button>
+          <button onClick={() => navigate("/new-arrivals")} className="hover:text-blue-400 transition">New</button>
           <button className="hover:text-blue-400 transition">Trending</button>
           <button className="hover:text-blue-400 transition">Support</button>
           <button onClick={() => navigate("/about")} className="hover:text-blue-400 transition">About</button>
@@ -484,6 +506,29 @@ export default function Home() {
 
       <SponsorBar />
       <TrendingProductsShowcase />
+
+      {/* ────── EXTENDED HOMEPAGE SECTIONS ────── */}
+      <FlashDeals />
+      <ShopByCategory />
+      <RecommendedForYou />
+      <BestSellers />
+      <TrendingThisWeek />
+      <SpecialCollections />
+      <TopBrands />
+      <RecentlyAdded />
+      <WhyShopBeeta />
+      <AiShoppingAssistant />
+      <UpcomingDeals />
+      <CustomerTestimonials />
+      <ProductGallery />
+      <RecentlyViewed />
+      <MarketplaceStats />
+      <AppPromotion />
+      <DeliveryPartners />
+      <PaymentMethods />
+      <Newsletter />
+
+      <CustomerFooter />
     </div>
   );
 }

@@ -182,3 +182,30 @@ export const deleteVariant = async (productId, variantId) => {
   if (!res.ok) throw new Error(data.message || "Failed to delete variant");
   return data;
 };
+
+/**
+ * Fetch deals from the backend.
+ * Returns { deals, totalDeals, currentPage, totalPages }
+ * Each deal has: { product: { _id, productName, image, ... }, offer: { _id, finalPrice, ... } }
+ *
+ * @param {Object} params
+ * @param {number}  params.page
+ * @param {number}  params.limit
+ * @param {string}  params.category
+ * @param {string}  params.sort  - discount_desc | price_asc | price_desc | savings_desc | newest
+ * @param {number}  params.minDiscount - minimum discount % (0–100)
+ */
+export async function fetchDeals(params = {}) {
+  try {
+    const clean = Object.fromEntries(
+      Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== "" && v !== "All")
+    );
+    const qs = new URLSearchParams(clean).toString();
+    const res = await fetch(`${API_BASE_URL}/api/deals?${qs}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error("❌ fetchDeals error:", err.message);
+    return { deals: [], totalDeals: 0, currentPage: 1, totalPages: 0, error: err.message };
+  }
+}

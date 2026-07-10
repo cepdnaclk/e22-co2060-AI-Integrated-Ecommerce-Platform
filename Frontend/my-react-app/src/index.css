@@ -44,6 +44,11 @@
   }
 }
 
+@keyframes marquee-logos {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
 /* viewport */
 .marquee-container {
   width: 100%;
@@ -51,22 +56,24 @@
   position: relative;
 }
 
-/* moving track (EXACTLY 200%) */
+/* moving track — flex row, infinite wide */
 .marquee-track {
   display: flex;
-  width: 200%;
-  animation: marquee 30s linear infinite;
+  width: max-content;
+  animation: marquee-logos 28s linear infinite;
+  align-items: center;
 }
 
 /* each half */
 .marquee-group {
   display: flex;
-  width: 50%;
-  justify-content: space-around;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-/* pause on hover (optional) */
-.marquee-container:hover .marquee-track {
+/* pause on hover */
+.marquee-container:hover .marquee-track,
+.overflow-hidden:hover .marquee-track {
   animation-play-state: paused;
 }
 
@@ -93,3 +100,12 @@
 .glow-blue-hover:hover {
   box-shadow: 0 0 30px rgba(77, 163, 255, 0.5);
 }
+
+/* ── Hide scrollbar (keep scroll functionality) ─────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Line clamp utilities ────────────────────────────────────────────── */
+.line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; }
+.line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }

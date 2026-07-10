@@ -28,6 +28,18 @@ const ProductDetails = () => {
     loadProduct();
   }, [id]);
 
+  // ✅ Track recently viewed in localStorage for the home page section
+  useEffect(() => {
+    if (!id) return;
+    try {
+      const existing = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
+      const updated = [id, ...existing.filter(v => v !== id)].slice(0, 10);
+      localStorage.setItem('recentlyViewed', JSON.stringify(updated));
+    } catch {
+      // localStorage not available, ignore
+    }
+  }, [id]);
+
   const loadProduct = async () => {
     try {
       setLoading(true);

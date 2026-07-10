@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link, useSearchParams } from "react-router-dom";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase";
+// Removed Firebase storage imports to bypass the 404 storage bucket issue
 import { createSellerOffer } from "../services/sellerOfferService";
 import { fetchProducts } from "../services/productService";
 import API_BASE_URL from "../config/api";
@@ -184,35 +183,30 @@ export default function CreateSellerOffer() {
         setImagePreview(URL.createObjectURL(file));
     };
 
-    /* ─── Upload to Firebase Storage ─── */
+    /* ─── Upload image (Fallback to Base64 since Firebase bucket is 404) ─── */
     const uploadImage = () => {
         return new Promise((resolve, reject) => {
             if (!imageFile) { resolve(""); return; }
 
             setUploading(true);
-            const storageRef = ref(
-                storage,
-                `seller-offers/${Date.now()}_${imageFile.name}`
-            );
-            const task = uploadBytesResumable(storageRef, imageFile);
-
-            task.on(
-                "state_changed",
-                (snap) => {
-                    const pct = Math.round((snap.bytesTransferred / snap.totalBytes) * 100);
-                    setUploadProgress(pct);
-                },
-                (err) => {
+            setUploadProgress(45); // Fake progress step
+            
+            const reader = new FileReader();
+            reader.onload = () => {
+                setUploadProgress(100);
+                // Small delay to let the UI show 100% completion
+                setTimeout(() => {
+                    setImageUrl(reader.result);
                     setUploading(false);
-                    reject(err);
-                },
-                async () => {
-                    const url = await getDownloadURL(task.snapshot.ref);
-                    setImageUrl(url);
-                    setUploading(false);
-                    resolve(url);
-                }
-            );
+                    resolve(reader.result);
+                }, 400);
+            };
+            reader.onerror = () => {
+                setUploading(false);
+                reject(new Error("Failed to process image file locally"));
+            };
+            // Compress the image or just read as data URL (Base64)
+            reader.readAsDataURL(imageFile);
         });
     };
 

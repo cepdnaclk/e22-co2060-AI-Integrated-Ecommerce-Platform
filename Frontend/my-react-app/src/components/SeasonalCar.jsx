@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../config/api";
 
 const TrendingProductsShowcase = () => {
   const [trendingData, setTrendingData] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef(null);
+  const navigate = useNavigate();
 
   // Viewport reveal trigger
   useEffect(() => {
@@ -64,9 +66,25 @@ const TrendingProductsShowcase = () => {
   const product2 = trendingData[1] || { Keyword: "Loading..." };
   const product3 = trendingData[2] || { Keyword: "Loading..." };
 
-  // Placehold.co - remove text from URL to avoid duplication
-  const getSmallImg = (keyword) => `https://placehold.co/400x400/00c3ff/ffffff?text=${encodeURIComponent(keyword)}`;
-  const getLargeImg = (keyword) => `https://placehold.co/800x800/111111/ffffff?text=${encodeURIComponent(keyword)}`;
+  // Manual image overrides to present complete/attractive sections
+  const MANUAL_IMAGES = {
+    "Android Phone": "/trends/android.png",
+    "iPhone": "/trends/iphone.png",
+    "Laptop": "/trends/laptop.png"
+  };
+
+  const getImg = (keyword, isLarge = false) => {
+    if (MANUAL_IMAGES[keyword]) return MANUAL_IMAGES[keyword];
+    const dim = isLarge ? "800x800" : "400x400";
+    const bg = isLarge ? "111111" : "00c3ff";
+    return `https://placehold.co/${dim}/${bg}/ffffff?text=${encodeURIComponent(keyword)}`;
+  };
+
+  const handleProductClick = (keyword) => {
+    if (keyword && keyword !== "Loading...") {
+      navigate(`/products?search=${encodeURIComponent(keyword)}`);
+    }
+  };
 
   return (
     <section
@@ -89,36 +107,42 @@ const TrendingProductsShowcase = () => {
         <div className="grid grid-rows-2 gap-6">
           {/* 2️⃣ LEFT BOX 1 */}
           <div
-            className={`${baseAnimation} bg-gradient-to-br from-[#00c3ff] to-[#0084ff] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 ${
+            onClick={() => handleProductClick(product1.Keyword)}
+            className={`${baseAnimation} cursor-pointer bg-gradient-to-br from-[#00c3ff] to-[#0084ff] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
             style={{ transitionDelay: "200ms" }}
           >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
             <img
-              src={getSmallImg(product1.Keyword)}
+              src={getImg(product1.Keyword, false)}
               alt={product1.Keyword}
-              className="w-32 h-32 object-contain mb-4 rounded-lg shadow-inner brightness-110"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0"
             />
-            <p className="font-bold text-xl text-white tracking-wide">
+            {/* Gradient overlay for text readability */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none" />
+            <p className="font-bold text-2xl text-white absolute bottom-8 tracking-wide z-20 drop-shadow-lg">
               {product1.Keyword}
             </p>
           </div>
 
           {/* 3️⃣ LEFT BOX 2 */}
           <div
-            className={`${baseAnimation} bg-gradient-to-br from-[#00c3ff] to-[#0084ff] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 ${
+            onClick={() => handleProductClick(product2.Keyword)}
+            className={`${baseAnimation} cursor-pointer bg-gradient-to-br from-[#00c3ff] to-[#0084ff] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.02] transition-transform duration-300 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
             }`}
             style={{ transitionDelay: "400ms" }}
           >
-            <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
             <img
-              src={getSmallImg(product2.Keyword)}
+              src={getImg(product2.Keyword, false)}
               alt={product2.Keyword}
-              className="w-32 h-32 object-contain mb-4 rounded-lg shadow-inner brightness-110"
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0"
             />
-            <p className="font-bold text-xl text-white tracking-wide">
+            {/* Gradient overlay for text readability */}
+            <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none" />
+            <p className="font-bold text-2xl text-white absolute bottom-8 tracking-wide z-20 drop-shadow-lg">
               {product2.Keyword}
             </p>
           </div>
@@ -126,23 +150,26 @@ const TrendingProductsShowcase = () => {
 
         {/* 4️⃣ RIGHT BOX (CAR) */}
         <div
-          className={`${baseAnimation} bg-gradient-to-br from-[#111] via-[#222] to-[#000] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 ${
+          onClick={() => handleProductClick(product3.Keyword)}
+          className={`${baseAnimation} cursor-pointer bg-gradient-to-br from-[#111] via-[#222] to-[#000] rounded-2xl shadow-2xl flex flex-col items-center justify-center relative overflow-hidden group hover:scale-[1.01] transition-transform duration-300 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           }`}
           style={{ transitionDelay: "600ms" }}
         >
-          <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
           <img
-            src={getLargeImg(product3.Keyword)}
+            src={getImg(product3.Keyword, true)}
             alt={product3.Keyword}
-            className="w-[85%] object-contain rounded-2xl shadow-2xl mb-8 group-hover:scale-105 transition-transform duration-500"
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0"
           />
 
-          <div className="absolute top-6 right-6 bg-white text-black px-5 py-2 rounded-full text-sm font-extrabold shadow-2xl tracking-tighter uppercase">
+          <div className="absolute top-6 right-6 bg-white text-black px-5 py-2 rounded-full text-sm font-extrabold shadow-2xl tracking-tighter uppercase z-20">
             Summer
           </div>
           
-          <p className="font-bold text-2xl text-white absolute bottom-12 tracking-wide">
+          {/* Gradient overlay for text readability */}
+          <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none" />
+          <p className="font-bold text-3xl text-white absolute bottom-10 tracking-wide z-20 drop-shadow-lg">
             {product3.Keyword}
           </p>
         </div>

@@ -23,6 +23,7 @@ import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority 
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
 import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
+import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
 
 
 // ================== CRON JOBS ==================
@@ -98,6 +99,9 @@ app.use("/api/ai", aiRouter);
 
 // Trending Products
 app.use("/api/trending", trendingRouter);
+
+// 🏷️ Deals (products with active discounted offers)
+app.use("/api/deals", dealsRouter);
 
 
 // Product catalog (browse products)

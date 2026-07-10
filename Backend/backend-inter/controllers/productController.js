@@ -166,7 +166,10 @@ export async function getAllProducts(req, res) {
       pipeline.push({ $sort: { minPrice: 1 } });
     } else if (sort === "price_desc") {
       pipeline.push({ $sort: { minPrice: -1 } });
+    } else if (sort === "popular") {
+      pipeline.push({ $sort: { howManyProductsSold: -1, createdAt: -1 } });
     } else {
+      // default: latest
       pipeline.push({ $sort: { createdAt: -1 } });
     }
 

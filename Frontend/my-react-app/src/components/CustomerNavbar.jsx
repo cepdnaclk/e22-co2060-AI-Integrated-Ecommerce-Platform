@@ -170,8 +170,8 @@ export default function CustomerNavbar() {
             )}
           </div>
 
-          <button onClick={() => navigate("/products")} className="hover:text-blue-400 transition">Deals</button>
-          <button onClick={() => navigate("/products")} className="hover:text-blue-400 transition">New</button>
+          <button onClick={() => navigate("/deals")} className="hover:text-blue-400 transition">Deals</button>
+          <button onClick={() => navigate("/new-arrivals")} className="hover:text-blue-400 transition">New</button>
           <button onClick={() => navigate("/products")} className="hover:text-blue-400 transition">Trending</button>
           <button onClick={() => navigate("/support")} className="hover:text-blue-400 transition">Support</button>
           <button onClick={() => navigate("/about")} className="hover:text-blue-400 transition">About</button>
@@ -240,6 +240,8 @@ export default function CustomerNavbar() {
         {isMenuOpen && (
           <div className="lg:hidden absolute top-full left-0 w-full bg-[#0b1c2d] border-t border-white/10 z-50 py-4 px-6 flex flex-col gap-4">
             <button onClick={() => { navigate("/products"); setIsMenuOpen(false); }} className="text-left py-2 hover:text-blue-400">Products</button>
+            <button onClick={() => { navigate("/new-arrivals"); setIsMenuOpen(false); }} className="text-left py-2 hover:text-blue-400 font-medium">New Arrivals</button>
+            <button onClick={() => { navigate("/deals"); setIsMenuOpen(false); }} className="text-left py-2 hover:text-blue-400 text-blue-400 font-medium">Deals</button>
             <button onClick={() => { navigate("/about"); setIsMenuOpen(false); }} className="text-left py-2 hover:text-blue-400">About</button>
             <button onClick={() => { navigate("/team"); setIsMenuOpen(false); }} className="text-left py-2 text-blue-400 font-medium">Team</button>
             {!user && (
