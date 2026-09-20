@@ -35,6 +35,8 @@ def _load_from_disk() -> Optional[nx.Graph]:
         return None
     try:
         graph = load_graph(_graph_file)
+        if graph.number_of_nodes() < 10:
+            return None
         return graph
     except Exception:
         return None
