@@ -14,7 +14,7 @@ def _get_client() -> MongoClient:
 
 
 def _get_db_name() -> str:
-    return os.getenv("RECOMMENDER_DB_NAME") or os.getenv("MONGO_DB_NAME") or "test"
+    return os.getenv("RECOMMENDER_DB_NAME") or os.getenv("MONGO_DB_NAME") or "ecommerce"
 
 
 def _to_str(value) -> str:

@@ -46,7 +46,7 @@ services:
       mongodb:
         condition: service_healthy
     environment:
-      RECOMMENDER_MONGO_URI: ${RECOMMENDER_MONGO_URI:-mongodb://host.docker.internal:27017}
+      RECOMMENDER_MONGO_URI: mongodb://mongodb:27017
       RECOMMENDER_DB_NAME: ecommerce
       RECOMMENDER_GRAPH_REBUILD_HOURS: 24
     ports:
