@@ -23,6 +23,7 @@ import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority 
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
 import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
+import automationRouter from "./router/automationRouter.js"; // 🤖 LangChain Automation Agent
 import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
 import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
 
@@ -30,6 +31,8 @@ import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
 // ================== CRON & WORKERS ==================
 import "./cron/dailySendToAI.js";
 import "./cron/graphRebuildJob.js";
+import "./cron/marketingAutomationJob.js";
+import "./cron/autoFacebookPostingJob.js";
 import "./worker/facebookPublisherWorker.js";
 
 // ================== CONFIG ==================
@@ -105,6 +108,9 @@ app.use("/api/ai", aiRouter);
 // Trending Products
 app.use("/api/trending", trendingRouter);
 
+// 🤖 LangChain Automation (Marketing, Restock, Agent Status)
+app.use("/api/automation", automationRouter);
+
 // 🏷️ Deals (products with active discounted offers)
 app.use("/api/deals", dealsRouter);
 
@@ -152,10 +158,10 @@ app.use("/api/admin/restock", restockRouter);
 app.use("/api/recommendations", recommendationRouter);
 // 🚚 Delivery Management System
 app.use("/api/dms", dmsRouter);
-if ((process.env.ENABLE_FACEBOOK_MODULE || "false").toLowerCase() === "true") {
-  const { default: facebookRouter } = await import("./router/facebookRouter.js");
-  app.use("/api/facebook", facebookRouter);
-}
+
+// 📱 Facebook Integration & Auto-Posting
+const { default: facebookRouter } = await import("./router/facebookRouter.js");
+app.use("/api/facebook", facebookRouter);
 
 // ================== TEST ROUTES ==================
 
