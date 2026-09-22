@@ -13,9 +13,14 @@ export default function AdminDashboard() {
     // AI & Facebook Automation State
     const [autoPostLoading, setAutoPostLoading] = useState(false);
     const [autoPostResult, setAutoPostResult] = useState(null);
+    const [autoPostTone, setAutoPostTone] = useState("hype");
+    const [autoPostMode, setAutoPostMode] = useState("now");
     const [trendingModalOpen, setTrendingModalOpen] = useState(false);
     const [trendingLoading, setTrendingLoading] = useState(false);
     const [trendingReport, setTrendingReport] = useState(null);
+    const [restockModalOpen, setRestockModalOpen] = useState(false);
+    const [restockLoading, setRestockLoading] = useState(false);
+    const [restockReport, setRestockReport] = useState(null);
     
     // Get admin user info
     const adminUser = JSON.parse(localStorage.getItem("adminUser") || localStorage.getItem("user") || "{}");
@@ -79,7 +84,8 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleTriggerAutoPost = async (mode = "now") => {
+    const handleTriggerAutoPost = async (overrideMode = null) => {
+        const mode = overrideMode || autoPostMode;
         setAutoPostLoading(true);
         setAutoPostResult(null);
         try {
@@ -90,7 +96,7 @@ export default function AdminDashboard() {
                     "Content-Type": "application/json",
                     ...(token && { Authorization: `Bearer ${token}` })
                 },
-                body: JSON.stringify({ mode, tone: "hype", campaignType: "product_spotlight" })
+                body: JSON.stringify({ mode, tone: autoPostTone, campaignType: "product_spotlight" })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || data.error || "Failed to auto-post");
@@ -119,6 +125,25 @@ export default function AdminDashboard() {
             console.error("Failed to load trending products:", err);
         } finally {
             setTrendingLoading(false);
+        }
+    };
+
+    const handleOpenRestockModal = async () => {
+        setRestockModalOpen(true);
+        setRestockLoading(true);
+        try {
+            const token = localStorage.getItem("adminToken") || localStorage.getItem("token");
+            const res = await fetch(`${API_BASE_URL}/api/automation/restock/review`, {
+                headers: {
+                    ...(token && { Authorization: `Bearer ${token}` })
+                }
+            });
+            const data = await res.json();
+            setRestockReport(data.review || data);
+        } catch (err) {
+            console.error("Failed to load restock review:", err);
+        } finally {
+            setRestockLoading(false);
         }
     };
 
@@ -302,20 +327,57 @@ export default function AdminDashboard() {
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-2.5 mt-auto">
+                        {/* Controls for Tone and Mode */}
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                            <div>
+                                <label className="block text-[10px] text-slate-400 uppercase font-bold mb-1">Tone</label>
+                                <select
+                                    value={autoPostTone}
+                                    onChange={(e) => setAutoPostTone(e.target.value)}
+                                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                                >
+                                    <option value="hype">🔥 Hype</option>
+                                    <option value="professional">💼 Pro</option>
+                                    <option value="discount_driven">🏷️ Deals</option>
+                                    <option value="storytelling">📖 Story</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] text-slate-400 uppercase font-bold mb-1">Mode</label>
+                                <select
+                                    value={autoPostMode}
+                                    onChange={(e) => setAutoPostMode(e.target.value)}
+                                    className="w-full bg-slate-800 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white outline-none"
+                                >
+                                    <option value="now">⚡ Now</option>
+                                    <option value="optimal_time">⏰ 7 PM</option>
+                                    <option value="draft">📝 Draft</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-2 mt-auto">
                             <button
-                                onClick={() => handleTriggerAutoPost("now")}
+                                onClick={() => handleTriggerAutoPost()}
                                 disabled={autoPostLoading}
                                 className="w-full py-2.5 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50"
                             >
-                                {autoPostLoading ? "Publishing via AI..." : "⚡ Auto-Post to Facebook Now"}
+                                {autoPostLoading ? "Publishing via AI..." : `🚀 Run Auto-Post (${autoPostMode.toUpperCase()})`}
                             </button>
-                            <button
-                                onClick={handleOpenTrendingModal}
-                                className="w-full py-2 px-4 bg-white/5 hover:bg-white/10 border border-white/10 text-purple-300 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
-                            >
-                                📈 YouTube Trending Intel
-                            </button>
+                            <div className="grid grid-cols-2 gap-2">
+                                <button
+                                    onClick={handleOpenTrendingModal}
+                                    className="py-2 px-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-purple-300 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition-all"
+                                >
+                                    📈 YT Trending
+                                </button>
+                                <button
+                                    onClick={handleOpenRestockModal}
+                                    className="py-2 px-2.5 bg-white/5 hover:bg-white/10 border border-white/10 text-emerald-300 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition-all"
+                                >
+                                    📦 Restock POs
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -352,7 +414,7 @@ export default function AdminDashboard() {
                                             {trendingReport.summary}
                                         </div>
                                         {trendingReport.top_trending_products.map((item, idx) => (
-                                            <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
+                                             <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-2">
                                                 <div className="flex items-start justify-between gap-2">
                                                     <div>
                                                         <span className="text-[10px] font-black uppercase text-purple-400">{item.brand} • {item.category}</span>
@@ -381,6 +443,84 @@ export default function AdminDashboard() {
                                     className="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs font-bold"
                                 >
                                     Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Restock PO Review Modal */}
+                {restockModalOpen && (
+                    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <div className="bg-slate-900 border border-emerald-500/30 rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+                            <div className="p-5 border-b border-white/10 flex items-center justify-between">
+                                <div className="flex items-center gap-2.5">
+                                    <span className="text-2xl">📦</span>
+                                    <div>
+                                        <h3 className="font-bold text-lg text-white">AI Restock & Purchase Order Draft</h3>
+                                        <p className="text-xs text-slate-400">Automated evaluation by LangChain Restock Agent</p>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setRestockModalOpen(false)}
+                                    className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            <div className="p-6 overflow-y-auto space-y-4 flex-grow">
+                                {restockLoading ? (
+                                    <div className="py-12 text-center text-slate-400 text-sm">
+                                        Evaluating inventory health, restock scores & drafting PO email...
+                                    </div>
+                                ) : restockReport ? (
+                                    <>
+                                        <div className="bg-emerald-500/10 border border-emerald-500/20 p-3 rounded-xl flex items-center justify-between">
+                                            <div>
+                                                <p className="text-xs font-bold text-emerald-300">Urgency: {restockReport.overall_urgency || "NORMAL"}</p>
+                                                <p className="text-[11px] text-slate-400 mt-0.5">{restockReport.summary}</p>
+                                            </div>
+                                            <span className="text-xs font-black px-2.5 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg">
+                                                {restockReport.items_to_restock?.length || 0} Critical Items
+                                            </span>
+                                        </div>
+
+                                        {/* PO Email Draft */}
+                                        {restockReport.supplier_email_draft && (
+                                            <div className="bg-slate-950/80 border border-white/10 rounded-xl p-4 space-y-2">
+                                                <p className="text-[10px] text-slate-500 uppercase font-black tracking-wider">Formal Supplier PO Email Draft</p>
+                                                <p className="text-xs font-bold text-white">Subject: {restockReport.supplier_email_draft.subject}</p>
+                                                <pre className="text-xs text-slate-300 whitespace-pre-wrap font-sans bg-white/5 p-3 rounded-lg border border-white/5">
+                                                    {restockReport.supplier_email_draft.body}
+                                                </pre>
+                                            </div>
+                                        )}
+
+                                        {/* Items breakdown */}
+                                        {restockReport.items_to_restock?.map((item, idx) => (
+                                            <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-3 flex items-center justify-between text-xs">
+                                                <div>
+                                                    <p className="font-bold text-white">{item.product_name}</p>
+                                                    <p className="text-[11px] text-slate-400">Current Stock: {item.current_stock} • Risk Score: {item.risk_score}</p>
+                                                </div>
+                                                <span className="px-2.5 py-1 bg-blue-500/20 text-blue-300 rounded font-bold text-[11px]">
+                                                    Order +{item.recommended_order_quantity} units
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </>
+                                ) : (
+                                    <div className="py-8 text-center text-slate-400 text-sm">No restock alerts at this moment.</div>
+                                )}
+                            </div>
+
+                            <div className="p-4 border-t border-white/10 bg-slate-950/50 flex justify-end">
+                                <button
+                                    onClick={() => setRestockModalOpen(false)}
+                                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold"
+                                >
+                                    Done
                                 </button>
                             </div>
                         </div>

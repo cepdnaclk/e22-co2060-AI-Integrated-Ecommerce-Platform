@@ -69,6 +69,36 @@ const facebookPostSchema = new mongoose.Schema(
     isAutomated: {
       type: Boolean,
       default: true
+    },
+    // Verification & Quality Guardrails
+    verificationStatus: {
+      type: String,
+      enum: ["unverified", "pending_verification", "verified", "rejected", "auto_verified"],
+      default: "auto_verified"
+    },
+    verificationScore: {
+      type: Number,
+      default: 100
+    },
+    verificationChecks: [
+      {
+        name: { type: String },
+        passed: { type: Boolean },
+        details: { type: String }
+      }
+    ],
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
+    verifiedAt: {
+      type: Date,
+      default: null
+    },
+    rejectionReason: {
+      type: String,
+      default: null
     }
   },
   { timestamps: true }
