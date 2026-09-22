@@ -24,11 +24,13 @@ import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dij
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
 import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
 import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
+import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
 
 
-// ================== CRON JOBS ==================
+// ================== CRON & WORKERS ==================
 import "./cron/dailySendToAI.js";
 import "./cron/graphRebuildJob.js";
+import "./worker/facebookPublisherWorker.js";
 
 // ================== CONFIG ==================
 dotenv.config();
@@ -46,6 +48,9 @@ const app = express();
 
 // Parse JSON request bodies
 app.use(express.json());
+
+// Parse URL-encoded request bodies (for PayHere notify callback)
+app.use(express.urlencoded({ extended: true }));
 
 // CORS configuration
 const allowedOrigins = [
@@ -124,6 +129,9 @@ app.use("/api/cart", cartRouter);
 
 // 📦 Orders (checkout & order history)
 app.use("/api/orders", orderRouter);
+
+// 💳 PayHere Payments
+app.use("/api/payment", paymentRouter);
 
 
 app.use("/api/export", exportRouter);

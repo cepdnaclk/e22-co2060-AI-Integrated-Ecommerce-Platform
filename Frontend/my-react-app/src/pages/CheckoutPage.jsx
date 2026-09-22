@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getCart } from "../services/cartService";
 import { placeOrder, getDeliveryChargePreview } from "../services/orderService";
+import { createPayHerePayment, submitPayHereForm } from "../services/paymentService";
 import GoogleMapAddressPicker from "../components/GoogleMapAddressPicker";
 import API_BASE_URL from "../config/api";
 
@@ -343,6 +344,41 @@ export default function CheckoutPage() {
             showToast(err.message, false);
         } finally {
             setPlacing(false);
+        }
+    };
+
+    const [payhereLoading, setPayhereLoading] = useState(false);
+
+    const handlePayWithPayHere = async () => {
+        if (!validate()) return;
+        setPayhereLoading(true);
+        try {
+            const activePhone = phoneSource === "profile" ? (profileAddress?.phone || "") : otherPhone;
+            const shippingData = {
+                ...form,
+                phone: activePhone,
+                deliveryInstructions: form.deliveryInstructions?.trim() || "",
+            };
+
+            if (addressSource === "profile" && profileAddress?.addressLocation?.verified) {
+                applyLocationToShippingData(shippingData, profileAddress.addressLocation);
+            } else if (addressSource === "custom" && mapLocation?.verified) {
+                applyLocationToShippingData(shippingData, mapLocation);
+            }
+
+            const res = await createPayHerePayment(token, {
+                shippingAddress: shippingData,
+                deliveryCharge
+            });
+
+            if (res && res.payhere) {
+                submitPayHereForm(res.payhere);
+            } else {
+                throw new Error("Invalid response from payment server");
+            }
+        } catch (err) {
+            showToast(err.message, false);
+            setPayhereLoading(false);
         }
     };
 
@@ -825,14 +861,50 @@ export default function CheckoutPage() {
                                 </span>
                             </div>
 
+                            {/* PayHere Payment Button */}
+                            <button
+                                className="co-btn"
+                                onClick={handlePayWithPayHere}
+                                disabled={payhereLoading || placing || items.length === 0}
+                                style={{
+                                    background: "linear-gradient(135deg, #d97706, #f59e0b)",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: 10,
+                                    fontWeight: 800,
+                                    fontSize: 15,
+                                    padding: "14px 28px",
+                                    width: "100%",
+                                    marginBottom: 12,
+                                    opacity: payhereLoading || placing || items.length === 0 ? 0.5 : 1,
+                                    cursor: payhereLoading || placing || items.length === 0 ? "not-allowed" : "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: 10,
+                                    boxShadow: "0 4px 15px rgba(245, 158, 11, 0.25)"
+                                }}
+                            >
+                                {payhereLoading ? (
+                                    <>
+                                        <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+                                        Redirecting to PayHere…
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>💳</span> Pay with PayHere
+                                    </>
+                                )}
+                            </button>
+
                             <button
                                 className="co-btn"
                                 onClick={handlePlaceOrder}
-                                disabled={placing || items.length === 0}
+                                disabled={placing || payhereLoading || items.length === 0}
                                 style={{
                                     ...S.btnBlue,
-                                    opacity: placing || items.length === 0 ? 0.5 : 1,
-                                    cursor: placing || items.length === 0 ? "not-allowed" : "pointer",
+                                    opacity: placing || payhereLoading || items.length === 0 ? 0.5 : 1,
+                                    cursor: placing || payhereLoading || items.length === 0 ? "not-allowed" : "pointer",
                                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
                                 }}
                             >
@@ -841,7 +913,7 @@ export default function CheckoutPage() {
                                         <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
                                         Placing Order…
                                     </>
-                                ) : "Place Order 🎉"}
+                                ) : "Cash on Delivery / Direct Checkout 📦"}
                             </button>
 
                             <p style={{ textAlign: "center", marginTop: 12, fontSize: 11, color: "#475569" }}>

@@ -9,6 +9,9 @@ import {
   adminCreateVariant,
   updateVariant,
   deleteVariant,
+  approveAdminProduct,
+  rejectAdminProduct,
+  retryFacebookPost,
 } from "../services/productService";
 
 const CATEGORIES = ["Electronics", "Fashion", "Home", "Beauty", "Sports", "Books", "Others"];
@@ -381,7 +384,45 @@ export default function AdminProducts() {
     setLoading(false);
   }, [search, categoryFilter, showToast]);
 
-  useEffect(() => { loadProducts(1); }, [loadProducts]);
+  useEffect(() => {
+    loadProducts(1);
+  }, [loadProducts]);
+
+  const handleApprove = async (p) => {
+    setActionLoading(true);
+    try {
+      await approveAdminProduct(p._id);
+      showToast(`Approved "${p.productName}" and queued Facebook post!`, "success");
+      await loadProducts(currentPage);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
+    setActionLoading(false);
+  };
+
+  const handleReject = async (p) => {
+    setActionLoading(true);
+    try {
+      await rejectAdminProduct(p._id);
+      showToast(`Rejected "${p.productName}"`, "success");
+      await loadProducts(currentPage);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
+    setActionLoading(false);
+  };
+
+  const handleRetryFacebook = async (p) => {
+    setActionLoading(true);
+    try {
+      await retryFacebookPost(p._id);
+      showToast(`Retrying Facebook post for "${p.productName}"`, "success");
+      await loadProducts(currentPage);
+    } catch (e) {
+      showToast(e.message, "error");
+    }
+    setActionLoading(false);
+  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -528,91 +569,182 @@ export default function AdminProducts() {
           ) : (
             <div className="flex flex-col">
               {/* Desktop Table Header */}
-              <div className="hidden lg:grid grid-cols-[60px_1fr_140px_120px_100px_100px_150px] gap-4 px-6 py-4 bg-white/5 border-b border-white/10">
-                {["", "Product", "Category", "Brand", "Variants", "Sales", "Actions"].map((h, i) => (
+              <div className="hidden lg:grid grid-cols-[50px_1fr_120px_110px_130px_140px_220px] gap-3 px-6 py-4 bg-white/5 border-b border-white/10">
+                {["", "Product", "Category", "Brand", "Approval", "Facebook Status", "Actions"].map((h, i) => (
                   <span key={i} className="text-[10px] uppercase tracking-widest font-black text-slate-500">{h}</span>
                 ))}
               </div>
 
               {/* Product Rows/Cards */}
-              {products.map((p) => (
-                <div key={p._id} className="animate-fadeIn">
-                  <div
-                    className="flex flex-col lg:grid lg:grid-cols-[60px_1fr_140px_120px_100px_100px_150px] gap-4 px-6 py-6 lg:py-4 border-b border-white/5 transition-all ap-row group"
-                    onClick={() => toggleExpand(p._id)}
-                  >
-                    {/* Image & Main Info (Stacked on Mobile) */}
-                    <div className="flex items-center gap-4 lg:contents">
-                      <div className="flex-shrink-0">
-                        {p.image ? (
-                          <img src={p.image} alt={p.productName} className="w-12 h-12 lg:w-10 lg:h-10 object-cover rounded-xl shadow-lg shadow-black/20" />
-                        ) : (
-                          <div className="w-12 h-12 lg:w-10 lg:h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-xl">📦</div>
+              {products.map((p) => {
+                const approval = p.approvalStatus || "pending";
+                const fbStatus = p.facebookStatus || "not_posted";
+
+                return (
+                  <div key={p._id} className="animate-fadeIn">
+                    <div
+                      className="flex flex-col lg:grid lg:grid-cols-[50px_1fr_120px_110px_130px_140px_220px] gap-3 px-6 py-6 lg:py-4 border-b border-white/5 transition-all ap-row group items-center"
+                      onClick={() => toggleExpand(p._id)}
+                    >
+                      {/* Image & Main Info */}
+                      <div className="flex items-center gap-4 lg:contents">
+                        <div className="flex-shrink-0">
+                          {p.image ? (
+                            <img src={p.image} alt={p.productName} className="w-12 h-12 lg:w-10 lg:h-10 object-cover rounded-xl shadow-lg shadow-black/20" />
+                          ) : (
+                            <div className="w-12 h-12 lg:w-10 lg:h-10 bg-purple-500/10 rounded-xl flex items-center justify-center text-xl">📦</div>
+                          )}
+                        </div>
+
+                        <div className="flex-grow">
+                          <div className="text-base lg:text-sm font-bold text-white group-hover:text-purple-400 transition-colors">{p.productName}</div>
+                          <div className="text-[10px] text-slate-500 font-mono mt-0.5">ID: {p._id.slice(-8)}</div>
+                        </div>
+                      </div>
+
+                      {/* Category */}
+                      <div className="flex items-center gap-2 lg:block">
+                        <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Category</span>
+                        <span className="text-xs px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg">
+                          {p.category}
+                        </span>
+                      </div>
+
+                      {/* Brand */}
+                      <div className="flex items-center gap-2 lg:block">
+                        <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Brand</span>
+                        <span className="text-sm text-slate-300 font-medium">{p.brand || "—"}</span>
+                      </div>
+
+                      {/* Approval Status Badge */}
+                      <div className="flex items-center gap-2 lg:block">
+                        <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Approval</span>
+                        {approval === "approved" && (
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 rounded-md">
+                            ✓ Approved
+                          </span>
+                        )}
+                        {approval === "rejected" && (
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-red-500/15 text-red-400 border border-red-500/30 rounded-md">
+                            ✕ Rejected
+                          </span>
+                        )}
+                        {approval === "pending" && (
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-amber-500/15 text-amber-400 border border-amber-500/30 rounded-md">
+                            ⏳ Pending
+                          </span>
                         )}
                       </div>
 
-                      <div className="flex-grow">
-                        <div className="text-base lg:text-sm font-bold text-white group-hover:text-purple-400 transition-colors">{p.productName}</div>
-                        <div className="text-[10px] text-slate-500 font-mono mt-1">ID: {p._id.slice(-8)}</div>
+                      {/* Facebook Status Badge */}
+                      <div className="flex items-center gap-2 lg:block">
+                        <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Facebook</span>
+                        {fbStatus === "published" && (
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-blue-500/15 text-blue-400 border border-blue-500/30 rounded-md">
+                            🌐 Published
+                          </span>
+                        )}
+                        {fbStatus === "queued" && (
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-purple-500/15 text-purple-400 border border-purple-500/30 rounded-md">
+                            📥 Queued
+                          </span>
+                        )}
+                        {fbStatus === "processing" && (
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 rounded-md animate-pulse">
+                            ⚙️ Processing
+                          </span>
+                        )}
+                        {fbStatus === "failed" && (
+                          <span className="text-[11px] font-bold px-2 py-0.5 bg-rose-500/15 text-rose-400 border border-rose-500/30 rounded-md" title={p.facebookError || "Failed"}>
+                            ⚠️ Failed
+                          </span>
+                        )}
+                        {fbStatus === "not_posted" && (
+                          <span className="text-[11px] font-medium px-2 py-0.5 bg-slate-500/10 text-slate-400 border border-slate-500/20 rounded-md">
+                            Not Posted
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex flex-wrap gap-1.5 mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-white/5 items-center" onClick={(e) => e.stopPropagation()}>
+                        {approval === "pending" && (
+                          <>
+                            <button
+                              onClick={() => handleApprove(p)}
+                              disabled={actionLoading}
+                              className="px-2.5 py-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-lg hover:bg-emerald-500 hover:text-white transition-all text-xs font-bold"
+                              title="Approve & Queue Facebook Post"
+                            >
+                              ✓ Approve
+                            </button>
+                            <button
+                              onClick={() => handleReject(p)}
+                              disabled={actionLoading}
+                              className="px-2.5 py-1.5 bg-rose-500/20 text-rose-300 border border-rose-500/40 rounded-lg hover:bg-rose-500 hover:text-white transition-all text-xs font-bold"
+                              title="Reject Product"
+                            >
+                              ✕ Reject
+                            </button>
+                          </>
+                        )}
+
+                        {approval === "approved" && fbStatus === "failed" && (
+                          <button
+                            onClick={() => handleRetryFacebook(p)}
+                            disabled={actionLoading}
+                            className="px-2.5 py-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 rounded-lg hover:bg-amber-500 hover:text-white transition-all text-xs font-bold"
+                            title={p.facebookError || "Retry Facebook Post"}
+                          >
+                            🔄 Retry FB
+                          </button>
+                        )}
+
+                        {fbStatus === "published" && p.facebookPostId && (
+                          <a
+                            href={`https://facebook.com/${p.facebookPostId}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-2.5 py-1.5 bg-blue-600/20 text-blue-300 border border-blue-500/40 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-xs font-bold inline-flex items-center gap-1"
+                          >
+                            🔗 Post
+                          </a>
+                        )}
+
+                        <button
+                          onClick={() => setEditingProduct(p)}
+                          className="p-1.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-lg hover:bg-blue-500 hover:text-white transition-all text-xs"
+                          title="Edit Product"
+                        >
+                          ✏️
+                        </button>
+                        <button
+                          onClick={() => setDeletingProduct(p)}
+                          className="p-1.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-lg hover:bg-red-500 hover:text-white transition-all text-xs"
+                          title="Delete Product"
+                        >
+                          🗑️
+                        </button>
+                        <button
+                          onClick={() => toggleExpand(p._id)}
+                          className="p-1.5 bg-white/5 text-slate-400 border border-white/10 rounded-lg hover:bg-white/10 text-xs"
+                        >
+                          {expandedProduct === p._id ? "▲" : "▼"}
+                        </button>
                       </div>
                     </div>
 
-                    {/* Metadata (Columns on Desktop, Labels on Mobile) */}
-                    <div className="flex items-center gap-2 lg:block">
-                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Category</span>
-                      <span className="text-xs px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded-lg">
-                        {p.category}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2 lg:block">
-                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Brand</span>
-                      <span className="text-sm text-slate-300 font-medium">{p.brand || "—"}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 lg:block">
-                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Variants</span>
-                      <span className="text-sm text-slate-400">{p.variantCount ?? 0}</span>
-                    </div>
-
-                    <div className="flex items-center gap-2 lg:block">
-                      <span className="lg:hidden text-[9px] uppercase font-black text-slate-600 mr-2">Sales</span>
-                      <span className="text-sm text-emerald-400 font-bold">{p.howManyProductsSold ?? 0}</span>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="flex gap-2 mt-4 lg:mt-0 pt-4 lg:pt-0 border-t lg:border-t-0 border-white/5" onClick={(e) => e.stopPropagation()}>
-                      <button 
-                        onClick={() => setEditingProduct(p)}
-                        className="flex-1 lg:flex-none p-2.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-xl hover:bg-blue-500 hover:text-white transition-all text-sm"
-                      >
-                        ✏️ <span className="lg:hidden ml-1">Edit</span>
-                      </button>
-                      <button 
-                        onClick={() => setDeletingProduct(p)}
-                        className="flex-1 lg:flex-none p-2.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl hover:bg-red-500 hover:text-white transition-all text-sm"
-                      >
-                        🗑️ <span className="lg:hidden ml-1">Delete</span>
-                      </button>
-                      <button 
-                        onClick={() => toggleExpand(p._id)}
-                        className="p-2.5 bg-white/5 text-slate-400 border border-white/10 rounded-xl hover:bg-white/10 text-sm"
-                      >
-                        {expandedProduct === p._id ? "▲" : "▼"}
-                      </button>
-                    </div>
+                    {/* Expanded Variant Panel */}
+                    {expandedProduct === p._id && (
+                      <div className="bg-purple-500/5 px-6 pb-6 pt-2 border-b border-white/5 animate-fadeIn">
+                        <div className="lg:ml-[50px]">
+                          <VariantPanel productId={p._id} onToast={showToast} />
+                        </div>
+                      </div>
+                    )}
                   </div>
-
-                  {/* Expanded Variant Panel */}
-                  {expandedProduct === p._id && (
-                    <div className="bg-purple-500/5 px-6 pb-6 pt-2 border-b border-white/5 animate-fadeIn">
-                      <div className="lg:ml-[60px]">
-                        <VariantPanel productId={p._id} onToast={showToast} />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

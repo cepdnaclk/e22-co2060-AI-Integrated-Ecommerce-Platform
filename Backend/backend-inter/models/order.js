@@ -112,6 +112,37 @@ const orderSchema = new mongoose.Schema(
       required: false
     },
 
+    // 💳 PayHere & Payment Details
+    orderId: {
+      type: String,
+      index: true
+    },
+    currency: {
+      type: String,
+      default: "LKR"
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["pending", "paid", "failed", "cancelled", "chargedback"],
+      default: "pending"
+    },
+    payherePaymentId: {
+      type: String,
+      default: null
+    },
+    payhereMethod: {
+      type: String,
+      default: null
+    },
+    payhereStatusCode: {
+      type: Number,
+      default: null
+    },
+    paymentDate: {
+      type: Date,
+      default: null
+    },
+
     // 📌 Order status lifecycle
     status: {
       type: String,

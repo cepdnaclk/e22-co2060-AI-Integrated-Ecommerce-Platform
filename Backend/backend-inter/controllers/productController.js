@@ -2,10 +2,11 @@ import productModel from "../models/products.js";
 import sellerOfferModel from "../models/sellerOffer.js";
 import TopProduct from "../models/topProducts.js";
 import ProductVariant from "../models/productVariant.js";
+import { enqueueProductFacebookPost } from "../queues/facebookPostQueue.js";
 
 /**
  * ======================================================
- * CREATE PRODUCT (ADMIN)
+ * CREATE PRODUCT
  * ======================================================
  */
 export async function createProduct(req, res) {
@@ -16,7 +17,9 @@ export async function createProduct(req, res) {
       category: req.body.category,
       description: req.body.description,
       brand: req.body.brand,
-      specs: req.body.specs
+      specs: req.body.specs,
+      approvalStatus: "pending",
+      facebookStatus: "not_posted"
     });
 
     res.status(201).json({
@@ -26,6 +29,104 @@ export async function createProduct(req, res) {
   } catch (error) {
     res.status(500).json({
       message: "Error creating product",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * ======================================================
+ * APPROVE PRODUCT & QUEUE FACEBOOK POST
+ * ======================================================
+ */
+export async function approveProduct(req, res) {
+  try {
+    const product = await productModel.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    // Update statuses
+    product.approvalStatus = "approved";
+    product.facebookStatus = "queued";
+    product.facebookError = null;
+    await product.save();
+
+    // Enqueue BullMQ job for async worker processing
+    await enqueueProductFacebookPost(product._id.toString());
+
+    res.json({
+      message: "Product approved successfully and queued for Facebook posting",
+      product
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error approving product",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * ======================================================
+ * REJECT PRODUCT
+ * ======================================================
+ */
+export async function rejectProduct(req, res) {
+  try {
+    const product = await productModel.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    product.approvalStatus = "rejected";
+    await product.save();
+
+    res.json({
+      message: "Product rejected successfully",
+      product
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error rejecting product",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * ======================================================
+ * RETRY FAILED FACEBOOK POST
+ * ======================================================
+ */
+export async function retryFacebookPost(req, res) {
+  try {
+    const product = await productModel.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    if (product.approvalStatus !== "approved") {
+      return res.status(400).json({ message: "Only approved products can be posted to Facebook" });
+    }
+
+    if (product.facebookStatus === "processing" || product.facebookStatus === "published") {
+      return res.status(400).json({ message: `Cannot retry while Facebook post is ${product.facebookStatus}` });
+    }
+
+    product.facebookStatus = "queued";
+    product.facebookError = null;
+    await product.save();
+
+    await enqueueProductFacebookPost(product._id.toString());
+
+    res.json({
+      message: "Facebook post enqueued for retry",
+      product
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error retrying Facebook post",
       error: error.message
     });
   }

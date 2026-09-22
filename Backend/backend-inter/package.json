@@ -8,6 +8,7 @@
     "start": "nodemon index.js",
     "worker:facebook": "node worker/facebookPublisherWorker.js",
     "test:login": "node --test tests/firebaseLogin.test.js",
+    "test:payhere": "node tests/payhereService.test.js",
     "seed:user": "node scripts/seedTestUser.js",
     "migrate:location": "node scripts/migrateLocationMetadata.js"
   },
@@ -16,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
+    "@google/genai": "^2.23.0",
     "@google/generative-ai": "^0.24.1",
     "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",

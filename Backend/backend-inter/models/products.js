@@ -34,6 +34,38 @@ const productSchema = new mongoose.Schema(
     howManyProductsSold: {
       type: Number,
       default: 0
+    },
+
+    approvalStatus: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending"
+    },
+
+    facebookStatus: {
+      type: String,
+      enum: ["not_posted", "queued", "processing", "published", "failed"],
+      default: "not_posted"
+    },
+
+    facebookPostId: {
+      type: String,
+      default: null
+    },
+
+    facebookError: {
+      type: String,
+      default: null
+    },
+
+    facebookPublishedAt: {
+      type: Date,
+      default: null
+    },
+
+    facebookCaption: {
+      type: String,
+      default: null
     }
   },
   {

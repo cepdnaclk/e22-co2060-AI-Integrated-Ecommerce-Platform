@@ -22,3 +22,22 @@ export async function enqueueFacebookPost(post) {
     }
   );
 }
+
+export async function enqueueProductFacebookPost(productId) {
+  await facebookPostQueue.add(
+    "publish-product-facebook",
+    {
+      type: "product_auto_post",
+      productId: productId.toString()
+    },
+    {
+      attempts: 3,
+      backoff: {
+        type: "exponential",
+        delay: 30000
+      },
+      removeOnComplete: 1000,
+      removeOnFail: false
+    }
+  );
+}

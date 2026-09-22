@@ -9,6 +9,9 @@ import {
   createVariant,
   updateVariant,
   deleteVariant,
+  approveProduct,
+  rejectProduct,
+  retryFacebookPost,
 } from "../controllers/productController.js";
 
 const router = Router();
@@ -22,6 +25,15 @@ router.get("/", getAdminAllProducts);
 
 // POST /api/admin/products          → create product
 router.post("/", createProduct);
+
+// PATCH /api/admin/products/:id/approve → approve product & queue Facebook post
+router.patch("/:id/approve", approveProduct);
+
+// PATCH /api/admin/products/:id/reject  → reject product
+router.patch("/:id/reject", rejectProduct);
+
+// POST /api/admin/products/:id/retry-facebook → retry failed Facebook post
+router.post("/:id/retry-facebook", retryFacebookPost);
 
 // PUT  /api/admin/products/:id      → update product
 router.put("/:id", updateProduct);

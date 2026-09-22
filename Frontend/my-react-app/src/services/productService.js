@@ -184,6 +184,36 @@ export const deleteVariant = async (productId, variantId) => {
 };
 
 /**
+ * APPROVE product & trigger Facebook post (admin)
+ */
+export const approveAdminProduct = async (id) => {
+  const res = await fetch(`${ADMIN_URL}/${id}/approve`, { method: "PATCH", headers: adminHeaders() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to approve product");
+  return data;
+};
+
+/**
+ * REJECT product (admin)
+ */
+export const rejectAdminProduct = async (id) => {
+  const res = await fetch(`${ADMIN_URL}/${id}/reject`, { method: "PATCH", headers: adminHeaders() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to reject product");
+  return data;
+};
+
+/**
+ * RETRY Facebook post (admin)
+ */
+export const retryFacebookPost = async (id) => {
+  const res = await fetch(`${ADMIN_URL}/${id}/retry-facebook`, { method: "POST", headers: adminHeaders() });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Failed to retry Facebook post");
+  return data;
+};
+
+/**
  * Fetch deals from the backend.
  * Returns { deals, totalDeals, currentPage, totalPages }
  * Each deal has: { product: { _id, productName, image, ... }, offer: { _id, finalPrice, ... } }
