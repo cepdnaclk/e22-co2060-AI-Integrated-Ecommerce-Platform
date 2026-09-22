@@ -8,6 +8,7 @@ from config import PORT, GEMINI_API_KEY
 from agents.marketing_agent import MarketingCampaignAgent, CampaignOptions
 from agents.support_agent import SupportAgent
 from agents.restock_agent import RestockAutomationAgent
+from agents.youtube_trending_agent import YouTubeTrendingAgent
 
 app = FastAPI(
     title="LangChain E-Commerce Automation Service",
@@ -27,6 +28,7 @@ app.add_middleware(
 marketing_agent = MarketingCampaignAgent()
 support_agent = SupportAgent()
 restock_agent = RestockAutomationAgent()
+youtube_trending_agent = YouTubeTrendingAgent()
 
 # ────────────────── Schemas ──────────────────
 
@@ -41,9 +43,9 @@ def health_check():
     return {
         "status": "healthy",
         "service": "langchain-automation-agent",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "llm_configured": bool(GEMINI_API_KEY),
-        "agents": ["marketing", "customer_support", "inventory_restock"]
+        "agents": ["marketing", "customer_support", "inventory_restock", "youtube_trending"]
     }
 
 @app.get("/automation/marketing-options")
@@ -120,6 +122,20 @@ async def review_inventory_restock():
         return {"status": "success", "report": report}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Restock review error: {str(e)}")
+
+@app.get("/automation/youtube-trending-products")
+@app.post("/automation/youtube-trending-products")
+async def extract_youtube_trending_products(category_filter: Optional[str] = None):
+    """
+    LangChain YouTube Trending Products Automation:
+    Analyzes viral YouTube tech trends, extracts concrete electronic products,
+    evaluates viewer sentiment, and cross-references against live store catalog.
+    """
+    try:
+        report = await youtube_trending_agent.get_trending_products(category_filter=category_filter)
+        return {"status": "success", "report": report}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"YouTube trending extraction error: {str(e)}")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=PORT, reload=True)

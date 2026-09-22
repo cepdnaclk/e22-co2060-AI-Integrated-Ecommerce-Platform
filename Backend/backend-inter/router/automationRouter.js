@@ -128,4 +128,23 @@ router.post("/restock/review", async (req, res) => {
   }
 });
 
+/**
+ * GET /api/automation/youtube-trending
+ * Run LangChain YouTube Trending Products Extractor & Catalog Matcher
+ */
+router.get("/youtube-trending", async (req, res) => {
+  try {
+    const { getYouTubeTrendingProducts } = await import("../services/automationService.js");
+    const { category } = req.query;
+    const report = await getYouTubeTrendingProducts(category);
+    res.json(report);
+  } catch (error) {
+    console.error("❌ YouTube trending automation error:", error.message);
+    res.status(500).json({
+      error: "Failed to extract trending products",
+      details: error.message
+    });
+  }
+});
+
 export default router;

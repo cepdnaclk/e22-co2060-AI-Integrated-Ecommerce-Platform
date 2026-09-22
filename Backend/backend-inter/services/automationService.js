@@ -87,3 +87,16 @@ export async function runRestockReview() {
   });
   return res.data;
 }
+
+/**
+ * Extract and analyze YouTube trending products using LangChain.
+ * @param {string} categoryFilter - Optional category filter (e.g. "Laptops", "Smartphones", "Audio")
+ */
+export async function getYouTubeTrendingProducts(categoryFilter = null) {
+  const url = categoryFilter
+    ? `${AUTOMATION_URL}/automation/youtube-trending-products?category_filter=${encodeURIComponent(categoryFilter)}`
+    : `${AUTOMATION_URL}/automation/youtube-trending-products`;
+  const res = await axios.get(url, { timeout: TIMEOUT_MS });
+  return res.data;
+}
+
