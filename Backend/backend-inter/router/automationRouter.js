@@ -85,6 +85,32 @@ router.post("/campaign/publish", async (req, res) => {
 });
 
 /**
+ * POST /api/automation/facebook/auto-post
+ * Autonomous End-to-End Facebook Post Generation & Publishing Pipeline
+ */
+router.post("/facebook/auto-post", async (req, res) => {
+  try {
+    const { executeAutomatedFacebookPost } = await import("../services/facebookAutoPosterService.js");
+    const { pageId, trendOverride, mode, scheduledAt } = req.body || {};
+
+    const result = await executeAutomatedFacebookPost({
+      pageId,
+      trendOverride,
+      mode: mode || "now",
+      scheduledAt
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("❌ End-to-end auto Facebook post failed:", error.message);
+    res.status(500).json({
+      error: "Failed to execute automated Facebook post",
+      details: error.message
+    });
+  }
+});
+
+/**
  * POST /api/automation/restock/review
  * Run LangChain Inventory & Restock Automation Agent
  */

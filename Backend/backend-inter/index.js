@@ -30,6 +30,7 @@ import automationRouter from "./router/automationRouter.js"; // 🤖 LangChain A
 import "./cron/dailySendToAI.js";
 import "./cron/graphRebuildJob.js";
 import "./cron/marketingAutomationJob.js";
+import "./cron/autoFacebookPostingJob.js";
 
 // ================== CONFIG ==================
 dotenv.config();
@@ -145,10 +146,10 @@ app.use("/api/admin/restock", restockRouter);
 app.use("/api/recommendations", recommendationRouter);
 // 🚚 Delivery Management System
 app.use("/api/dms", dmsRouter);
-if ((process.env.ENABLE_FACEBOOK_MODULE || "false").toLowerCase() === "true") {
-  const { default: facebookRouter } = await import("./router/facebookRouter.js");
-  app.use("/api/facebook", facebookRouter);
-}
+
+// 📱 Facebook Integration & Auto-Posting
+const { default: facebookRouter } = await import("./router/facebookRouter.js");
+app.use("/api/facebook", facebookRouter);
 
 // ================== TEST ROUTES ==================
 
