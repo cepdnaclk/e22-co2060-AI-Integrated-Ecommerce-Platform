@@ -46,7 +46,7 @@ services:
       mongodb:
         condition: service_healthy
     environment:
-      RECOMMENDER_MONGO_URI: mongodb://mongodb:27017
+      RECOMMENDER_MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/}
       RECOMMENDER_DB_NAME: ecommerce
       RECOMMENDER_GRAPH_REBUILD_HOURS: 24
     ports:
@@ -58,20 +58,6 @@ services:
       retries: 5
       start_period: 20s
 
-  face-service:
-    build:
-      context: .\AI-ML
-      dockerfile: Dockerfile.face
-    container_name: face-recognition-service
-    restart: unless-stopped
-    ports:
-      - "5000:5000"
-    healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:5000/health')"]
-      interval: 20s
-      timeout: 10s
-      retries: 5
-      start_period: 45s
 
   weather-rag-service:
     build:
@@ -90,11 +76,11 @@ services:
       OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:1b}
       OLLAMA_API_KEY: ${OLLAMA_API_KEY:-ollama}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
-      GEMINI_MODEL: ${GEMINI_MODEL:-models/gemini-2.0-flash}
+      GEMINI_MODEL: ${GEMINI_MODEL:-models/gemini-3.6-flash}
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
       DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
-      MONGO_URI: ${MONGO_URI:-mongodb://mongodb:27017/ecommerce}
+      MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/ecommerce?retryWrites=true&w=majority}
       RAG_TOP_K: ${RAG_TOP_K:-4}
       RAG_COLLECTION: ${RAG_COLLECTION:-chatbot_knowledge}
       RAG_DB_DIR: /app/chroma_db
@@ -173,8 +159,6 @@ services:
         condition: service_healthy
       recommendation-engine:
         condition: service_healthy
-      face-service:
-        condition: service_healthy
       weather-rag-service:
         condition: service_started
       bookkeeping-service:
@@ -183,7 +167,7 @@ services:
       - .\Backend\backend-inter\.env
     environment:
       PORT: 8080
-
+      MONGO_URI: mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/ecommerce?retryWrites=true&w=majority
       JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
       FRONTEND_URL: https://localhost:5173
       ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-false}

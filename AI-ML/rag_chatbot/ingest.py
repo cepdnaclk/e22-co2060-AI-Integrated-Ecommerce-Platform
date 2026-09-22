@@ -28,7 +28,7 @@ def load_mongo_products(uri: str) -> List[tuple[str, str]]:
             specs = p.get("specs", {})
             
             text_parts = [
-                f"Product: {product_name}",
+                f"Product Name: {product_name}",
                 f"Brand: {brand}",
                 f"Category: {category}"
             ]
@@ -43,8 +43,42 @@ def load_mongo_products(uri: str) -> List[tuple[str, str]]:
             documents.append((source, text))
             
         print(f"Loaded {len(documents)} products from MongoDB.")
+
+        # Load Seller Offers
+        offers_collection = db["selleroffers"]
+        offers = offers_collection.find({})
+        offers_count = 0
+        for o in offers:
+            seller_name = o.get("sellerName", "Unknown Seller")
+            price = o.get("price", 0)
+            stock = o.get("stock", 0)
+            warranty = o.get("warranty", "")
+            if not o.get("isActive", True): continue
+            
+            text = f"Seller Offer: {seller_name} is selling this product for {price} LKR with {stock} in stock. Warranty: {warranty}."
+            source = f"mongodb://selleroffers/{o['_id']}"
+            documents.append((source, text))
+            offers_count += 1
+        print(f"Loaded {offers_count} seller offers from MongoDB.")
+
+        # Load Sellers
+        sellers_collection = db["sellers"]
+        sellers = sellers_collection.find({})
+        sellers_count = 0
+        for s in sellers:
+            shop_name = s.get("shopName", "")
+            desc = s.get("description", "")
+            rating = s.get("rating", 0)
+            if not shop_name: continue
+            
+            text = f"Seller Information: {shop_name}. Rating: {rating}/5. {desc}"
+            source = f"mongodb://sellers/{s['_id']}"
+            documents.append((source, text))
+            sellers_count += 1
+        print(f"Loaded {sellers_count} sellers from MongoDB.")
+
     except Exception as e:
-        print(f"Error connecting to MongoDB or fetching products: {e}")
+        print(f"Error connecting to MongoDB or fetching data: {e}")
         
     return documents
 
