@@ -33,7 +33,7 @@ export default function TrendingThisWeek() {
   if (!featured) return null;
 
   const img = resolveProductImage(featured);
-  const price = featured.offers?.[0]?.price || featured.price || 0;
+  const price = featured.minPrice ?? featured.offers?.[0]?.price ?? featured.price ?? 0;
   const sold = featured.howManyProductsSold || 0;
 
   return (
