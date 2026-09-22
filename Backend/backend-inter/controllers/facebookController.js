@@ -313,3 +313,20 @@ export async function getFacebookPostingOptions(req, res) {
   }
 }
 
+/**
+ * Retries publishing a previously failed post
+ */
+export async function retryFailedPostController(req, res) {
+  try {
+    const { retryFailedFacebookPost } = await import("../services/facebookAutoPosterService.js");
+    const { id } = req.params;
+    const result = await retryFailedFacebookPost(id);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to retry post",
+      error: error.message
+    });
+  }
+}
+

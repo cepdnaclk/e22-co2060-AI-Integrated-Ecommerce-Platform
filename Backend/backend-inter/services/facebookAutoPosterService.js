@@ -264,3 +264,65 @@ ${campaignData.call_to_action}`.trim();
     };
   }
 }
+
+/**
+ * Retrieves diagnostics and telemetry for the automated Facebook posting engine.
+ */
+export async function getAutoPostDiagnostics() {
+  const [totalPublished, totalScheduled, totalFailed, totalPages] = await Promise.all([
+    FacebookPost.countDocuments({ status: "published" }),
+    FacebookPost.countDocuments({ status: "pending" }),
+    FacebookPost.countDocuments({ status: "failed" }),
+    FacebookPage.countDocuments()
+  ]);
+
+  const nextPeakWindow = calculateOptimalPostingTime();
+
+  return {
+    engine: "LangChain Autonomous Marketing Agent",
+    status: "healthy",
+    totalPublished,
+    totalScheduled,
+    totalFailed,
+    connectedPages: totalPages,
+    optimalPostingWindow: nextPeakWindow.toISOString(),
+    automationAgentUrl: process.env.AUTOMATION_AGENT_URL || "http://localhost:8004"
+  };
+}
+
+/**
+ * Retries a previously failed Facebook post.
+ */
+export async function retryFailedFacebookPost(postId) {
+  const post = await FacebookPost.findById(postId).populate("pageRef");
+  if (!post) {
+    throw new Error(`Post with ID ${postId} not found`);
+  }
+
+  const page = post.pageRef || await FacebookPage.findOne().sort({ updatedAt: -1 });
+  if (!page) {
+    throw new Error("No connected Facebook page found to retry posting.");
+  }
+
+  const token = decryptToken(page.pageAccessToken);
+  const graphResponse = await publishToPage({
+    pageId: page.pageId,
+    pageAccessToken: token,
+    content: post.content,
+    imageUrl: post.imageUrl || undefined,
+    linkUrl: post.linkUrl || undefined
+  });
+
+  post.status = "published";
+  post.publishedAt = new Date();
+  post.graphPostId = graphResponse?.id || null;
+  post.errorMessage = undefined;
+  await post.save();
+
+  return {
+    status: "published",
+    message: "Post retried and published successfully",
+    graphPostId: graphResponse?.id,
+    post
+  };
+}
