@@ -55,17 +55,37 @@ docker compose up -d automation-agent
 | Endpoint | Method | Description |
 |---|---|---|
 | `/health` | `GET` | Service health status and agent readiness |
-| `/automation/marketing-campaign` | `POST` | Generates a trend-aligned social marketing campaign |
+| `/automation/marketing-options` | `GET` | Available tones, campaign types, audiences, and publish modes |
+| `/automation/marketing-campaign` | `POST` | Generates a trend-aligned social marketing campaign with options |
 | `/automation/chat` | `POST` | Conversational support with tool execution |
 | `/automation/restock-review` | `POST` | Evaluates inventory and drafts supplier reorder emails |
+
+### Supported Campaign & Auto-Post Options
+
+| Option | Type | Example / Values |
+|---|---|---|
+| `tone` | `string` | `"hype"`, `"professional"`, `"discount_driven"`, `"storytelling"`, `"informative"`, `"humorous"` |
+| `campaignType` | `string` | `"product_spotlight"`, `"flash_sale"`, `"deal_of_the_day"`, `"trend_roundup"`, `"buying_guide"` |
+| `targetAudience` | `string` | `"tech enthusiasts & gamers"`, `"university students"`, `"remote workers"` |
+| `promoCode` | `string` | `"TREND15"`, `"SAVE10"` |
+| `discountPercent` | `number` | `10`, `15`, `20` |
+| `language` | `string` | `"English"`, `"Sinhala"`, `"Tamil"` |
+| `postLength` | `string` | `"short"` (< 50 words), `"medium"` (100-150 words), `"long"` (> 200 words) |
+| `mode` | `string` | `"now"` (instant publish), `"schedule"`, `"optimal_time"` (smart peak hour), `"draft"` |
+| `customProductId` | `string` | Specific product ID to spotlight from store catalog |
+| `trendOverride` | `string` | Custom trending topic override |
+| `customImageUrl` | `string` | Custom image URL override |
 
 ---
 
 ## 🔗 Backend Integration
 
 The Express backend (`Backend/backend-inter`) connects to this service via `AUTOMATION_AGENT_URL=http://automation-agent:8004`:
+- `GET /api/facebook/auto-post/options`: Fetch all available presets and options
+- `POST /api/facebook/auto-post`: Trigger automated Facebook post with full options
+- `GET /api/facebook/auto-post/status`: Check auto-posting status and scheduled queue
 - `GET /api/automation/status`: Check agent health
-- `POST /api/automation/campaign/generate`: Generate marketing campaign
-- `POST /api/automation/campaign/publish`: Publish or schedule to Facebook
+- `POST /api/automation/campaign/generate`: Generate marketing campaign with options
+- `POST /api/automation/facebook/auto-post`: End-to-end campaign + Facebook publish
 - `POST /api/automation/restock/review`: Review restock suggestions
 - `POST /api/chat`: Customer chat automatically routed through LangChain with graceful fallback to direct Gemini
