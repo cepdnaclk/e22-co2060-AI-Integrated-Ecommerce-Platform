@@ -12,16 +12,38 @@ class CampaignOutput(BaseModel):
     matched_product_id: Optional[str] = Field(description="ID of the matched catalog product")
     primary_trend_topic: str = Field(description="The trending topic or keyword this campaign aligns with")
     post_caption: str = Field(description="Full engaging Facebook/social media post copy with emojis and value proposition")
+    key_features: List[str] = Field(description="3 top product benefits or specifications highlighted in the post", default=[])
     hashtags: List[str] = Field(description="5-8 relevant trending and product hashtags")
     call_to_action: str = Field(description="Call to action directing shoppers to visit the platform")
-    urgency_hook: str = Field(description="A limited-time offer or compelling hook for shoppers")
+    urgency_hook: str = Field(description="A limited-time offer, promo code, or compelling hook for shoppers")
+    target_audience_appeal: Optional[str] = Field(description="Short note on how this appeals to the target audience", default=None)
+
+class CampaignOptions(BaseModel):
+    trend_override: Optional[str] = None
+    custom_product_id: Optional[str] = None
+    tone: Optional[str] = "hype" # hype, professional, storytelling, discount_driven, informative, humorous
+    campaign_type: Optional[str] = "product_spotlight" # product_spotlight, flash_sale, buying_guide, trend_roundup, deal_of_the_day
+    target_audience: Optional[str] = "tech enthusiasts & gamers"
+    promo_code: Optional[str] = None
+    discount_percent: Optional[int] = None
+    language: Optional[str] = "English" # English, Sinhala, Tamil, etc.
+    post_length: Optional[str] = "medium" # short, medium, long
 
 class MarketingCampaignAgent:
     def __init__(self):
         self.parser = JsonOutputParser(pydantic_object=CampaignOutput)
         self.prompt = PromptTemplate(
-            template="""You are the Chief AI Marketing Strategist for "I-Computers", a leading e-commerce tech platform.
-Your task is to analyze real-time trending electronic topics and match them with available products in our store catalog to generate high-converting social media marketing campaigns.
+            template="""You are the Chief AI Marketing Strategist for "I-Computers", a premier tech & electronics e-commerce platform.
+Your task is to analyze real-time online trends and match them with store products to generate an optimized social media marketing campaign.
+
+CAMPAIGN CONFIGURATION:
+- Desired Tone: {tone}
+- Campaign Type: {campaign_type}
+- Target Audience: {target_audience}
+- Promo Code: {promo_code}
+- Discount: {discount_percent}%
+- Language: {language}
+- Post Length: {post_length}
 
 TRENDING ONLINE TOPICS:
 {trending_topics}
@@ -31,11 +53,17 @@ CURRENT STORE PRODUCTS:
 
 {format_instructions}
 
-Analyze the trending topics and identify the single best matching product from the store.
-Generate an engaging, persuasive social media campaign tailored for Facebook and Instagram.
-Make sure the tone is exciting, authoritative, and customer-focused.
-Output ONLY valid JSON matching the schema.""",
-            input_variables=["trending_topics", "store_products"],
+INSTRUCTIONS:
+1. Identify the best product matching the trend (or use the requested specific product if provided).
+2. Craft high-converting social media copy strictly adhering to the requested tone ({tone}), campaign type ({campaign_type}), and target audience ({target_audience}).
+3. If promo code or discount is provided, prominently feature it in the urgency hook and caption.
+4. Keep the text format clean and engaging with appropriate emojis.
+5. Output ONLY valid JSON matching the schema.""",
+            input_variables=[
+                "tone", "campaign_type", "target_audience", "promo_code",
+                "discount_percent", "language", "post_length",
+                "trending_topics", "store_products"
+            ],
             partial_variables={"format_instructions": self.parser.get_format_instructions()},
         )
         self._init_llm()
@@ -98,30 +126,49 @@ Output ONLY valid JSON matching the schema.""",
             {"id": "demo-3", "name": "RGB Mechanical Keyboard Tactile", "price": 89, "category": "Accessories"}
         ]
 
-    async def generate_campaign(self, custom_trend: Optional[str] = None) -> Dict[str, Any]:
+    async def generate_campaign(self, options: Optional[CampaignOptions] = None) -> Dict[str, Any]:
+        if options is None:
+            options = CampaignOptions()
+
         trending = await self.fetch_trending_topics()
-        if custom_trend:
-            trending.insert(0, {"title": custom_trend, "category": "Electronics"})
+        if options.trend_override:
+            trending.insert(0, {"title": options.trend_override, "category": "Electronics"})
 
         products = await self.fetch_store_products()
+        if options.custom_product_id:
+            # Reorder products so the requested product is first
+            products = sorted(
+                products,
+                key=lambda p: 0 if str(p.get("id")) == str(options.custom_product_id) else 1
+            )
 
         if not self.llm:
             matched = products[0] if products else {"name": "Featured Gadget", "id": "1", "price": 99}
             trend_title = trending[0]["title"] if trending else "Top Tech"
+            discount_text = f" Use code {options.promo_code} for {options.discount_percent}% off!" if options.promo_code else ""
             return {
                 "headline": f"🔥 Trending Now: Get {matched['name']} at I-Computers!",
                 "matched_product_name": matched["name"],
                 "matched_product_id": matched.get("id"),
                 "primary_trend_topic": trend_title,
-                "post_caption": f"Everyone is talking about {trend_title}! Upgrade your setup with the {matched['name']} today. Premium performance guaranteed. Shop now at I-Computers!",
+                "post_caption": f"Everyone is talking about {trend_title}! Upgrade your setup with the {matched['name']} today.{discount_text} Premium performance guaranteed. Shop now at I-Computers!",
+                "key_features": ["Ultra-fast performance", "Latest generation hardware", "Official manufacturer warranty"],
                 "hashtags": ["#TechDeals", "#TrendingTech", "#IComputers", "#Gaming", "#Innovation"],
                 "call_to_action": "Order today from I-Computers and enjoy rapid 3-5 day delivery!",
-                "urgency_hook": "Limited stock available on trending items!"
+                "urgency_hook": f"Limited stock available on trending items!{discount_text}",
+                "target_audience_appeal": f"Tailored for {options.target_audience}"
             }
 
         chain = self.prompt | self.llm | self.parser
         try:
             result = await chain.ainvoke({
+                "tone": options.tone or "hype",
+                "campaign_type": options.campaign_type or "product_spotlight",
+                "target_audience": options.target_audience or "tech enthusiasts",
+                "promo_code": options.promo_code or "None",
+                "discount_percent": str(options.discount_percent or 0),
+                "language": options.language or "English",
+                "post_length": options.post_length or "medium",
                 "trending_topics": json.dumps(trending[:5], indent=2),
                 "store_products": json.dumps(products[:10], indent=2)
             })
@@ -135,7 +182,9 @@ Output ONLY valid JSON matching the schema.""",
                 "matched_product_id": matched.get("id"),
                 "primary_trend_topic": trending[0].get("title", "Electronics"),
                 "post_caption": f"Explore the top trending gear this season with {matched['name']}. Available now at unbeatable prices!",
+                "key_features": ["High performance", "Top user reviews", "Exclusive store deal"],
                 "hashtags": ["#TrendingGadgets", "#TechNews", "#IComputers"],
                 "call_to_action": "Explore exclusive offers at I-Computers today!",
-                "urgency_hook": "Grab yours while current inventory lasts!"
+                "urgency_hook": "Grab yours while current inventory lasts!",
+                "target_audience_appeal": f"Designed for {options.target_audience}"
             }
