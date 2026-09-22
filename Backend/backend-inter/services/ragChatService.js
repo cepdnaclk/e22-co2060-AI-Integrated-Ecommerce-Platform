@@ -57,3 +57,33 @@ export async function ragHealthCheck() {
     return { status: "unreachable", detail: extractServiceError(err) };
   }
 }
+
+export async function requestRagQuery({ question }) {
+  if (!isRagChatEnabled()) {
+    return null;
+  }
+  try {
+    const client = createClient();
+    const { data } = await client.post("/query", { question });
+    return data;
+  } catch (err) {
+    throw new Error(extractServiceError(err));
+  }
+}
+
+export async function requestRagReindex({ reset = true, include_mongo = true }) {
+  if (!isRagChatEnabled()) {
+    return null;
+  }
+  try {
+    const client = createClient();
+    const { data } = await client.post("/reindex", { reset, include_mongo });
+    return data;
+  } catch (err) {
+    throw new Error(extractServiceError(err));
+  }
+}
+
+export async function requestRagStatus() {
+  return ragHealthCheck();
+}
