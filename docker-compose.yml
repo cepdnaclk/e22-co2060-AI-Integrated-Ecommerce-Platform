@@ -152,6 +152,7 @@ services:
       RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
       YOUTUBE_TRENDING_URL: http://youtube-trending:8003
       BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
+      AUTOMATION_AGENT_URL: http://automation-agent:8004
     volumes:
       - .\Backend\backend-inter:/app
       - /app/node_modules
@@ -176,6 +177,29 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+
+  automation-agent:
+    build:
+      context: .\AI-ML\automation-agent
+      dockerfile: Dockerfile
+    container_name: langchain-automation-agent
+    restart: unless-stopped
+    ports:
+      - "8004:8004"
+    environment:
+      PORT: 8004
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      BACKEND_URL: http://backend:3000
+      YOUTUBE_TRENDING_URL: http://youtube-trending:8003
+      RESTOCK_ML_URL: http://restock-ml:8001
+    volumes:
+      - .\AI-ML\automation-agent:/app
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8004/health')"]
+      interval: 25s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
 
   frontend:
     image: node:20-slim
