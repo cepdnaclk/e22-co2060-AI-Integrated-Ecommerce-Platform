@@ -5,6 +5,7 @@ import { decryptToken } from "./tokenCryptoService.js";
 import { publishToPage } from "./facebookService.js";
 import { enqueueFacebookPost } from "../queues/facebookPostQueue.js";
 import { generateMarketingCampaign } from "./automationService.js";
+import { verifyCampaignContent } from "./automationVerificationService.js";
 
 /**
  * Calculates the next optimal engagement window (e.g., peak evening engagement at 19:00 / 7 PM).
@@ -156,7 +157,21 @@ ${campaignData.call_to_action}`.trim();
     finalScheduledDate = new Date(scheduledAt);
   }
 
-  // 5️⃣ Prepare Post Document
+  // 5️⃣ Automated Quality & Safety Verification
+  const verification = await verifyCampaignContent({
+    campaignData,
+    product,
+    options: { tone, campaignType, targetAudience, promoCode, discountPercent, language, postLength },
+    postContent,
+    imageUrl,
+    productLink
+  });
+
+  const verificationStatus = verification.passed
+    ? (verification.requiresHumanApproval ? "pending_verification" : "auto_verified")
+    : "pending_verification";
+
+  // 6️⃣ Prepare Post Document
   let savedPost = null;
   if (targetPage) {
     savedPost = await FacebookPost.create({
@@ -166,7 +181,14 @@ ${campaignData.call_to_action}`.trim();
       linkUrl: productLink,
       imageUrl,
       scheduledAt: finalScheduledDate,
-      status: mode === "draft" ? "pending" : "pending"
+      status: mode === "draft" ? "pending" : "pending",
+      tone,
+      campaignType,
+      targetAudience,
+      isAutomated: true,
+      verificationStatus,
+      verificationScore: verification.score,
+      verificationChecks: verification.checks
     });
   }
 
@@ -260,6 +282,13 @@ ${campaignData.call_to_action}`.trim();
       linkUrl: productLink,
       campaign: campaignData,
       facebookConfigured: true,
+      verification: {
+        passed: verification.passed,
+        score: verification.score,
+        status: verificationStatus,
+        requiresApproval: verification.requiresHumanApproval,
+        checks: verification.checks
+      },
       optionsApplied: { tone, campaignType, targetAudience, promoCode, discountPercent, language, postLength, mode }
     };
   }
@@ -323,6 +352,77 @@ export async function retryFailedFacebookPost(postId) {
     status: "published",
     message: "Post retried and published successfully",
     graphPostId: graphResponse?.id,
+    post
+  };
+}
+
+/**
+ * Approves and publishes a previously pending or draft post after human verification.
+ */
+export async function approveAndPublishPost(postId, adminUserId = null) {
+  const post = await FacebookPost.findById(postId).populate("pageRef");
+  if (!post) {
+    throw new Error(`Post with ID ${postId} not found`);
+  }
+
+  post.verificationStatus = "verified";
+  post.verifiedBy = adminUserId;
+  post.verifiedAt = new Date();
+
+  const page = post.pageRef || await FacebookPage.findOne().sort({ updatedAt: -1 });
+  if (!page) {
+    post.status = "pending";
+    await post.save();
+    return {
+      status: "verified",
+      message: "Post approved and verified! Saved as draft since no Facebook page is currently connected.",
+      post
+    };
+  }
+
+  const token = decryptToken(page.pageAccessToken);
+  const graphResponse = await publishToPage({
+    pageId: page.pageId,
+    pageAccessToken: token,
+    content: post.content,
+    imageUrl: post.imageUrl || undefined,
+    linkUrl: post.linkUrl || undefined
+  });
+
+  post.status = "published";
+  post.publishedAt = new Date();
+  post.graphPostId = graphResponse?.id || null;
+  post.errorMessage = undefined;
+  await post.save();
+
+  return {
+    status: "published",
+    message: "Post verified and published to Facebook successfully",
+    graphPostId: graphResponse?.id,
+    post
+  };
+}
+
+/**
+ * Rejects a post during human verification review.
+ */
+export async function rejectPost(postId, reason = "Content rejected by administrator", adminUserId = null) {
+  const post = await FacebookPost.findById(postId);
+  if (!post) {
+    throw new Error(`Post with ID ${postId} not found`);
+  }
+
+  post.verificationStatus = "rejected";
+  post.rejectionReason = reason;
+  post.verifiedBy = adminUserId;
+  post.verifiedAt = new Date();
+  post.status = "failed";
+  post.errorMessage = `Verification rejected: ${reason}`;
+  await post.save();
+
+  return {
+    status: "rejected",
+    message: "Post has been rejected and marked failed.",
     post
   };
 }
