@@ -178,16 +178,13 @@ services:
       RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
       YOUTUBE_TRENDING_URL: http://youtube-trending:8003
       BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
-<<<<<<< HEAD
       AUTOMATION_AGENT_URL: http://automation-agent:8004
-=======
       RAG_CHAT_ENABLED: "true"
       RAG_SERVICE_URL: http://weather-rag-service:8010
       RAG_CHAT_TIMEOUT_MS: ${RAG_CHAT_TIMEOUT_MS:-60000}
       LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
       GEMINI_FALLBACK_ENABLED: ${GEMINI_FALLBACK_ENABLED:-false}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
->>>>>>> origin/main
     volumes:
       - .\Backend\backend-inter:/app
       - /app/node_modules

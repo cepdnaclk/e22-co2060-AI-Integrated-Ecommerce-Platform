@@ -1,10 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-<<<<<<< HEAD
 import { askSupportAgent } from "../services/automationService.js";
-
-/**
- * AI Chatbot Controller (Tool-Augmented LangChain Assistant with Gemini Fallback)
-=======
 import { isRagChatEnabled, requestRagChat } from "../services/ragChatService.js";
 import Product from "../models/products.js";
 
@@ -57,8 +52,7 @@ function isGreetingMessage(message) {
 }
 
 /**
- * AI Chatbot Controller (Weather + E-Commerce RAG with Gemini fallback)
->>>>>>> origin/main
+ * AI Chatbot Controller (LangChain Agent + Weather/E-Commerce RAG with Gemini fallback)
  */
 export async function handleChatMessage(req, res) {
     const { currentMessage, history = [] } = req.body || {};
@@ -228,12 +222,16 @@ export async function handleChatMessage(req, res) {
     }
 
     try {
-<<<<<<< HEAD
-        const { currentMessage, history = [] } = req.body;
+        // 1️⃣ Try tool-augmented LangChain Support Agent first
+        try {
+            const agentResponse = await askSupportAgent(message, normalizedHistory);
+            if (agentResponse && agentResponse.reply) {
+                return res.status(200).json({ reply: agentResponse.reply, provider: "langchain-agent" });
+            }
+        } catch (agentError) {
+            console.warn("⚠️ LangChain agent unreachable or failed, trying direct LLM fallback:", agentError.message);
+        }
 
-        if (!currentMessage) {
-            return res.status(400).json({ error: "Message is required." });
-=======
         const llmProvider = (process.env.LLM_PROVIDER || "").trim().toLowerCase();
         const geminiFallbackEnabled = process.env.GEMINI_FALLBACK_ENABLED
             ? process.env.GEMINI_FALLBACK_ENABLED.toLowerCase() === "true"
@@ -252,17 +250,6 @@ export async function handleChatMessage(req, res) {
             return res.status(500).json({
                 error: `GEMINI_API_KEY is not configured on the server.${ragDetail}`,
             });
->>>>>>> origin/main
-        }
-
-        // 1️⃣ Try tool-augmented LangChain Support Agent first
-        try {
-            const agentResponse = await askSupportAgent(currentMessage, history);
-            if (agentResponse && agentResponse.reply) {
-                return res.status(200).json({ reply: agentResponse.reply, source: "langchain-agent" });
-            }
-        } catch (agentError) {
-            console.warn("⚠️ LangChain agent unreachable or failed, falling back to direct LLM:", agentError.message);
         }
 
         // 2️⃣ Fallback: direct Gemini LLM chat session
@@ -312,15 +299,11 @@ User's message: ${message}
         const result = await chat.sendMessage(systemInstruction);
         const responseText = result.response.text();
 
-<<<<<<< HEAD
-        res.status(200).json({ reply: responseText, source: "gemini-direct" });
-=======
         res.status(200).json({
             reply: responseText,
             provider: "gemini-fallback",
             ...(ragError && { fallbackReason: ragError.message }),
         });
->>>>>>> origin/main
     } catch (error) {
         console.error("AI Chat Error:", error);
         res.status(500).json({ error: "Failed to generate AI response. Please try again later." });
