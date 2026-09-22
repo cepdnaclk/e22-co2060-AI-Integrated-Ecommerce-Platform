@@ -2,7 +2,8 @@ import express from "express";
 import {
   checkAutomationHealth,
   generateMarketingCampaign,
-  runRestockReview
+  runRestockReview,
+  getMarketingOptions
 } from "../services/automationService.js";
 
 const router = express.Router();
@@ -17,13 +18,21 @@ router.get("/status", async (req, res) => {
 });
 
 /**
+ * GET /api/automation/campaign/options
+ * List all available presets and options for campaigns
+ */
+router.get("/campaign/options", async (req, res) => {
+  const options = await getMarketingOptions();
+  res.json(options);
+});
+
+/**
  * POST /api/automation/campaign/generate
- * Run LangChain Trend-to-Marketing Agent
+ * Run LangChain Trend-to-Marketing Agent with custom options
  */
 router.post("/campaign/generate", async (req, res) => {
   try {
-    const { trendOverride } = req.body;
-    const result = await generateMarketingCampaign(trendOverride);
+    const result = await generateMarketingCampaign(req.body || {});
     res.json(result);
   } catch (error) {
     console.error("❌ Marketing campaign automation failed:", error.message);
@@ -91,15 +100,7 @@ router.post("/campaign/publish", async (req, res) => {
 router.post("/facebook/auto-post", async (req, res) => {
   try {
     const { executeAutomatedFacebookPost } = await import("../services/facebookAutoPosterService.js");
-    const { pageId, trendOverride, mode, scheduledAt } = req.body || {};
-
-    const result = await executeAutomatedFacebookPost({
-      pageId,
-      trendOverride,
-      mode: mode || "now",
-      scheduledAt
-    });
-
+    const result = await executeAutomatedFacebookPost(req.body || {});
     res.json(result);
   } catch (error) {
     console.error("❌ End-to-end auto Facebook post failed:", error.message);

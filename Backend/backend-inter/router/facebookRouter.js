@@ -11,7 +11,8 @@ import {
   listSelectedPages,
   saveSelectedPages,
   triggerAutoFacebookPost,
-  getAutoPostStatus
+  getAutoPostStatus,
+  getFacebookPostingOptions
 } from "../controllers/facebookController.js";
 
 const router = express.Router();
@@ -34,5 +35,6 @@ router.delete("/posts/:id", authMiddleware, deleteScheduledPost);
 // 🤖 Autonomous Facebook Posting Endpoints
 router.post("/auto-post", triggerAutoFacebookPost);
 router.get("/auto-post/status", getAutoPostStatus);
+router.get("/auto-post/options", getFacebookPostingOptions);
 
 export default router;
