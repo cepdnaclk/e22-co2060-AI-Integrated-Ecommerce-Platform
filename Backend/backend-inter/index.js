@@ -23,14 +23,23 @@ import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority 
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
 import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
+<<<<<<< HEAD
 import automationRouter from "./router/automationRouter.js"; // 🤖 LangChain Automation Agent
+=======
+import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
+import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
+>>>>>>> origin/main
 
 
-// ================== CRON JOBS ==================
+// ================== CRON & WORKERS ==================
 import "./cron/dailySendToAI.js";
 import "./cron/graphRebuildJob.js";
+<<<<<<< HEAD
 import "./cron/marketingAutomationJob.js";
 import "./cron/autoFacebookPostingJob.js";
+=======
+import "./worker/facebookPublisherWorker.js";
+>>>>>>> origin/main
 
 // ================== CONFIG ==================
 dotenv.config();
@@ -49,12 +58,15 @@ const app = express();
 // Parse JSON request bodies
 app.use(express.json());
 
+// Parse URL-encoded request bodies (for PayHere notify callback)
+app.use(express.urlencoded({ extended: true }));
+
 // CORS configuration
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   "http://localhost:5173",
   "https://localhost:5173",
-  "http://localhost:3000"
+  "http://localhost:8080"
 ].filter(Boolean);
 
 app.use(
@@ -102,8 +114,13 @@ app.use("/api/ai", aiRouter);
 // Trending Products
 app.use("/api/trending", trendingRouter);
 
+<<<<<<< HEAD
 // 🤖 LangChain Automation (Marketing, Restock, Agent Status)
 app.use("/api/automation", automationRouter);
+=======
+// 🏷️ Deals (products with active discounted offers)
+app.use("/api/deals", dealsRouter);
+>>>>>>> origin/main
 
 
 // Product catalog (browse products)
@@ -126,6 +143,9 @@ app.use("/api/cart", cartRouter);
 
 // 📦 Orders (checkout & order history)
 app.use("/api/orders", orderRouter);
+
+// 💳 PayHere Payments
+app.use("/api/payment", paymentRouter);
 
 
 app.use("/api/export", exportRouter);

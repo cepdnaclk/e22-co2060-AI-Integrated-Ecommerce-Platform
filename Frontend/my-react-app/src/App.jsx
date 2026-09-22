@@ -38,6 +38,9 @@ import CheckoutPage from "./pages/CheckoutPage";
 import OrderHistory from "./pages/OrderHistory";
 import AboutUs from "./pages/AboutUs";
 import Team from "./pages/Team";
+import Deals from "./pages/Deals";
+import NewArrivals from "./pages/NewArrivals";
+import PaymentStatusPage from "./pages/PaymentStatusPage";
 import { CartProvider } from "./context/CartContext";
 
 function App() {
@@ -58,6 +61,12 @@ function App() {
 
           {/* Browse Products Page */}
           <Route path="/products" element={<ProductListing />} />
+
+          {/* Deals Page */}
+          <Route path="/deals" element={<Deals />} />
+
+          {/* New Arrivals Page */}
+          <Route path="/new-arrivals" element={<NewArrivals />} />
 
           {/* Product Details Page */}
           <Route path="/products/:id" element={<ProductDetails />} />
@@ -87,6 +96,11 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders" element={<OrderHistory />} />
+
+          {/* 💳 PayHere Payment Status Routes */}
+          <Route path="/payment/status/:orderId" element={<PaymentStatusPage />} />
+          <Route path="/payment/return" element={<PaymentStatusPage />} />
+          <Route path="/payment/cancel" element={<PaymentStatusPage />} />
 
           {/* Admin Login - Separate from regular login */}
           <Route path="/admin/login" element={<AdminLogin />} />
