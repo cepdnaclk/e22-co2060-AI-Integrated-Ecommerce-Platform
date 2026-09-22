@@ -11,8 +11,26 @@ from datetime import datetime
 
 YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 GOOGLE_SHEET_ID = os.getenv("GOOGLE_SHEET_ID")
+MONGO_URI = os.getenv("MONGO_URI")
 
-KEYWORDS = ["iPhone", "Smart TV", "Laptop", "Android Phone"]
+from pymongo import MongoClient
+import random
+
+try:
+    client_db = MongoClient(MONGO_URI)
+    db = client_db.get_database("ecommerce")
+    # Fetch random 5 products or top 5
+    products = list(db.products.find({}, {"productName": 1}).limit(20))
+    # Select 5 unique random names
+    if len(products) >= 5:
+        selected = random.sample(products, 5)
+    else:
+        selected = products
+    KEYWORDS = [p.get("productName", "Unknown") for p in selected] if selected else ["iPhone", "Smart TV", "Laptop", "Android Phone"]
+except Exception as e:
+    print(f"Error fetching products from DB: {e}")
+    KEYWORDS = ["iPhone", "Smart TV", "Laptop", "Android Phone"]
+
 MAX_RESULTS = 10
 
 youtube = build("youtube", "v3", developerKey=YOUTUBE_API_KEY)
