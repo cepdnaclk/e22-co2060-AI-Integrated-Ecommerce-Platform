@@ -7,45 +7,80 @@ import { enqueueFacebookPost } from "../queues/facebookPostQueue.js";
 import { generateMarketingCampaign } from "./automationService.js";
 
 /**
- * Executes end-to-end automated Facebook post creation & publishing:
- * 1. Analyzes real-time trends and matches catalog products via LangChain agent.
- * 2. Fetches product details, image URL, and frontend shop link.
- * 3. Identifies the target Facebook Page (from database or environment).
- * 4. Publishes immediately or schedules into the BullMQ queue.
- * 5. Persists the post record in MongoDB.
+ * Calculates the next optimal engagement window (e.g., peak evening engagement at 19:00 / 7 PM).
+ */
+function calculateOptimalPostingTime() {
+  const now = new Date();
+  const optimal = new Date(now);
+  optimal.setHours(19, 0, 0, 0); // 7:00 PM
+  if (now.getTime() >= optimal.getTime()) {
+    // If 7 PM passed today, schedule for tomorrow 7 PM
+    optimal.setDate(optimal.getDate() + 1);
+  }
+  return optimal;
+}
+
+/**
+ * Executes end-to-end automated Facebook post creation & publishing with rich options:
+ * - Tone: hype, professional, storytelling, discount_driven, informative, humorous
+ * - Campaign Type: product_spotlight, flash_sale, deal_of_the_day, trend_roundup, buying_guide
+ * - Target Audience, Promo Code, Discount %, Language, Length
+ * - Publish Mode: "now", "schedule", "optimal_time", "draft"
  */
 export async function executeAutomatedFacebookPost({
   userId = null,
   pageId = null,
   trendOverride = null,
-  mode = "now", // "now" or "schedule"
+  customProductId = null,
+  tone = "hype",
+  campaignType = "product_spotlight",
+  targetAudience = "tech enthusiasts & gamers",
+  promoCode = null,
+  discountPercent = null,
+  language = "English",
+  postLength = "medium",
+  customImageUrl = null,
+  mode = "now", // "now", "schedule", "optimal_time", "draft"
   scheduledAt = null
 } = {}) {
-  console.log("🤖 Starting automated Facebook post pipeline...");
+  console.log(`🤖 Starting automated Facebook post pipeline [mode: ${mode}, tone: ${tone}, type: ${campaignType}]...`);
 
-  // 1️⃣ Run LangChain Marketing Agent
+  // 1️⃣ Run LangChain Marketing Agent with options
   let campaignData;
   try {
-    const result = await generateMarketingCampaign(trendOverride);
+    const result = await generateMarketingCampaign({
+      trendOverride,
+      customProductId,
+      tone,
+      campaignType,
+      targetAudience,
+      promoCode,
+      discountPercent,
+      language,
+      postLength
+    });
     campaignData = result?.campaign || result;
   } catch (err) {
     console.warn("⚠️ LangChain agent fallback for Facebook automation:", err.message);
+    const discountText = promoCode ? ` Use code ${promoCode} for ${discountPercent || 10}% off!` : "";
     campaignData = {
       headline: "🔥 Trending Tech Spotlight at I-Computers!",
       matched_product_name: "Featured Tech Product",
       primary_trend_topic: trendOverride || "Trending Electronics",
-      post_caption: "Upgrade your tech game with the latest high-performance gadgets. Available now at unbeatable prices!",
+      post_caption: `Upgrade your tech game with the latest high-performance gadgets.${discountText} Available now at unbeatable prices!`,
+      key_features: ["Top tier performance", "Verified authenticity", "Official warranty"],
       hashtags: ["#IComputers", "#TechDeals", "#TrendingTech", "#Electronics"],
       call_to_action: "Shop now at I-Computers with fast 3-5 day delivery!",
-      urgency_hook: "Special online promotional pricing for a limited time!"
+      urgency_hook: `Special promotional pricing for a limited time!${discountText}`
     };
   }
 
   // 2️⃣ Resolve Product & Image
   let product = null;
-  if (campaignData.matched_product_id) {
+  const targetId = customProductId || campaignData.matched_product_id;
+  if (targetId) {
     try {
-      product = await Product.findById(campaignData.matched_product_id);
+      product = await Product.findById(targetId);
     } catch {
       // Ignored if invalid ObjectId
     }
@@ -59,21 +94,25 @@ export async function executeAutomatedFacebookPost({
   const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
   const productLink = product ? `${frontendUrl}/products/${product._id}` : frontendUrl;
   
-  let imageUrl = null;
-  if (product && product.image && (product.image.startsWith("http://") || product.image.startsWith("https://"))) {
+  let imageUrl = customImageUrl || null;
+  if (!imageUrl && product && product.image && (product.image.startsWith("http://") || product.image.startsWith("https://"))) {
     imageUrl = product.image;
   }
 
   // 3️⃣ Construct Facebook Post Content
   const hashtags = Array.isArray(campaignData.hashtags) ? campaignData.hashtags.join(" ") : "";
+  const features = Array.isArray(campaignData.key_features) && campaignData.key_features.length > 0
+    ? `\n✨ Key Highlights:\n${campaignData.key_features.map(f => `• ${f}`).join('\n')}\n`
+    : "";
+
   const postContent = `${campaignData.headline}
 
 ${campaignData.post_caption}
-
-🔥 Why You'll Love It:
+${features}
+🔥 Campaign Details:
 • Product: ${campaignData.matched_product_name}
 • Trend: ${campaignData.primary_trend_topic}
-• Special Offer: ${campaignData.urgency_hook}
+• Special: ${campaignData.urgency_hook}
 
 👉 Get Yours Here: ${productLink}
 
@@ -94,7 +133,6 @@ ${campaignData.call_to_action}`.trim();
   }
 
   if (!targetPage) {
-    // Pick first available page in DB
     targetPage = await FacebookPage.findOne().sort({ updatedAt: -1 });
   }
 
@@ -110,7 +148,13 @@ ${campaignData.call_to_action}`.trim();
     pageAccessToken = process.env.FB_PAGE_ACCESS_TOKEN;
   }
 
-  const scheduledDate = scheduledAt ? new Date(scheduledAt) : new Date();
+  // Determine Scheduled Time based on mode
+  let finalScheduledDate = new Date();
+  if (mode === "optimal_time") {
+    finalScheduledDate = calculateOptimalPostingTime();
+  } else if (scheduledAt) {
+    finalScheduledDate = new Date(scheduledAt);
+  }
 
   // 5️⃣ Prepare Post Document
   let savedPost = null;
@@ -121,12 +165,25 @@ ${campaignData.call_to_action}`.trim();
       content: postContent,
       linkUrl: productLink,
       imageUrl,
-      scheduledAt: scheduledDate,
-      status: "pending"
+      scheduledAt: finalScheduledDate,
+      status: mode === "draft" ? "pending" : "pending"
     });
   }
 
   // 6️⃣ Execute Publishing or Scheduling
+  if (mode === "draft") {
+    return {
+      status: "draft",
+      message: "Post generated and saved as draft for admin review.",
+      post: savedPost,
+      content: postContent,
+      imageUrl,
+      linkUrl: productLink,
+      campaign: campaignData,
+      optionsApplied: { tone, campaignType, targetAudience, promoCode, discountPercent, language, postLength, mode }
+    };
+  }
+
   if (!pageAccessToken || !resolvedPageId) {
     console.log("ℹ️  No Facebook Page connected or configured yet. Automated post generated in simulation/draft mode.");
     return {
@@ -137,7 +194,8 @@ ${campaignData.call_to_action}`.trim();
       imageUrl,
       linkUrl: productLink,
       campaign: campaignData,
-      facebookConfigured: false
+      facebookConfigured: false,
+      optionsApplied: { tone, campaignType, targetAudience, promoCode, discountPercent, language, postLength, mode }
     };
   }
 
@@ -170,7 +228,8 @@ ${campaignData.call_to_action}`.trim();
         imageUrl,
         linkUrl: productLink,
         campaign: campaignData,
-        facebookConfigured: true
+        facebookConfigured: true,
+        optionsApplied: { tone, campaignType, targetAudience, promoCode, discountPercent, language, postLength, mode }
       };
     } catch (pubErr) {
       console.error("❌ Facebook direct publish error:", pubErr.message);
@@ -182,23 +241,26 @@ ${campaignData.call_to_action}`.trim();
       throw new Error(`Facebook publishing failed: ${pubErr.message}`);
     }
   } else {
-    // Schedule mode: queue delayed job in BullMQ
+    // Schedule or Optimal Time mode: queue delayed job in BullMQ
     if (savedPost) {
       await enqueueFacebookPost(savedPost);
     }
 
-    console.log(`⏰ Automated Facebook post scheduled for ${scheduledDate.toISOString()}`);
+    console.log(`⏰ Automated Facebook post scheduled for ${finalScheduledDate.toISOString()} [mode: ${mode}]`);
 
     return {
       status: "scheduled",
-      message: "Automated post queued in BullMQ scheduler",
+      message: mode === "optimal_time"
+        ? `Automated post queued for peak engagement at ${finalScheduledDate.toLocaleString()}`
+        : `Automated post queued in BullMQ scheduler for ${finalScheduledDate.toLocaleString()}`,
       post: savedPost,
-      scheduledAt: scheduledDate,
+      scheduledAt: finalScheduledDate,
       content: postContent,
       imageUrl,
       linkUrl: productLink,
       campaign: campaignData,
-      facebookConfigured: true
+      facebookConfigured: true,
+      optionsApplied: { tone, campaignType, targetAudience, promoCode, discountPercent, language, postLength, mode }
     };
   }
 }

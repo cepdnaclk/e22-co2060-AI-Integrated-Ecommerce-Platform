@@ -20,10 +20,46 @@ export async function checkAutomationHealth() {
 }
 
 /**
- * Trigger the LangChain Autonomous Marketing Campaign Agent.
+ * Fetch all supported options and presets for campaign generation.
  */
-export async function generateMarketingCampaign(trendOverride = null) {
-  const payload = trendOverride ? { trend_override: trendOverride } : {};
+export async function getMarketingOptions() {
+  try {
+    const res = await axios.get(`${AUTOMATION_URL}/automation/marketing-options`, { timeout: 4000 });
+    return res.data;
+  } catch (err) {
+    return {
+      tones: ["hype", "professional", "discount_driven", "storytelling", "informative", "humorous"],
+      campaign_types: ["product_spotlight", "flash_sale", "deal_of_the_day", "trend_roundup", "buying_guide"],
+      target_audiences: ["tech enthusiasts & gamers", "university students", "remote workers"],
+      languages: ["English", "Sinhala", "Tamil"],
+      post_lengths: ["short", "medium", "long"],
+      publish_modes: ["now", "schedule", "optimal_time", "draft"]
+    };
+  }
+}
+
+/**
+ * Trigger the LangChain Autonomous Marketing Campaign Agent.
+ * @param {Object|string} options - Campaign customization options or string trend override
+ */
+export async function generateMarketingCampaign(options = {}) {
+  let payload = {};
+  if (typeof options === "string") {
+    payload = { trend_override: options };
+  } else if (options && typeof options === "object") {
+    payload = {
+      trend_override: options.trendOverride || options.trend_override,
+      custom_product_id: options.customProductId || options.custom_product_id,
+      tone: options.tone || "hype",
+      campaign_type: options.campaignType || options.campaign_type || "product_spotlight",
+      target_audience: options.targetAudience || options.target_audience || "tech enthusiasts & gamers",
+      promo_code: options.promoCode || options.promo_code,
+      discount_percent: options.discountPercent || options.discount_percent,
+      language: options.language || "English",
+      post_length: options.postLength || options.post_length || "medium"
+    };
+  }
+
   const res = await axios.post(`${AUTOMATION_URL}/automation/marketing-campaign`, payload, {
     timeout: TIMEOUT_MS
   });

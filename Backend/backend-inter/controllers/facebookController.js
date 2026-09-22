@@ -227,12 +227,35 @@ export async function deleteScheduledPost(req, res) {
 export async function triggerAutoFacebookPost(req, res) {
   try {
     const { executeAutomatedFacebookPost } = await import("../services/facebookAutoPosterService.js");
-    const { pageId, trendOverride, mode, scheduledAt } = req.body || {};
+    const {
+      pageId,
+      trendOverride,
+      customProductId,
+      tone,
+      campaignType,
+      targetAudience,
+      promoCode,
+      discountPercent,
+      language,
+      postLength,
+      customImageUrl,
+      mode,
+      scheduledAt
+    } = req.body || {};
 
     const result = await executeAutomatedFacebookPost({
       userId: req.user?.id || null,
       pageId,
       trendOverride,
+      customProductId,
+      tone,
+      campaignType,
+      targetAudience,
+      promoCode,
+      discountPercent,
+      language,
+      postLength,
+      customImageUrl,
       mode: mode || "now",
       scheduledAt
     });
@@ -269,6 +292,22 @@ export async function getAutoPostStatus(req, res) {
   } catch (error) {
     return res.status(500).json({
       message: "Failed to fetch auto-post status",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Get all available options, presets, and campaign types for automated Facebook posting
+ */
+export async function getFacebookPostingOptions(req, res) {
+  try {
+    const { getMarketingOptions } = await import("../services/automationService.js");
+    const options = await getMarketingOptions();
+    return res.status(200).json(options);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch posting options",
       error: error.message
     });
   }
