@@ -23,23 +23,17 @@ import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority 
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
 import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
-<<<<<<< HEAD
 import automationRouter from "./router/automationRouter.js"; // 🤖 LangChain Automation Agent
-=======
 import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
 import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
->>>>>>> origin/main
 
 
 // ================== CRON & WORKERS ==================
 import "./cron/dailySendToAI.js";
 import "./cron/graphRebuildJob.js";
-<<<<<<< HEAD
 import "./cron/marketingAutomationJob.js";
 import "./cron/autoFacebookPostingJob.js";
-=======
 import "./worker/facebookPublisherWorker.js";
->>>>>>> origin/main
 
 // ================== CONFIG ==================
 dotenv.config();
@@ -114,13 +108,11 @@ app.use("/api/ai", aiRouter);
 // Trending Products
 app.use("/api/trending", trendingRouter);
 
-<<<<<<< HEAD
 // 🤖 LangChain Automation (Marketing, Restock, Agent Status)
 app.use("/api/automation", automationRouter);
-=======
+
 // 🏷️ Deals (products with active discounted offers)
 app.use("/api/deals", dealsRouter);
->>>>>>> origin/main
 
 
 // Product catalog (browse products)
