@@ -244,7 +244,7 @@ const TrendingProductsShowcase = () => {
         style={{ transitionDelay: "800ms" }}
       >
         <button className="px-8 py-3 bg-black/80 backdrop-blur-md text-white border border-white/10 rounded-xl hover:bg-black hover:border-blue-500/50 transition-all duration-300 shadow-xl">
-          Previous
+          Prev
         </button>
         <button className="px-8 py-3 bg-black/80 backdrop-blur-md text-white border border-white/10 rounded-xl hover:bg-black hover:border-blue-500/50 transition-all duration-300 shadow-xl">
           Next
