@@ -223,10 +223,7 @@ class RAGRuntime:
                     "max_output_tokens": self.max_tokens,
                 },
             )
-            try:
-                return (response.text or "").strip()
-            except ValueError:
-                return "I'm sorry, I couldn't generate a response. The model output was blocked by safety filters or returned empty."
+            return (response.text or "").strip()
 
         completion = self.llm_client.chat.completions.create(
             model=self.llm_model,

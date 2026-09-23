@@ -1,5 +1,4 @@
 import express from "express";
-import productModel from "../models/products.js";
 
 const router = express.Router();
 
@@ -13,28 +12,10 @@ router.get("/", async (req, res) => {
     }
     
     const data = await response.json();
-
-    // Enrich each trending item with the real product image from MongoDB
-    const enriched = await Promise.all(
-      data.map(async (item) => {
-        try {
-          const product = await productModel.findOne(
-            { productName: { $regex: new RegExp(item.Keyword, "i") } },
-            { image: 1 }
-          );
-          return {
-            ...item,
-            image: product?.image || null,
-          };
-        } catch {
-          return { ...item, image: null };
-        }
-      })
-    );
-
-    res.json(enriched);
+    res.json(data);
   } catch (error) {
     console.error("⚠️ Graceful fallback: Trending service unavailable:", error.message);
+    // Return an empty array instead of 500 to keep the frontend running smoothly
     res.json([]);
   }
 });

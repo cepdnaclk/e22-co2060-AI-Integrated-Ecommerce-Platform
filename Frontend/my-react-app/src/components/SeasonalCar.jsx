@@ -66,14 +66,18 @@ const TrendingProductsShowcase = () => {
   const product2 = trendingData[1] || { Keyword: "Loading..." };
   const product3 = trendingData[2] || { Keyword: "Loading..." };
 
+  // Manual image overrides to present complete/attractive sections
+  const MANUAL_IMAGES = {
+    "Android Phone": "/trends/android.png",
+    "iPhone": "/trends/iphone.png",
+    "Laptop": "/trends/laptop.png"
+  };
 
-
-  const getImg = (keyword, image, isLarge = false) => {
-    if (image) return image;
-    // Fallback: Unsplash search by keyword
-    const query = encodeURIComponent(keyword);
+  const getImg = (keyword, isLarge = false) => {
+    if (MANUAL_IMAGES[keyword]) return MANUAL_IMAGES[keyword];
     const dim = isLarge ? "800x800" : "400x400";
-    return `https://source.unsplash.com/${dim}/?${query},product`;
+    const bg = isLarge ? "111111" : "00c3ff";
+    return `https://placehold.co/${dim}/${bg}/ffffff?text=${encodeURIComponent(keyword)}`;
   };
 
   const handleProductClick = (keyword) => {
@@ -111,10 +115,9 @@ const TrendingProductsShowcase = () => {
           >
             <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
             <img
-              src={getImg(product1.Keyword, product1.image, false)}
+              src={getImg(product1.Keyword, false)}
               alt={product1.Keyword}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0"
-              onError={e => { e.target.src = `https://source.unsplash.com/400x400/?${encodeURIComponent(product1.Keyword)},product`; }}
             />
             {/* Gradient overlay for text readability */}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none" />
@@ -133,10 +136,9 @@ const TrendingProductsShowcase = () => {
           >
             <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
             <img
-              src={getImg(product2.Keyword, product2.image, false)}
+              src={getImg(product2.Keyword, false)}
               alt={product2.Keyword}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0"
-              onError={e => { e.target.src = `https://source.unsplash.com/400x400/?${encodeURIComponent(product2.Keyword)},product`; }}
             />
             {/* Gradient overlay for text readability */}
             <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 to-transparent z-10 pointer-events-none" />
@@ -156,10 +158,9 @@ const TrendingProductsShowcase = () => {
         >
           <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity z-10 pointer-events-none" />
           <img
-            src={getImg(product3.Keyword, product3.image, true)}
+            src={getImg(product3.Keyword, true)}
             alt={product3.Keyword}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 z-0"
-            onError={e => { e.target.src = `https://source.unsplash.com/800x800/?${encodeURIComponent(product3.Keyword)},product`; }}
           />
 
           <div className="absolute top-6 right-6 bg-white text-black px-5 py-2 rounded-full text-sm font-extrabold shadow-2xl tracking-tighter uppercase z-20">

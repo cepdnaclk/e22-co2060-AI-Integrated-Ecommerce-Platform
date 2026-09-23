@@ -1,69 +1,228 @@
-version: '3.8'
-
 services:
-  # ============================================================================
-  # Main FastAPI Application - Serves trending data
-  # ============================================================================
-  youtube-trending-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: youtube-trending-api
-    ports:
-      - "${API_PORT:-8000}:8000"
-    environment:
-      # YouTube API Configuration
-      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
-      GOOGLE_SHEET_ID: ${GOOGLE_SHEET_ID}
-      
-      # Logging
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-    volumes:
-      # Persist data between restarts
-      - ./storage:/app/storage
-      - ./output:/app/output
-      - ./logs:/app/logs
-      # Mount credentials (read-only)
-      - ./credentials.json:/app/credentials.json:ro
+  mongodb:
+    image: mongo:7
+    container_name: ecommerce-mongodb
     restart: unless-stopped
-    networks:
-      - youtube-trending-network
+    volumes:
+      - mongo_data:/data/db
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
-      interval: 30s
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 15s
       timeout: 10s
-      retries: 3
-      start_period: 10s
+      retries: 5
 
-  # ============================================================================
-  # Optional: Scheduler Service - Runs pipeline daily at 03:00 UTC
-  # Uncomment to enable automated daily pipeline execution
-  # ============================================================================
-  # youtube-trending-scheduler:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.scheduler
-  #   container_name: youtube-trending-scheduler
-  #   environment:
-  #     YOUTUBE_API_KEY: ${YOUTUBE_API_KEY}
-  #     GOOGLE_SHEET_ID: ${GOOGLE_SHEET_ID}
-  #     SCHEDULE: "0 3 * * *"  # Daily at 03:00 UTC
-  #   volumes:
-  #     - ./storage:/app/storage
-  #     - ./output:/app/output
-  #     - ./logs:/app/logs
-  #     - ./credentials.json:/app/credentials.json:ro
-  #   networks:
-  #     - youtube-trending-network
-  #   depends_on:
-  #     - youtube-trending-api
-  #   restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    container_name: ecommerce-redis
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-networks:
-  youtube-trending-network:
-    driver: bridge
+  restock-ml:
+    build:
+      context: .\AI-ML\restock_ml
+      dockerfile: Dockerfile
+    container_name: restock-ml-service
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  recommendation-engine:
+    build:
+      context: .\AI-ML
+      dockerfile: Dockerfile.recommendation
+    container_name: recommendation-engine
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      RECOMMENDER_MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/}
+      RECOMMENDER_DB_NAME: ecommerce
+      RECOMMENDER_GRAPH_REBUILD_HOURS: 24
+    ports:
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8002/health')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+
+  weather-rag-service:
+    build:
+      context: .\AI-ML\rag_chatbot
+      dockerfile: Dockerfile
+    container_name: weather-rag-service
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      NOMIC_API_KEY: ${NOMIC_API_KEY}
+      NOMIC_EMBED_MODEL: ${NOMIC_EMBED_MODEL:-nomic-embed-text-v1.5}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434/v1}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:1b}
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:-ollama}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-models/gemini-3.6-flash}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-chat}
+      MONGO_URI: ${MONGO_URI:-mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/ecommerce?retryWrites=true&w=majority}
+      RAG_TOP_K: ${RAG_TOP_K:-4}
+      RAG_COLLECTION: ${RAG_COLLECTION:-chatbot_knowledge}
+      RAG_DB_DIR: /app/chroma_db
+      RAG_DATA_DIR: /app/data
+    command: ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8010"]
+    volumes:
+      - .\AI-ML\rag_chatbot:/app
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8010:8010"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8010/health')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  bookkeeping-service:
+    build:
+      context: .\Backend\bookkeeping-service
+      dockerfile: Dockerfile
+    container_name: bookkeeping-service
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      PORT: 4020
+      MONGO_URI: mongodb://mongodb:27017/bookkeeping_service
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_REQUIRED: "true"
+      INLINE_EVENT_PROCESSING: "true"
+      FRONTEND_ORIGIN: https://localhost:5173,https://127.0.0.1:5173
+    ports:
+      - "4020:4020"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4020/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+  bookkeeping-worker:
+    build:
+      context: .\Backend\bookkeeping-service
+      dockerfile: Dockerfile
+    container_name: bookkeeping-worker
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      MONGO_URI: mongodb://mongodb:27017/bookkeeping_service
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_REQUIRED: "true"
+      INLINE_EVENT_PROCESSING: "false"
+    command: ["npm", "run", "start:worker"]
+
+  backend:
+    build:
+      context: .\Backend\backend-inter
+      dockerfile: Dockerfile
+    container_name: ecommerce-backend
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      restock-ml:
+        condition: service_healthy
+      recommendation-engine:
+        condition: service_healthy
+      weather-rag-service:
+        condition: service_started
+      bookkeeping-service:
+        condition: service_healthy
+    env_file:
+      - .\Backend\backend-inter\.env
+    environment:
+      PORT: 8080
+      MONGO_URI: mongodb+srv://admin:123better@cluster0.9v7ko7p.mongodb.net/ecommerce?retryWrites=true&w=majority
+      JWT_SECRET: ${JWT_SECRET:-change-this-jwt-secret-in-production}
+      FRONTEND_URL: https://localhost:5173
+      ENABLE_FACEBOOK_MODULE: ${ENABLE_FACEBOOK_MODULE:-false}
+      FACE_RECOGNITION_ENABLED: "false"
+      FACE_SERVICE_URL: http://face-service:5000
+      FACE_SIMILARITY_THRESHOLD: "0.45"
+      RESTOCK_ML_API: http://restock-ml:8001
+      RECOMMENDATION_SERVICE_URL: http://recommendation-engine:8002
+      YOUTUBE_TRENDING_URL: http://youtube-trending:8003
+      BOOKKEEPING_API_BASE_URL: http://bookkeeping-service:4020
+      RAG_CHAT_ENABLED: "true"
+      RAG_SERVICE_URL: http://weather-rag-service:8010
+      RAG_CHAT_TIMEOUT_MS: ${RAG_CHAT_TIMEOUT_MS:-60000}
+      LLM_PROVIDER: ${LLM_PROVIDER:-ollama}
+      GEMINI_FALLBACK_ENABLED: ${GEMINI_FALLBACK_ENABLED:-false}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.0-flash}
+    volumes:
+      - .\Backend\backend-inter:/app
+      - /app/node_modules
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "8080:8080"
+
+  youtube-trending:
+    build:
+      context: .\AI-ML\youtube-trending-system
+      dockerfile: Dockerfile
+    container_name: youtube-trending-service
+    restart: unless-stopped
+    ports:
+      - "8003:8003"
+    volumes:
+      - .\AI-ML\youtube-trending-system:/app
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8003/')"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    image: node:20-slim
+    container_name: ecommerce-frontend
+    working_dir: /app
+    restart: unless-stopped
+    depends_on:
+      - backend
+    volumes:
+      - .\Frontend\my-react-app:/app
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install --legacy-peer-deps && npm run dev"
 
 volumes:
-  storage:
-  output:
-  logs:
+  mongo_data:
+    external: true
+    name: e22-co2060-ai-integrated-ecommerce-platform_mongo_data

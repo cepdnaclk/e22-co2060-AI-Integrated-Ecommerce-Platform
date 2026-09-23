@@ -1,0 +1,53 @@
+[
+  {
+    "eventId": "evt-order-created-1001",
+    "type": "ORDER_CREATED",
+    "timestamp": "2026-04-17T10:00:00.000Z",
+    "source": "ecommerce-backend",
+    "payload": {
+      "orderId": "1001",
+      "amount": 3500,
+      "sourceDocumentType": "CUSTOMER_TAX_INVOICE",
+      "sourceDocumentId": "INV-1001"
+    }
+  },
+  {
+    "eventId": "evt-order-shipped-1001",
+    "type": "ORDER_SHIPPED",
+    "timestamp": "2026-04-17T10:05:00.000Z",
+    "source": "ecommerce-backend",
+    "payload": {
+      "orderId": "1001",
+      "cogsAmount": 2100,
+      "sourceDocumentType": "DELIVERY_CONFIRMATION",
+      "sourceDocumentId": "SHIP-1001"
+    }
+  },
+  {
+    "eventId": "evt-marketplace-settlement-2001",
+    "type": "MARKETPLACE_SETTLEMENT",
+    "timestamp": "2026-04-17T10:10:00.000Z",
+    "source": "ecommerce-backend",
+    "payload": {
+      "settlementId": "AMZ-WK1-2001",
+      "marketplaceGross": 4300,
+      "marketplaceFees": 450,
+      "marketplaceNet": 3850,
+      "sourceDocumentType": "MARKETPLACE_SETTLEMENT_REPORT",
+      "sourceDocumentId": "AMZ-WK1-2001"
+    }
+  },
+  {
+    "eventId": "evt-refund-1001",
+    "type": "REFUND_ISSUED",
+    "timestamp": "2026-04-17T10:15:00.000Z",
+    "source": "ecommerce-backend",
+    "payload": {
+      "orderId": "1001",
+      "refundAmount": 350,
+      "sourceDocumentType": "CREDIT_NOTE",
+      "sourceDocumentId": "CN-1001"
+    }
+  }
+]
+

@@ -1,0 +1,41 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: rag_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
+  rag:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rag_chatbot
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: ["sleep", "infinity"]
+    environment:
+      NOMIC_API_KEY: ${NOMIC_API_KEY}
+      NOMIC_EMBED_MODEL: ${NOMIC_EMBED_MODEL:-nomic-embed-text-v1.5}
+      LLM_PROVIDER: ollama
+      OLLAMA_BASE_URL: http://ollama:11434/v1
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:1b}
+      OLLAMA_API_KEY: ${OLLAMA_API_KEY:-ollama}
+      MONGO_URI: ${MONGO_URI}
+    volumes:
+      - ./:/app
+    networks:
+      - default
+      - ecommerce_net
+    depends_on:
+      - ollama
+
+volumes:
+  ollama_data:
+
+networks:
+  ecommerce_net:
+    external: true
+    name: hoste22-co2060-ai-integrated-ecommerce-platform_default
