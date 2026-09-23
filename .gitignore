@@ -1,3 +1,30 @@
 google_creds.json
 .env
 service_accounnt.json
+
+# Node
+**/node_modules/
+**/npm-debug.log*
+**/package-lock.json
+
+# Python
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+**/.pytest_cache/
+**/.venv/
+**/venv/
+**/env/
+**/*.egg-info/
+**/dist/
+**/build/
+**/.eggs/
+
+# Chroma / vector DBs
+**/chroma_db/
+
+# Misc
+**/.DS_Store
+**/Thumbs.db
+**/*.log
+**/steps.txt
