@@ -2,6 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
+import dns from "dns";
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 // ================== ROUTERS ==================
 import authRouter from "./router/authRouter.js";
@@ -38,7 +40,7 @@ import "./worker/facebookPublisherWorker.js";
 // ================== CONFIG ==================
 dotenv.config();
 
-const PORT = process.env.PORT || 8080; 
+const PORT = process.env.PORT || 8080;
 
 const mongoURI =
   process.env.MONGO_URI ||
@@ -67,11 +69,11 @@ app.use(
   cors({
     origin: function (origin, callback) {
       if (!origin) return callback(null, true);
-      
-      const isAllowed = allowedOrigins.includes(origin) || 
-                       origin.endsWith(".up.railway.app") || 
-                       /^https?:\/\/localhost:\d+$/.test(origin);
-      
+
+      const isAllowed = allowedOrigins.includes(origin) ||
+        origin.endsWith(".up.railway.app") ||
+        /^https?:\/\/localhost:\d+$/.test(origin);
+
       if (isAllowed) {
         callback(null, true);
       } else {
