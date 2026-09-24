@@ -26,6 +26,7 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminLogin from "./pages/AdminLogin";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AdminBookkeeping from "./pages/AdminBookkeeping";
+import AdminCommissionPolicy from "./pages/AdminCommissionPolicy";
 import AdminDmsControlTower from "./pages/AdminDmsControlTower";
 import DmsLogin from "./pages/DmsLogin";
 import DmsRegister from "./pages/DmsRegister";
@@ -139,6 +140,11 @@ function App() {
           <Route path="/admin/bookkeeping" element={
             <AdminProtectedRoute>
               <AdminBookkeeping />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/commission" element={
+            <AdminProtectedRoute>
+              <AdminCommissionPolicy />
             </AdminProtectedRoute>
           } />
           <Route path="/admin/dms-control" element={

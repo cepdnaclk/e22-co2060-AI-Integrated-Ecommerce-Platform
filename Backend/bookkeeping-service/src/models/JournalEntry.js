@@ -14,6 +14,10 @@ const journalLineSchema = new mongoose.Schema(
 const journalEntrySchema = new mongoose.Schema(
   {
     eventId: { type: String, required: true, unique: true, index: true },
+    transactionId: { type: String, required: true, unique: true, index: true },
+    orderId: { type: String, default: null, index: true },
+    paymentReference: { type: String, default: null, index: true },
+    sellerId: { type: String, default: null, index: true },
     eventType: { type: String, required: true, index: true },
     eventTimestamp: { type: Date, required: true },
     sourceDocumentType: { type: String, default: "SYSTEM_EVENT" },

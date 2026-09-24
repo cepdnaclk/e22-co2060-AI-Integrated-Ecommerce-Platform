@@ -105,6 +105,25 @@ const orderSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    
+    // 📊 Commission Snapshot
+    commissionRate: {
+      type: Number,
+      default: 0
+    },
+    commissionAmount: {
+      type: Number,
+      default: 0
+    },
+    sellerPayableAmount: {
+      type: Number,
+      default: 0
+    },
+    commissionPolicyId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CommissionPolicy",
+      default: null
+    },
 
     // 📦 Shipping address
     shippingAddress: {

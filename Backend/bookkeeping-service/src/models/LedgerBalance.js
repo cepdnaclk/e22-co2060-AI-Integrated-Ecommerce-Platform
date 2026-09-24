@@ -4,8 +4,13 @@ import { ENTRY_SIDES } from "../constants/accounting.js";
 const ledgerHistorySchema = new mongoose.Schema(
   {
     journalEntryId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
+    transactionId: { type: String, required: true, index: true },
+    orderId: { type: String, default: null, index: true },
+    paymentReference: { type: String, default: null, index: true },
+    sellerId: { type: String, default: null, index: true },
     eventId: { type: String, required: true, index: true },
     eventType: { type: String, required: true },
+    description: { type: String, default: "" },
     postedAt: { type: Date, required: true },
     debit: { type: Number, default: 0, min: 0 },
     credit: { type: Number, default: 0, min: 0 },

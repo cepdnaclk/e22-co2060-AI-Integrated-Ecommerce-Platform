@@ -65,16 +65,21 @@ export default function AdminBookkeeping() {
     if (!ledger || !ledgerHistory.length) return;
     downloadCsv(
       `ledger-${ledger.account?.code || "account"}-${toFileTimestamp()}.csv`,
-      ["accountCode", "accountName", "postedAt", "eventType", "eventId", "debit", "credit", "balanceAfter"],
+      ["Date", "Transaction ID", "Journal Entry ID", "Event ID", "Order ID", "Payment Reference", "Event Type", "Account Code", "Account Name", "Debit", "Credit", "Balance After", "Description"],
       ledgerHistory.map((entry) => ({
-        accountCode: ledger.account?.code || ledger.ledger?.accountCode || "",
-        accountName: ledger.account?.name || "",
-        postedAt: entry.postedAt || "",
-        eventType: entry.eventType || "",
-        eventId: entry.eventId || "",
-        debit: Number(entry.debit || 0),
-        credit: Number(entry.credit || 0),
-        balanceAfter: Number(entry.balanceAfter || 0)
+        "Date": entry.postedAt || "",
+        "Transaction ID": entry.transactionId || "",
+        "Journal Entry ID": entry.journalEntryId || "",
+        "Event ID": entry.eventId || "",
+        "Order ID": entry.orderId || "",
+        "Payment Reference": entry.paymentReference || "",
+        "Event Type": entry.eventType || "",
+        "Account Code": ledger.account?.code || ledger.ledger?.accountCode || "",
+        "Account Name": ledger.account?.name || "",
+        "Debit": Number(entry.debit || 0),
+        "Credit": Number(entry.credit || 0),
+        "Balance After": Number(entry.balanceAfter || 0),
+        "Description": entry.description || ""
       }))
     );
   };
@@ -102,17 +107,21 @@ export default function AdminBookkeeping() {
     if (!account?.history?.length) return;
     downloadCsv(
       `t-account-${account.code}-${toFileTimestamp()}.csv`,
-      ["accountCode", "accountName", "normalBalance", "postedAt", "eventType", "eventId", "debit", "credit", "balanceAfter"],
+      ["Date", "Transaction ID", "Journal Entry ID", "Event ID", "Order ID", "Payment Reference", "Event Type", "Account Code", "Account Name", "Debit", "Credit", "Balance After", "Description"],
       account.history.map((entry) => ({
-        accountCode: account.code,
-        accountName: account.name,
-        normalBalance: account.normalBalance,
-        postedAt: entry.postedAt || "",
-        eventType: entry.eventType || "",
-        eventId: entry.eventId || "",
-        debit: Number(entry.debit || 0),
-        credit: Number(entry.credit || 0),
-        balanceAfter: Number(entry.balanceAfter || 0)
+        "Date": entry.postedAt || "",
+        "Transaction ID": entry.transactionId || "",
+        "Journal Entry ID": entry.journalEntryId || "",
+        "Event ID": entry.eventId || "",
+        "Order ID": entry.orderId || "",
+        "Payment Reference": entry.paymentReference || "",
+        "Event Type": entry.eventType || "",
+        "Account Code": account.code,
+        "Account Name": account.name,
+        "Debit": Number(entry.debit || 0),
+        "Credit": Number(entry.credit || 0),
+        "Balance After": Number(entry.balanceAfter || 0),
+        "Description": entry.description || ""
       }))
     );
   };
@@ -339,11 +348,15 @@ export default function AdminBookkeeping() {
                     <thead>
                       <tr>
                         <th style={S.tableHeadCell}>Date</th>
-                        <th style={S.tableHeadCell}>Event Type</th>
+                        <th style={S.tableHeadCell}>Transaction ID</th>
                         <th style={S.tableHeadCell}>Event ID</th>
+                        <th style={S.tableHeadCell}>Order ID</th>
+                        <th style={S.tableHeadCell}>Payment Ref</th>
+                        <th style={S.tableHeadCell}>Event Type</th>
                         <th style={S.tableHeadCellRight}>Debit</th>
                         <th style={S.tableHeadCellRight}>Credit</th>
-                        <th style={S.tableHeadCellRight}>Balance After</th>
+                        <th style={S.tableHeadCellRight}>Balance</th>
+                        <th style={S.tableHeadCell}>Description</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -351,16 +364,20 @@ export default function AdminBookkeeping() {
                         ledgerHistory.map((entry, index) => (
                           <tr key={`${entry.eventId || entry.postedAt || index}-${index}`}>
                             <td style={S.tableCell}>{formatDateTime(entry.postedAt)}</td>
-                            <td style={S.tableCell}>{entry.eventType || "-"}</td>
+                            <td style={S.tableCodeCell}>{entry.transactionId || "-"}</td>
                             <td style={S.tableCodeCell}>{entry.eventId || "-"}</td>
+                            <td style={S.tableCodeCell}>{entry.orderId || "-"}</td>
+                            <td style={S.tableCodeCell}>{entry.paymentReference || "-"}</td>
+                            <td style={S.tableCell}>{entry.eventType || "-"}</td>
                             <td style={S.tableCellRight}>{formatMoney(entry.debit)}</td>
                             <td style={S.tableCellRight}>{formatMoney(entry.credit)}</td>
                             <td style={S.tableCellRight}>{formatMoney(entry.balanceAfter)}</td>
+                            <td style={S.tableCell}>{entry.description || "-"}</td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={6} style={S.tableEmptyCell}>No ledger movements available for this account.</td>
+                          <td colSpan={10} style={S.tableEmptyCell}>No ledger movements available for this account.</td>
                         </tr>
                       )}
                     </tbody>
@@ -458,7 +475,14 @@ function TAccountView({ account, onExport }) {
             {debitRows.length > 0 ? (
               debitRows.map((debit, idx) => (
                 <div key={`dr-${idx}`} style={S.tRowEntry}>
-                  <span style={S.tDate}>{formatShortDate(debit.postedAt)}</span>
+                  <div style={S.tRowMeta}>
+                    {debit.transactionId && (
+                      <span style={S.tTxnId} title={debit.transactionId}>
+                        {debit.transactionId}
+                      </span>
+                    )}
+                    <span style={S.tDate}>{formatShortDate(debit.postedAt)}</span>
+                  </div>
                   <span style={S.tAmount}>{formatMoney(debit.debit)}</span>
                 </div>
               ))
@@ -468,7 +492,14 @@ function TAccountView({ account, onExport }) {
             {creditRows.length > 0 ? (
               creditRows.map((credit, idx) => (
                 <div key={`cr-${idx}`} style={S.tRowEntry}>
-                  <span style={S.tDate}>{formatShortDate(credit.postedAt)}</span>
+                  <div style={S.tRowMeta}>
+                    {credit.transactionId && (
+                      <span style={S.tTxnId} title={credit.transactionId}>
+                        {credit.transactionId}
+                      </span>
+                    )}
+                    <span style={S.tDate}>{formatShortDate(credit.postedAt)}</span>
+                  </div>
                   <span style={S.tAmount}>{formatMoney(credit.credit)}</span>
                 </div>
               ))
@@ -833,16 +864,35 @@ const S = {
   tColumnRight: { flex: 1, paddingLeft: "8px", overflowY: "auto", minHeight: 0 },
   tRowEntry: {
     display: "flex",
+    alignItems: "center",
     justifyContent: "space-between",
+    gap: "6px",
     fontSize: "12px",
     color: "#e2e8f0",
-    padding: "4px 6px",
+    padding: "5px 6px",
     borderRadius: "6px",
     borderBottom: "1px dashed rgba(255,255,255,0.08)",
     background: "rgba(15,23,42,0.35)"
   },
-  tDate: { color: "#64748b", fontSize: "11px" },
-  tAmount: { fontWeight: "500", fontFamily: "'Courier New', Courier, monospace" },
+  tRowMeta: { display: "flex", flexDirection: "column", gap: "1px", minWidth: 0 },
+  tTxnId: {
+    fontSize: "10px",
+    fontWeight: 700,
+    color: "#a78bfa",
+    fontFamily: "'Courier New', Courier, monospace",
+    background: "rgba(139,92,246,0.12)",
+    border: "1px solid rgba(139,92,246,0.25)",
+    borderRadius: "4px",
+    padding: "1px 4px",
+    letterSpacing: "0.03em",
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    maxWidth: "120px",
+    display: "block"
+  },
+  tDate: { color: "#64748b", fontSize: "10px" },
+  tAmount: { fontWeight: "600", fontFamily: "'Courier New', Courier, monospace", whiteSpace: "nowrap" },
   tTotalsRow: {
     display: "flex",
     marginTop: "8px",

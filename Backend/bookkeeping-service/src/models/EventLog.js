@@ -3,6 +3,10 @@ import mongoose from "mongoose";
 const eventLogSchema = new mongoose.Schema(
   {
     eventId: { type: String, required: true, unique: true, index: true },
+    transactionId: { type: String, required: true, unique: true, index: true },
+    orderId: { type: String, default: null, index: true },
+    paymentReference: { type: String, default: null, index: true },
+    sellerId: { type: String, default: null, index: true },
     eventType: { type: String, required: true, index: true },
     payloadHash: { type: String, required: true },
     source: { type: String, default: "api" },

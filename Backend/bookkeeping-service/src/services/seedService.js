@@ -23,7 +23,7 @@ const rules = [
     sourceDocumentType: "PAYMENT_GATEWAY_REPORT",
     lines: [
       { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.BANK_OPERATING, amountPath: "payload.amount" },
-      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.SALES_ONLINE, amountPath: "payload.amount" }
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.ACCOUNTS_RECEIVABLE, amountPath: "payload.amount" }
     ]
   },
   {
@@ -75,12 +75,52 @@ const rules = [
   },
   {
     eventType: EVENT_TYPES.MARKETPLACE_SETTLEMENT,
-    journalDescriptionTemplate: "Marketplace settlement {{payload.settlementId}}",
+    journalDescriptionTemplate: "Marketplace seller settlement {{payload.settlementId}}",
     sourceDocumentType: "MARKETPLACE_SETTLEMENT_REPORT",
     lines: [
-      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.BANK_OPERATING, amountPath: "payload.marketplaceNet" },
-      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.MARKETPLACE_COMMISSION, amountPath: "payload.marketplaceFees" },
-      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.SALES_MARKETPLACE, amountPath: "payload.marketplaceGross" }
+      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.GATEWAY_BALANCE, amountPath: "payload.marketplaceGross" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.SELLER_PAYABLES, amountPath: "payload.sellerPayable" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.MARKETPLACE_COMMISSION_REVENUE, amountPath: "payload.marketplaceFees" }
+    ]
+  },
+  {
+    eventType: EVENT_TYPES.MARKETPLACE_PAYMENT,
+    journalDescriptionTemplate: "Marketplace payment for order {{payload.orderId}}",
+    sourceDocumentType: "PAYHERE_CHECKOUT",
+    lines: [
+      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.GATEWAY_BALANCE, amountPath: "payload.marketplaceGross" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.SELLER_PAYABLES, amountPath: "payload.sellerPayableAmount" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.MARKETPLACE_COMMISSION_REVENUE, amountPath: "payload.commissionAmount" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.SHIPPING_REVENUE, amountPath: "payload.deliveryCharge" }
+    ]
+  },
+  {
+    eventType: EVENT_TYPES.GATEWAY_SETTLEMENT,
+    journalDescriptionTemplate: "Gateway settlement to bank {{payload.settlementId}}",
+    sourceDocumentType: "BANK_STATEMENT",
+    lines: [
+      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.BANK_OPERATING, amountPath: "payload.settledAmount" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.GATEWAY_BALANCE, amountPath: "payload.settledAmount" }
+    ]
+  },
+  {
+    eventType: EVENT_TYPES.SELLER_PAYOUT,
+    journalDescriptionTemplate: "Payout to seller {{payload.sellerId}}",
+    sourceDocumentType: "BANK_STATEMENT",
+    lines: [
+      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.SELLER_PAYABLES, amountPath: "payload.payoutAmount" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.BANK_OPERATING, amountPath: "payload.payoutAmount" }
+    ]
+  },
+  {
+    eventType: EVENT_TYPES.MARKETPLACE_REFUND,
+    journalDescriptionTemplate: "Marketplace refund for order {{payload.orderId}}",
+    sourceDocumentType: "CREDIT_NOTE",
+    lines: [
+      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.SELLER_PAYABLES, amountPath: "payload.sellerPayableAmount" },
+      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.MARKETPLACE_COMMISSION_REVENUE, amountPath: "payload.commissionAmount" },
+      { side: ENTRY_SIDES.DEBIT, accountCode: ACCOUNT_CODES.SHIPPING_REVENUE, amountPath: "payload.deliveryCharge" },
+      { side: ENTRY_SIDES.CREDIT, accountCode: ACCOUNT_CODES.GATEWAY_BALANCE, amountPath: "payload.refundGross" }
     ]
   },
   {
@@ -96,15 +136,21 @@ const rules = [
 
 export const seedChartOfAccounts = async () => {
   for (const account of DEFAULT_CHART_OF_ACCOUNTS) {
-    await AccountModel.updateOne({ code: account.code }, { $setOnInsert: account }, { upsert: true });
+    await AccountModel.updateOne(
+      { code: account.code },
+      { $set: account },
+      { upsert: true }
+    );
   }
+
+  await AccountModel.deleteOne({ code: "6002" });
 };
 
 export const seedRules = async () => {
   for (const rule of rules) {
     await AccountingRuleModel.updateOne(
       { eventType: rule.eventType },
-      { $setOnInsert: rule },
+      { $set: rule },
       { upsert: true }
     );
   }
@@ -114,4 +160,9 @@ export const seedSystemData = async () => {
   await seedChartOfAccounts();
   await seedRules();
 };
+
+
+
+
+
 

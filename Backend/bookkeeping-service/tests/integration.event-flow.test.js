@@ -75,3 +75,64 @@ test("failed transaction marks event log as FAILED", async () => {
   assert.equal(log.status, "FAILED");
 });
 
+test("Duplicate MARKETPLACE_PAYMENT is ignored", async () => {
+  const event = {
+    eventId: "evt-mp-payment-1",
+    type: "MARKETPLACE_PAYMENT",
+    timestamp: new Date().toISOString(),
+    source: "integration-test",
+    payload: {
+      orderId: "O1",
+      marketplaceGross: 10500,
+      sellerPayableAmount: 9000,
+      commissionAmount: 1000,
+      deliveryCharge: 500
+    }
+  };
+
+  await EventLogModel.create({
+    eventId: event.eventId,
+    eventType: event.type,
+    payloadHash: "testhash3",
+    source: event.source,
+    status: "QUEUED",
+    idempotencyKey: `event:${event.eventId}`,
+    rawEvent: event
+  });
+
+  await processAccountingEvent(event);
+  await processAccountingEvent(event);
+
+  const journals = await JournalEntryModel.find({ eventId: event.eventId }).lean();
+  assert.equal(journals.length, 1);
+});
+
+test("Duplicate SELLER_PAYOUT is ignored", async () => {
+  const event = {
+    eventId: "evt-sp-1",
+    type: "SELLER_PAYOUT",
+    timestamp: new Date().toISOString(),
+    source: "integration-test",
+    payload: {
+      sellerId: "seller1",
+      payoutAmount: 9000
+    }
+  };
+
+  await EventLogModel.create({
+    eventId: event.eventId,
+    eventType: event.type,
+    payloadHash: "testhash4",
+    source: event.source,
+    status: "QUEUED",
+    idempotencyKey: `event:${event.eventId}`,
+    rawEvent: event
+  });
+
+  await processAccountingEvent(event);
+  await processAccountingEvent(event);
+
+  const journals = await JournalEntryModel.find({ eventId: event.eventId }).lean();
+  assert.equal(journals.length, 1);
+});
+

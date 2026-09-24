@@ -45,6 +45,30 @@ export const getPaymentStatus = async (orderId) => {
 };
 
 /**
+ * 🧪 Simulate Successful Payment (Dev Only)
+ * POST /api/payment/test-success
+ * 
+ * @param {string} orderId 
+ * @returns {Promise<Object>}
+ */
+export const simulateTestPayment = async (orderId) => {
+  const res = await fetch(`${BASE_URL}/test-success`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ orderId })
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Failed to simulate payment");
+  }
+
+  return data;
+};
+
+/**
  * Programmatically create an HTML form and submit to PayHere Checkout URL
  *
  * @param {Object} payhere - PayHere configuration returned from backend

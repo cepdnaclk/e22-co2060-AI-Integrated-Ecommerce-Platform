@@ -4,12 +4,14 @@ import cartModel from "../models/cart.js";
 import userModel from "../models/user.js";
 import sellerOfferModel from "../models/sellerOffer.js";
 import productModel from "../models/products.js";
+import CommissionPolicy from "../models/commissionPolicy.js";
 import {
   generateCheckoutHash,
   verifyNotificationSignature,
   mapStatusCodeToPaymentStatus,
   formatAmount
 } from "../services/payhereService.js";
+import { postMarketplacePaymentEventWithRetry } from "../services/bookkeepingService.js";
 
 /**
  * ======================================================
@@ -88,10 +90,18 @@ export async function createPayment(req, res) {
     const createdOrders = [];
     const sellerIds = Object.keys(processedItemsBySeller);
 
+    // 🛒 Get Active Commission Policy
+    const activePolicy = await CommissionPolicy.findOne({ isActive: true }).sort({ effectiveFrom: -1 });
+    const commissionRate = activePolicy ? activePolicy.rate : 0;
+
     for (const sellerId of sellerIds) {
       const itemsForSeller = processedItemsBySeller[sellerId];
       const sellerProdTotal = itemsForSeller.reduce((acc, i) => acc + i.price * i.quantity, 0);
-      const sellerTotal = sellerProdTotal + (deliveryCharge / sellerIds.length);
+      const sellerDeliveryCharge = deliveryCharge / sellerIds.length;
+      const sellerTotal = sellerProdTotal + sellerDeliveryCharge;
+      
+      const commissionAmount = Math.round((sellerProdTotal * commissionRate) / 100);
+      const sellerPayableAmount = sellerProdTotal - commissionAmount;
 
       const newOrder = await orderModel.create({
         orderId: uniqueOrderId,
@@ -99,8 +109,12 @@ export async function createPayment(req, res) {
         sellerId,
         items: itemsForSeller,
         productTotal: sellerProdTotal,
-        deliveryCharge: deliveryCharge / sellerIds.length,
+        deliveryCharge: sellerDeliveryCharge,
         totalAmount: sellerTotal,
+        commissionRate,
+        commissionAmount,
+        sellerPayableAmount,
+        commissionPolicyId: activePolicy ? activePolicy._id : null,
         currency,
         shippingAddress,
         paymentStatus: "pending",
@@ -233,6 +247,13 @@ export async function notifyPayment(req, res) {
 
         // Clear buyer's cart after successful payment
         await cartModel.deleteOne({ userId: order.userId });
+        
+        // 📚 Trigger Bookkeeping Event
+        try {
+          await postMarketplacePaymentEventWithRetry(order, payment_id);
+        } catch (bkError) {
+          console.error(`⚠️ Failed to post bookkeeping event for order ${order._id}:`, bkError.message);
+        }
       } else if (Number(status_code) === -1) {
         order.paymentStatus = "cancelled";
       } else if (Number(status_code) === -2) {
@@ -294,5 +315,69 @@ export async function getPaymentStatus(req, res) {
   } catch (error) {
     console.error("❌ getPaymentStatus error:", error.message);
     return res.status(500).json({ message: "Error fetching payment status", error: error.message });
+  }
+}
+
+/**
+ * 🧪 4. SIMULATE SUCCESSFUL PAYMENT (Development/Test Only)
+ * POST /api/payment/test-success
+ *
+ * Simulates a successful PayHere callback without real payment.
+ * MUST be disabled in production.
+ */
+export async function simulateTestPayment(req, res) {
+  try {
+    // 1. Strict Security Guard: Only in dev with explicit ENABLE_TEST_PAYMENTS flag
+    if (process.env.NODE_ENV === "production" || process.env.ENABLE_TEST_PAYMENTS !== "true") {
+      return res.status(403).json({ message: "Test payments are strictly disabled in this environment." });
+    }
+
+    const { orderId } = req.body;
+    if (!orderId) {
+      return res.status(400).json({ message: "orderId is required." });
+    }
+
+    // 2. Find matching Order(s)
+    const orders = await orderModel.find({
+      $or: [{ orderId }, { _id: mongoose.isValidObjectId(orderId) ? orderId : null }]
+    });
+
+    if (!orders || orders.length === 0) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    // 3. Process each order exactly like real PayHere success
+    const payment_id = `TEST-PAY-${Date.now()}-${orderId}`;
+
+    for (const order of orders) {
+      if (order.paymentStatus === "paid") {
+        continue;
+      }
+
+      order.payherePaymentId = payment_id;
+      order.payhereMethod = "TEST";
+      order.payhereStatusCode = 2; // Simulating success
+      order.paymentStatus = "paid";
+      order.status = "confirmed";
+      order.paymentDate = new Date();
+
+      // Clear buyer's cart after successful payment
+      await cartModel.deleteOne({ userId: order.userId });
+      
+      // 📚 Trigger Bookkeeping Event exactly like production
+      try {
+        await postMarketplacePaymentEventWithRetry(order, payment_id);
+      } catch (bkError) {
+        console.error(`⚠️ Failed to post bookkeeping event for test order ${order._id}:`, bkError.message);
+      }
+
+      await order.save();
+    }
+
+    console.log(`🧪 Simulated Test Payment Processed: Order ${orderId} -> paid`);
+    return res.status(200).json({ message: "Test payment simulated successfully" });
+  } catch (error) {
+    console.error("❌ simulateTestPayment error:", error.message);
+    return res.status(500).json({ message: "Internal Simulation Server Error", error: error.message });
   }
 }

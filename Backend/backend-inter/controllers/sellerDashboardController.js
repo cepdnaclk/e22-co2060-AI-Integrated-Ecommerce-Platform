@@ -19,7 +19,7 @@ export async function getSellerDashboardStats(req, res) {
             {
                 $group: {
                     _id: { $month: "$createdAt" }, // Group by exactly the month
-                    monthlyRevenue: { $sum: "$totalAmount" },
+                    monthlyRevenue: { $sum: { $ifNull: ["$sellerPayableAmount", "$totalAmount"] } },
                 },
             },
             { $sort: { "_id": 1 } },

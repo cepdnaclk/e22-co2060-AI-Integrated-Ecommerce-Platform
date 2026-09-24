@@ -13,6 +13,7 @@ import { createAuditLog } from "../services/auditService.js";
 import { getSuperAdminDashboard, getCourierDashboard, getBranchDashboard } from "../services/dashboardService.js";
 import { generateCode } from "../utils/idGenerator.js";
 import { requireFields } from "../utils/validation.js";
+import { postSellerPayoutEventWithRetry } from "../../services/bookkeepingService.js";
 
 function actorForAudit(req) {
   return {
@@ -374,7 +375,16 @@ export async function updateSettlementState(req, res) {
     if (settlement.state === "rider_collected") settlement.timeline.riderCollectedAt = settlement.timeline.riderCollectedAt || now;
     if (settlement.state === "branch_received") settlement.timeline.branchReceivedAt = settlement.timeline.branchReceivedAt || now;
     if (settlement.state === "platform_settled") settlement.timeline.platformSettledAt = settlement.timeline.platformSettledAt || now;
-    if (settlement.state === "seller_paid") settlement.timeline.sellerPaidAt = settlement.timeline.sellerPaidAt || now;
+    if (settlement.state === "seller_paid") {
+      settlement.timeline.sellerPaidAt = settlement.timeline.sellerPaidAt || now;
+      
+      // 📚 Trigger Bookkeeping Event for Seller Payout
+      try {
+        await postSellerPayoutEventWithRetry(settlement);
+      } catch (bkError) {
+        console.error(`⚠️ Failed to post bookkeeping seller payout event for settlement ${settlement._id}:`, bkError.message);
+      }
+    }
     if (settlement.state === "flagged") settlement.flaggedReason = req.body.flaggedReason || settlement.flaggedReason;
 
     settlement.reconciliation.reconciledByUserId = req.user.id;

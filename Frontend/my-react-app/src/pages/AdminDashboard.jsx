@@ -192,6 +192,18 @@ export default function AdminDashboard() {
                         </button>
                     </div>
 
+                    {/* Commission Policy */}
+                    <div className="ad-card bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 flex flex-col">
+                        <div className="text-4xl mb-5">💰</div>
+                        <h2 className="text-xl font-bold text-white mb-2">Commission Policy</h2>
+                        <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">
+                            Manage marketplace commission rates and effective dates.
+                        </p>
+                        <button onClick={() => navigate("/admin/commission")} className="w-full px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl text-sm font-bold hover:opacity-90 transition-all">
+                            Manage Commission →
+                        </button>
+                    </div>
+
                     {/* Delivery Center Monitoring */}
                     <div className="ad-card bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 flex flex-col">
                         <div className="text-4xl mb-5">🚚</div>

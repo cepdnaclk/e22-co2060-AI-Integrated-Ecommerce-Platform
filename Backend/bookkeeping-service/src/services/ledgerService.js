@@ -58,8 +58,13 @@ export const postJournalLinesToLedger = async (journalEntry, session) => {
                 [
                   {
                     journalEntryId: journalEntry._id,
+                    transactionId: journalEntry.transactionId,
+                    orderId: journalEntry.orderId,
+                    paymentReference: journalEntry.paymentReference,
+                    sellerId: journalEntry.sellerId,
                     eventId: journalEntry.eventId,
                     eventType: journalEntry.eventType,
+                    description: journalEntry.description,
                     postedAt: "$$NOW",
                     debit: debitIncrement,
                     credit: creditIncrement,

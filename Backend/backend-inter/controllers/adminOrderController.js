@@ -99,7 +99,14 @@ export async function getOrderStats(req, res) {
 
     const revenueResult = await Order.aggregate([
       { $match: { status: { $ne: "cancelled" } } },
-      { $group: { _id: null, total: { $sum: "$totalAmount" } } },
+      { 
+        $group: { 
+          _id: null, 
+          marketplaceValue: { $sum: "$totalAmount" },
+          beetaRevenue: { $sum: { $ifNull: ["$commissionAmount", "$totalAmount"] } },
+          totalSellerPayable: { $sum: { $ifNull: ["$sellerPayableAmount", 0] } }
+        } 
+      },
     ]);
 
     res.json({
@@ -109,7 +116,9 @@ export async function getOrderStats(req, res) {
       shipped,
       delivered,
       cancelled,
-      revenue: revenueResult[0]?.total || 0,
+      revenue: revenueResult[0]?.beetaRevenue || 0,
+      marketplaceValue: revenueResult[0]?.marketplaceValue || 0,
+      totalSellerPayable: revenueResult[0]?.totalSellerPayable || 0,
     });
   } catch (error) {
     console.error("❌ Admin getOrderStats error:", error);

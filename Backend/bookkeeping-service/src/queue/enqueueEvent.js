@@ -20,8 +20,19 @@ export const enqueueEvent = async (event) => {
   }
 
   if (!existing) {
+    const dateStr = new Date(event.timestamp).toISOString().split('T')[0].replace(/-/g, '');
+    const randSequence = Math.floor(Math.random() * 900000) + 100000;
+    const transactionId = event.payload.transactionId || `TXN-${dateStr}-${randSequence}`;
+    
+    // Inject generated transactionId into event payload so downstream services use it
+    event.payload.transactionId = transactionId;
+    
     await EventLogModel.create({
       eventId: event.eventId,
+      transactionId,
+      orderId: event.payload.orderId || null,
+      paymentReference: event.payload.paymentId || event.payload.reference || null,
+      sellerId: event.payload.sellerId || null,
       eventType: event.type,
       payloadHash,
       source: event.source,

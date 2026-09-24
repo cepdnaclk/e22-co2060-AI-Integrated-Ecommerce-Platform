@@ -21,6 +21,7 @@ import searchRouter from "./router/searchRouter.js"; // ✅ Smart Search
 import inventoryRouter from "./router/inventoryRouter.js"; // ✅ Inventory Management
 import adminProductRouter from "./router/adminProductRouter.js"; // ✅ Admin Product Management
 import adminOrderRouter from "./router/adminOrderRouter.js"; // ✅ Admin Order Management
+import adminCommissionRouter from "./router/adminCommissionRouter.js"; // 💰 Admin Commission Management
 import restockRouter from "./router/restockRouter.js"; // 🤖 Restock Priority ML
 import recommendationRouter from "./router/recommendationRouter.js"; // 🧭 Dijkstra Recommendations
 import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery Management System
@@ -147,6 +148,9 @@ app.use("/api/admin/products", adminProductRouter);
 // 📋 Admin Order Management (view & track)
 app.use("/api/admin/orders", adminOrderRouter);
 
+// 💰 Admin Marketplace Commission Management
+app.use("/api/admin/commission", adminCommissionRouter);
+
 // 🤖 Admin Restock Priority ML Scoring
 app.use("/api/admin/restock", restockRouter);
 
@@ -230,3 +234,4 @@ function startServer() {
 
 // Start server immediately so Nginx doesn't 502 while waiting for DB
 startServer();
+

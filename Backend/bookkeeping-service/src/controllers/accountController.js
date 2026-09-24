@@ -72,8 +72,14 @@ export const getAccountsTerminal = async (req, res, next) => {
         .slice(-historyLimit)
         .reverse()
         .map((entry) => ({
+          transactionId: entry.transactionId ?? null,
+          orderId: entry.orderId ?? null,
+          paymentReference: entry.paymentReference ?? null,
+          sellerId: entry.sellerId ?? null,
+          journalEntryId: entry.journalEntryId ?? null,
           eventId: entry.eventId,
           eventType: entry.eventType,
+          description: entry.description ?? "",
           postedAt: entry.postedAt,
           debit: entry.debit ?? 0,
           credit: entry.credit ?? 0,
