@@ -23,8 +23,9 @@ import AdminDashboard from "./pages/AdminDashboard";
 // import AdminFaceManagement from "./pages/AdminFaceManagement";
 import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
+import AdminPayouts from "./pages/AdminPayouts";
 import AdminLogin from "./pages/AdminLogin";
-// import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 // import AdminBookkeeping from "./pages/AdminBookkeeping";
 // import AdminDmsControlTower from "./pages/AdminDmsControlTower";
 // import DmsLogin from "./pages/DmsLogin";
@@ -124,6 +125,11 @@ function App() {
           <Route path="/admin/orders" element={
             <AdminProtectedRoute>
               <AdminOrders />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/payouts" element={
+            <AdminProtectedRoute>
+              <AdminPayouts />
             </AdminProtectedRoute>
           } />
           <Route path="/admin/inventory" element={

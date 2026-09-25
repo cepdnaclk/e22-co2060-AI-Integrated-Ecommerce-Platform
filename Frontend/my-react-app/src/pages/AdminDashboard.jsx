@@ -268,6 +268,18 @@ export default function AdminDashboard() {
                         </button>
                     </div>
 
+                    {/* Seller Payouts */}
+                    <div className="ad-card bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 flex flex-col">
+                        <div className="text-4xl mb-5">💸</div>
+                        <h2 className="text-xl font-bold text-white mb-2">Seller Payouts</h2>
+                        <p className="text-slate-400 text-sm leading-relaxed mb-8 flex-grow">
+                            Review eligible seller payout batches, process transfers, and monitor payout status across all marketplace sellers.
+                        </p>
+                        <button onClick={() => navigate("/admin/payouts")} className="w-full px-4 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl text-sm font-bold hover:opacity-90 transition-all">
+                            Manage Payouts →
+                        </button>
+                    </div>
+
                     {/* Delivery Center Monitoring */}
                     <div className="ad-card bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 flex flex-col">
                         <div className="text-4xl mb-5">🚚</div>
