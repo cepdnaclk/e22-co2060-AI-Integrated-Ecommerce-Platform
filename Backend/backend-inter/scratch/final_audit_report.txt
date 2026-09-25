@@ -1,0 +1,1246 @@
+=================================================================
+ READ-ONLY PRODUCT PRICE DATA QUALITY AUDIT REPORT
+ Database: MongoDB Atlas (ecommerce.products & selleroffers)
+=================================================================
+
+-----------------------------------------------------------------
+ SECTION 1: USER-SPECIFIED TARGET PRODUCT AUDIT
+-----------------------------------------------------------------
+
+>>> TARGET KEYWORD: "ASUS ROG Zephyrus G14" (1 matching documents found)
+  ID: 69f5d6de92e320f204426747
+  Title: ASUS ROG Zephyrus G14
+  Brand: ASUS | Category: electronics
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  ANOMALY REASONS: Unusually low price for high-end gaming laptop (e.g. LKR 58,072)
+
+>>> TARGET KEYWORD: "ASUS ROG Zephyrus G16" (1 matching documents found)
+  ID: 6a605fa35f4f80e651742263
+  Title: ASUS ROG Zephyrus G16 Gaming Laptop
+  Brand: ASUS | Category: Electronics
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+>>> TARGET KEYWORD: "MacBook Air M3" (1 matching documents found)
+  ID: 69f5d6de92e320f204426740
+  Title: Apple MacBook Air M3
+  Brand: Apple | Category: electronics
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  ANOMALY REASONS: Unusually low price for modern Apple MacBook laptop (e.g. LKR 42,707)
+
+>>> TARGET KEYWORD: "Samsung Galaxy S25 Ultra" (7 matching documents found)
+  ID: 6a605faa5f4f80e65174226d
+  Title: Samsung Galaxy S25 Ultra (512GB, Titanium Gray)
+  Brand: Samsung | Category: Electronics
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab0050644a3fa8764ba8d6e
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab0053ca48e398e32585958
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab0057f597bbe5602a9ccc7
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab005fea90b106fceb7b898
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab00637fc7fbf6f67de57b0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab006889863c1ae62b989c0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+>>> TARGET KEYWORD: "Razer BlackWidow V4 Keyboard" (1 matching documents found)
+  ID: 69f5d6de92e320f20442674b
+  Title: Razer BlackWidow V4 Keyboard
+  Brand: Razer | Category: electronics
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+-----------------------------------------------------------------
+ SECTION 2: HIGH-VALUE ELECTRONICS / APPLIANCES WITH UNUSUALLY LOW PRICES (< LKR 100,000)
+-----------------------------------------------------------------
+
+
+-----------------------------------------------------------------
+ SECTION 3: ALL PRODUCTS WITH PRICE BELOW LKR 100,000
+-----------------------------------------------------------------
+
+Total products under LKR 100,000: 0
+
+
+-----------------------------------------------------------------
+ SECTION 4: MISSING OR ZERO PRICE ANOMALIES
+-----------------------------------------------------------------
+
+Total products with missing/zero price: 159
+
+  ID: 69b24a298a4de71fa6f2950a
+  Title: Apple i phone 15 pro
+  Brand: Apple | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69b297243909cd16794fedb2
+  Title: DJI MAVIC 4 PRO
+  Brand: DJI | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69b298693909cd16794fedfd
+  Title: DJI MINI 5 PRO
+  Brand: DJI | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69b2cb7fbff078a1ca9c5343
+  Title: Galaxy S24 & S24+ | Galaxy AI
+  Brand: Samsung | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69b305a5f7ce706a90abdbb1
+  Title: PlayStation 5
+  Brand: Sony | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69b306bff7ce706a90abdc57
+  Title: MacBook
+  Brand: Apple | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69b3df3d4d7e986a2231a0a4
+  Title: SOUNDPEATS Wireless Earbuds, Bluetooth Headphones ...
+  Brand: SOUNDPEATS | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f591ca543867e16b8f50e8
+  Title: Jedel WD-155 Wireless Mouse 
+  Brand: Jedel | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673b
+  Title: Apple iPhone 15 Pro
+  Brand: Apple | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673c
+  Title: Samsung Galaxy S24 Ultra
+  Brand: Samsung | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673d
+  Title: Sony WH-1000XM5 Headphones
+  Brand: Sony | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673e
+  Title: Dell XPS 13 Laptop
+  Brand: Dell | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673f
+  Title: Logitech MX Master 3S Mouse
+  Brand: Logitech | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426740
+  Title: Apple MacBook Air M3
+  Brand: Apple | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426741
+  Title: Samsung 32-inch 4K Monitor
+  Brand: Samsung | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426742
+  Title: Sony PlayStation 5 Slim
+  Brand: Sony | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426743
+  Title: JBL Flip 6 Speaker
+  Brand: JBL | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426744
+  Title: Apple Watch Series 9
+  Brand: Apple | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426745
+  Title: GoPro HERO12 Black
+  Brand: GoPro | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426746
+  Title: Canon EOS R5 Camera
+  Brand: Canon | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426747
+  Title: ASUS ROG Zephyrus G14
+  Brand: ASUS | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426748
+  Title: Nintendo Switch OLED
+  Brand: Nintendo | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426749
+  Title: Bose QuietComfort Ultra
+  Brand: Bose | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674a
+  Title: HP LaserJet Pro Printer
+  Brand: HP | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674b
+  Title: Razer BlackWidow V4 Keyboard
+  Brand: Razer | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674c
+  Title: Anker 737 Power Bank
+  Brand: Anker | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674d
+  Title: Google Pixel 8 Pro
+  Brand: Google | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674e
+  Title: Kindle Paperwhite
+  Brand: Amazon | Category: electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674f
+  Title: Nike Air Force 1 '07
+  Brand: Nike | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426750
+  Title: Adidas Essentials Hoodie
+  Brand: Adidas | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426751
+  Title: Levi's 501 Original Jeans
+  Brand: Levi's | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426752
+  Title: Zara Leather Biker Jacket
+  Brand: Zara | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426753
+  Title: Ray-Ban Classic Wayfarer
+  Brand: Ray-Ban | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426754
+  Title: H&M V-Neck Summer Dress
+  Brand: H&M | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426755
+  Title: Gucci GG Marmont Handbag
+  Brand: Gucci | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426756
+  Title: Nike Tech Fleece Joggers
+  Brand: Nike | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426757
+  Title: Puma Suede Classic Sneakers
+  Brand: Puma | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426758
+  Title: Uniqlo Ultra Light Down
+  Brand: Uniqlo | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426759
+  Title: Ralph Lauren Polo Shirt
+  Brand: Ralph Lauren | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675a
+  Title: The North Face Nuptse
+  Brand: The North Face | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675b
+  Title: Converse Chuck Taylor 70
+  Brand: Converse | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675c
+  Title: Vans Old Skool Shoes
+  Brand: Vans | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675d
+  Title: Lacoste Slim Fit T-Shirt
+  Brand: Lacoste | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675e
+  Title: Tommy Hilfiger Sport Cap
+  Brand: Tommy Hilfiger | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675f
+  Title: Calvin Klein Boxer Briefs
+  Brand: Calvin Klein | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426760
+  Title: Herschel Little America Bag
+  Brand: Herschel | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426761
+  Title: Daniel Wellington Watch
+  Brand: Daniel Wellington | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426762
+  Title: Fjallraven Kanken Backpack
+  Brand: Fjallraven | Category: fashion
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426763
+  Title: Nespresso Pixie Coffee Maker
+  Brand: Nespresso | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426764
+  Title: Dyson V15 Detect Vacuum
+  Brand: Dyson | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426765
+  Title: Philips Air Fryer XXL
+  Brand: Philips | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426766
+  Title: KitchenAid Artisan Mixer
+  Brand: KitchenAid | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426767
+  Title: LG InstaView Refrigerator
+  Brand: LG | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426768
+  Title: iRobot Roomba j7+
+  Brand: iRobot | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426769
+  Title: Xiaomi Mi Air Purifier 4
+  Brand: Xiaomi | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676a
+  Title: SMEG Retro Style Toaster
+  Brand: SMEG | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676b
+  Title: Breville Barista Express
+  Brand: Breville | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676c
+  Title: Instant Pot Duo Plus
+  Brand: Instant Pot | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676d
+  Title: Dyson Pure Cool Link
+  Brand: Dyson | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676e
+  Title: Samsung EcoBubble Washer
+  Brand: Samsung | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676f
+  Title: Miele Complete C3 Vacuum
+  Brand: Miele | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426770
+  Title: SodaStream Terra Water
+  Brand: SodaStream | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426771
+  Title: Tefal Pro Express Steam
+  Brand: Tefal | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426772
+  Title: Blueair HealthProtect
+  Brand: Blueair | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426773
+  Title: Ninja Professional Blender
+  Brand: Ninja | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426774
+  Title: Bosch Series 6 Dishwasher
+  Brand: Bosch | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426775
+  Title: De'Longhi Magnifica Evo
+  Brand: De'Longhi | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426776
+  Title: Cuisinart Grind & Brew
+  Brand: Cuisinart | Category: home appliances
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426777
+  Title: Wilson Evolution Basketball
+  Brand: Wilson | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426778
+  Title: Nike Air Zoom Pegasus 40
+  Brand: Nike | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426779
+  Title: Wilson Pro Staff Tennis
+  Brand: Wilson | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677a
+  Title: Bowflex SelectTech 552
+  Brand: Bowflex | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677b
+  Title: Manduka PRO Yoga Mat
+  Brand: Manduka | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677c
+  Title: Spalding NBA Game Ball
+  Brand: Spalding | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677d
+  Title: Adidas Predator Football
+  Brand: Adidas | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677e
+  Title: Yonex Astrox 88D Pro
+  Brand: Yonex | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677f
+  Title: Giro Agilis Cycling Helmet
+  Brand: Giro | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426780
+  Title: Everlast Pro Boxing Gloves
+  Brand: Everlast | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426781
+  Title: Speedo Vanquisher 2.0
+  Brand: Speedo | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426782
+  Title: Gray-Nicolls Legend Bat
+  Brand: Gray-Nicolls | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426783
+  Title: Callaway Rogue ST Driver
+  Brand: Callaway | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426784
+  Title: Santa Cruz Skateboard
+  Brand: Santa Cruz | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426785
+  Title: Casall Jump Rope Pro
+  Brand: Casall | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426786
+  Title: Coleman Sundome Tent
+  Brand: Coleman | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426787
+  Title: Marmot Trestles Sleeping Bag
+  Brand: Marmot | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426788
+  Title: Salomon Quest 4D GTX Boots
+  Brand: Salomon | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426789
+  Title: CamelBak Eddy+ Bottle
+  Brand: CamelBak | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678a
+  Title: Under Armour Hustle 5.0
+  Brand: Under Armour | Category: sports
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678b
+  Title: The Ordinary Niacinamide
+  Brand: The Ordinary | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678c
+  Title: Estee Lauder Night Repair
+  Brand: Estee Lauder | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678d
+  Title: L'Oreal Revitalift Filler
+  Brand: L'Oreal | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678e
+  Title: Chanel No. 5 Perfume
+  Brand: Chanel | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678f
+  Title: Real Techniques Brush Set
+  Brand: Real Techniques | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426790
+  Title: MAC Retro Matte Lipstick
+  Brand: MAC | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426791
+  Title: Maybelline Sky High Mascara
+  Brand: Maybelline | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426792
+  Title: Fenty Beauty Foundation
+  Brand: Fenty | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426793
+  Title: CeraVe Hydrating Cleanser
+  Brand: CeraVe | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426794
+  Title: Paula's Choice BHA Exfoliant
+  Brand: Paula's Choice | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426795
+  Title: Glossier Cloud Paint
+  Brand: Glossier | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426796
+  Title: Olaplex No. 3 Treatment
+  Brand: Olaplex | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426797
+  Title: Drunk Elephant C-Firma
+  Brand: Drunk Elephant | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426798
+  Title: Kiehl's Ultra Facial Cream
+  Brand: Kiehl's | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426799
+  Title: Nars Radiant Concealer
+  Brand: Nars | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679a
+  Title: Laneige Lip Sleeping Mask
+  Brand: Laneige | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679b
+  Title: Dior Sauvage Cologne
+  Brand: Dior | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679c
+  Title: Tatcha The Water Cream
+  Brand: Tatcha | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679d
+  Title: Charlotte Tilbury Magic
+  Brand: Charlotte Tilbury | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679e
+  Title: Sunday Riley Good Genes
+  Brand: Sunday Riley | Category: beauty
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679f
+  Title: The Alchemist
+  Brand: Paulo Coelho | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a0
+  Title: Atomic Habits
+  Brand: James Clear | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a1
+  Title: Project Hail Mary
+  Brand: Andy Weir | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a2
+  Title: The Seven Husbands
+  Brand: Taylor Jenkins Reid | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a3
+  Title: Sapiens: A Brief History
+  Brand: Yuval Noah Harari | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a4
+  Title: Lessons in Chemistry
+  Brand: Bonnie Garmus | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a5
+  Title: The Creative Act
+  Brand: Rick Rubin | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a6
+  Title: Thinking, Fast and Slow
+  Brand: Daniel Kahneman | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a7
+  Title: Deep Work
+  Brand: Cal Newport | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a8
+  Title: Verity
+  Brand: Colleen Hoover | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a9
+  Title: Man's Search for Meaning
+  Brand: Viktor Frankl | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267aa
+  Title: Shoe Dog
+  Brand: Phil Knight | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ab
+  Title: The Midnight Library
+  Brand: Matt Haig | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ac
+  Title: Educated
+  Brand: Tara Westover | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ad
+  Title: Never Split the Difference
+  Brand: Chris Voss | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ae
+  Title: Building a Second Brain
+  Brand: Tiago Forte | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267af
+  Title: Great Expectations
+  Brand: Charles Dickens | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b0
+  Title: The Power of Habit
+  Brand: Charles Duhigg | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b1
+  Title: Zero to One
+  Brand: Peter Thiel | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b2
+  Title: The Psychology of Money
+  Brand: Morgan Housel | Category: books
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b3
+  Title: Moleskine Classic Notebook
+  Brand: Moleskine | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b4
+  Title: Lamy Safari Fountain Pen
+  Brand: Lamy | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b5
+  Title: IKEA Forsa Desk Lamp
+  Brand: IKEA | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b6
+  Title: Hydro Flask Travel Mug
+  Brand: Hydro Flask | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b7
+  Title: Blunt Metro Umbrella
+  Brand: Blunt | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b8
+  Title: Orbitkey Key Organizer
+  Brand: Orbitkey | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b9
+  Title: Seiko Wall Clock
+  Brand: Seiko | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ba
+  Title: A5 Acrylic Picture Frame
+  Brand: Generic | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bb
+  Title: Diptyque Baies Candle
+  Brand: Diptyque | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bc
+  Title: Muji Polypropylene Box
+  Brand: Muji | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bd
+  Title: Wera Tool-Check Plus
+  Brand: Wera | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267be
+  Title: Maglite Solitaire LED
+  Brand: Maglite | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bf
+  Title: Samsonite Luggage Scale
+  Brand: Samsonite | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c0
+  Title: Bellroy Passport Holder
+  Brand: Bellroy | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c1
+  Title: Trtl Travel Pillow
+  Brand: Trtl | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c2
+  Title: Gaiam Yoga Block
+  Brand: Gaiam | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c3
+  Title: TheraBand Resistance Set
+  Brand: TheraBand | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c4
+  Title: Ravensburger 1000pc Puzzle
+  Brand: Ravensburger | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c5
+  Title: Catan Board Game
+  Brand: Catan | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c6
+  Title: Bicycle Standard Deck
+  Brand: Bicycle | Category: others
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6a157fec34bd70483ae9e1ee
+  Title: Jedel Wireless Mouse | Katoya Innovations
+  Brand: Jedel | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6a605fa35f4f80e651742263
+  Title: ASUS ROG Zephyrus G16 Gaming Laptop
+  Brand: ASUS | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6a605faa5f4f80e65174226d
+  Title: Samsung Galaxy S25 Ultra (512GB, Titanium Gray)
+  Brand: Samsung | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6a605fab5f4f80e651742273
+  Title: Sony WH-1000XM6 Wireless Noise Canceling Headphones
+  Brand: Sony | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6a605fad5f4f80e651742279
+  Title: Apple AirPods Pro 2nd Gen (USB-C, Active Noise Cancellation)
+  Brand: Apple | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6ab0050644a3fa8764ba8d6e
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6ab0053ca48e398e32585958
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6ab0057f597bbe5602a9ccc7
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6ab005fea90b106fceb7b898
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6ab00637fc7fbf6f67de57b0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6ab006889863c1ae62b989c0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------

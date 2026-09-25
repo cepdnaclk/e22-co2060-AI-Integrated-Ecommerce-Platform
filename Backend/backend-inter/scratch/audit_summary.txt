@@ -1,0 +1,1115 @@
+=== DATA QUALITY AUDIT SUMMARY (159 Products) ===
+
+[1/159] ID: 69b24a298a4de71fa6f2950a
+  Title: Apple i phone 15 pro
+  Brand: Apple | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[2/159] ID: 69b297243909cd16794fedb2
+  Title: DJI MAVIC 4 PRO
+  Brand: DJI | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[3/159] ID: 69b298693909cd16794fedfd
+  Title: DJI MINI 5 PRO
+  Brand: DJI | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[4/159] ID: 69b2cb7fbff078a1ca9c5343
+  Title: Galaxy S24 & S24+ | Galaxy AI
+  Brand: Samsung | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[5/159] ID: 69b305a5f7ce706a90abdbb1
+  Title: PlayStation 5
+  Brand: Sony | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[6/159] ID: 69b306bff7ce706a90abdc57
+  Title: MacBook
+  Brand: Apple | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[7/159] ID: 69b3df3d4d7e986a2231a0a4
+  Title: SOUNDPEATS Wireless Earbuds, Bluetooth Headphones ...
+  Brand: SOUNDPEATS | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[8/159] ID: 69f591ca543867e16b8f50e8
+  Title: Jedel WD-155 Wireless Mouse 
+  Brand: Jedel | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[9/159] ID: 69f5d6de92e320f20442673b
+  Title: Apple iPhone 15 Pro
+  Brand: Apple | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[10/159] ID: 69f5d6de92e320f20442673c
+  Title: Samsung Galaxy S24 Ultra
+  Brand: Samsung | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[11/159] ID: 69f5d6de92e320f20442673d
+  Title: Sony WH-1000XM5 Headphones
+  Brand: Sony | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[12/159] ID: 69f5d6de92e320f20442673e
+  Title: Dell XPS 13 Laptop
+  Brand: Dell | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[13/159] ID: 69f5d6de92e320f20442673f
+  Title: Logitech MX Master 3S Mouse
+  Brand: Logitech | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[14/159] ID: 69f5d6de92e320f204426740
+  Title: Apple MacBook Air M3
+  Brand: Apple | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[15/159] ID: 69f5d6de92e320f204426741
+  Title: Samsung 32-inch 4K Monitor
+  Brand: Samsung | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[16/159] ID: 69f5d6de92e320f204426742
+  Title: Sony PlayStation 5 Slim
+  Brand: Sony | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[17/159] ID: 69f5d6de92e320f204426743
+  Title: JBL Flip 6 Speaker
+  Brand: JBL | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[18/159] ID: 69f5d6de92e320f204426744
+  Title: Apple Watch Series 9
+  Brand: Apple | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[19/159] ID: 69f5d6de92e320f204426745
+  Title: GoPro HERO12 Black
+  Brand: GoPro | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[20/159] ID: 69f5d6de92e320f204426746
+  Title: Canon EOS R5 Camera
+  Brand: Canon | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[21/159] ID: 69f5d6de92e320f204426747
+  Title: ASUS ROG Zephyrus G14
+  Brand: ASUS | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[22/159] ID: 69f5d6de92e320f204426748
+  Title: Nintendo Switch OLED
+  Brand: Nintendo | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[23/159] ID: 69f5d6de92e320f204426749
+  Title: Bose QuietComfort Ultra
+  Brand: Bose | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[24/159] ID: 69f5d6de92e320f20442674a
+  Title: HP LaserJet Pro Printer
+  Brand: HP | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[25/159] ID: 69f5d6de92e320f20442674b
+  Title: Razer BlackWidow V4 Keyboard
+  Brand: Razer | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[26/159] ID: 69f5d6de92e320f20442674c
+  Title: Anker 737 Power Bank
+  Brand: Anker | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[27/159] ID: 69f5d6de92e320f20442674d
+  Title: Google Pixel 8 Pro
+  Brand: Google | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[28/159] ID: 69f5d6de92e320f20442674e
+  Title: Kindle Paperwhite
+  Brand: Amazon | Category: electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[29/159] ID: 69f5d6de92e320f20442674f
+  Title: Nike Air Force 1 '07
+  Brand: Nike | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[30/159] ID: 69f5d6de92e320f204426750
+  Title: Adidas Essentials Hoodie
+  Brand: Adidas | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[31/159] ID: 69f5d6de92e320f204426751
+  Title: Levi's 501 Original Jeans
+  Brand: Levi's | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[32/159] ID: 69f5d6de92e320f204426752
+  Title: Zara Leather Biker Jacket
+  Brand: Zara | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[33/159] ID: 69f5d6de92e320f204426753
+  Title: Ray-Ban Classic Wayfarer
+  Brand: Ray-Ban | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[34/159] ID: 69f5d6de92e320f204426754
+  Title: H&M V-Neck Summer Dress
+  Brand: H&M | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[35/159] ID: 69f5d6de92e320f204426755
+  Title: Gucci GG Marmont Handbag
+  Brand: Gucci | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[36/159] ID: 69f5d6de92e320f204426756
+  Title: Nike Tech Fleece Joggers
+  Brand: Nike | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[37/159] ID: 69f5d6de92e320f204426757
+  Title: Puma Suede Classic Sneakers
+  Brand: Puma | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[38/159] ID: 69f5d6de92e320f204426758
+  Title: Uniqlo Ultra Light Down
+  Brand: Uniqlo | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[39/159] ID: 69f5d6de92e320f204426759
+  Title: Ralph Lauren Polo Shirt
+  Brand: Ralph Lauren | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[40/159] ID: 69f5d6de92e320f20442675a
+  Title: The North Face Nuptse
+  Brand: The North Face | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[41/159] ID: 69f5d6de92e320f20442675b
+  Title: Converse Chuck Taylor 70
+  Brand: Converse | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[42/159] ID: 69f5d6de92e320f20442675c
+  Title: Vans Old Skool Shoes
+  Brand: Vans | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[43/159] ID: 69f5d6de92e320f20442675d
+  Title: Lacoste Slim Fit T-Shirt
+  Brand: Lacoste | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[44/159] ID: 69f5d6de92e320f20442675e
+  Title: Tommy Hilfiger Sport Cap
+  Brand: Tommy Hilfiger | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[45/159] ID: 69f5d6de92e320f20442675f
+  Title: Calvin Klein Boxer Briefs
+  Brand: Calvin Klein | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[46/159] ID: 69f5d6de92e320f204426760
+  Title: Herschel Little America Bag
+  Brand: Herschel | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[47/159] ID: 69f5d6de92e320f204426761
+  Title: Daniel Wellington Watch
+  Brand: Daniel Wellington | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[48/159] ID: 69f5d6de92e320f204426762
+  Title: Fjallraven Kanken Backpack
+  Brand: Fjallraven | Category: fashion
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[49/159] ID: 69f5d6de92e320f204426763
+  Title: Nespresso Pixie Coffee Maker
+  Brand: Nespresso | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[50/159] ID: 69f5d6de92e320f204426764
+  Title: Dyson V15 Detect Vacuum
+  Brand: Dyson | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[51/159] ID: 69f5d6de92e320f204426765
+  Title: Philips Air Fryer XXL
+  Brand: Philips | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[52/159] ID: 69f5d6de92e320f204426766
+  Title: KitchenAid Artisan Mixer
+  Brand: KitchenAid | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[53/159] ID: 69f5d6de92e320f204426767
+  Title: LG InstaView Refrigerator
+  Brand: LG | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[54/159] ID: 69f5d6de92e320f204426768
+  Title: iRobot Roomba j7+
+  Brand: iRobot | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[55/159] ID: 69f5d6de92e320f204426769
+  Title: Xiaomi Mi Air Purifier 4
+  Brand: Xiaomi | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[56/159] ID: 69f5d6de92e320f20442676a
+  Title: SMEG Retro Style Toaster
+  Brand: SMEG | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[57/159] ID: 69f5d6de92e320f20442676b
+  Title: Breville Barista Express
+  Brand: Breville | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[58/159] ID: 69f5d6de92e320f20442676c
+  Title: Instant Pot Duo Plus
+  Brand: Instant Pot | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[59/159] ID: 69f5d6de92e320f20442676d
+  Title: Dyson Pure Cool Link
+  Brand: Dyson | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[60/159] ID: 69f5d6de92e320f20442676e
+  Title: Samsung EcoBubble Washer
+  Brand: Samsung | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[61/159] ID: 69f5d6de92e320f20442676f
+  Title: Miele Complete C3 Vacuum
+  Brand: Miele | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[62/159] ID: 69f5d6de92e320f204426770
+  Title: SodaStream Terra Water
+  Brand: SodaStream | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[63/159] ID: 69f5d6de92e320f204426771
+  Title: Tefal Pro Express Steam
+  Brand: Tefal | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[64/159] ID: 69f5d6de92e320f204426772
+  Title: Blueair HealthProtect
+  Brand: Blueair | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[65/159] ID: 69f5d6de92e320f204426773
+  Title: Ninja Professional Blender
+  Brand: Ninja | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[66/159] ID: 69f5d6de92e320f204426774
+  Title: Bosch Series 6 Dishwasher
+  Brand: Bosch | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[67/159] ID: 69f5d6de92e320f204426775
+  Title: De'Longhi Magnifica Evo
+  Brand: De'Longhi | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[68/159] ID: 69f5d6de92e320f204426776
+  Title: Cuisinart Grind & Brew
+  Brand: Cuisinart | Category: home appliances
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[69/159] ID: 69f5d6de92e320f204426777
+  Title: Wilson Evolution Basketball
+  Brand: Wilson | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[70/159] ID: 69f5d6de92e320f204426778
+  Title: Nike Air Zoom Pegasus 40
+  Brand: Nike | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[71/159] ID: 69f5d6de92e320f204426779
+  Title: Wilson Pro Staff Tennis
+  Brand: Wilson | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[72/159] ID: 69f5d6de92e320f20442677a
+  Title: Bowflex SelectTech 552
+  Brand: Bowflex | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[73/159] ID: 69f5d6de92e320f20442677b
+  Title: Manduka PRO Yoga Mat
+  Brand: Manduka | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[74/159] ID: 69f5d6de92e320f20442677c
+  Title: Spalding NBA Game Ball
+  Brand: Spalding | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[75/159] ID: 69f5d6de92e320f20442677d
+  Title: Adidas Predator Football
+  Brand: Adidas | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[76/159] ID: 69f5d6de92e320f20442677e
+  Title: Yonex Astrox 88D Pro
+  Brand: Yonex | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[77/159] ID: 69f5d6de92e320f20442677f
+  Title: Giro Agilis Cycling Helmet
+  Brand: Giro | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[78/159] ID: 69f5d6de92e320f204426780
+  Title: Everlast Pro Boxing Gloves
+  Brand: Everlast | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[79/159] ID: 69f5d6de92e320f204426781
+  Title: Speedo Vanquisher 2.0
+  Brand: Speedo | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[80/159] ID: 69f5d6de92e320f204426782
+  Title: Gray-Nicolls Legend Bat
+  Brand: Gray-Nicolls | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[81/159] ID: 69f5d6de92e320f204426783
+  Title: Callaway Rogue ST Driver
+  Brand: Callaway | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[82/159] ID: 69f5d6de92e320f204426784
+  Title: Santa Cruz Skateboard
+  Brand: Santa Cruz | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[83/159] ID: 69f5d6de92e320f204426785
+  Title: Casall Jump Rope Pro
+  Brand: Casall | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[84/159] ID: 69f5d6de92e320f204426786
+  Title: Coleman Sundome Tent
+  Brand: Coleman | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[85/159] ID: 69f5d6de92e320f204426787
+  Title: Marmot Trestles Sleeping Bag
+  Brand: Marmot | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[86/159] ID: 69f5d6de92e320f204426788
+  Title: Salomon Quest 4D GTX Boots
+  Brand: Salomon | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[87/159] ID: 69f5d6de92e320f204426789
+  Title: CamelBak Eddy+ Bottle
+  Brand: CamelBak | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[88/159] ID: 69f5d6de92e320f20442678a
+  Title: Under Armour Hustle 5.0
+  Brand: Under Armour | Category: sports
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[89/159] ID: 69f5d6de92e320f20442678b
+  Title: The Ordinary Niacinamide
+  Brand: The Ordinary | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[90/159] ID: 69f5d6de92e320f20442678c
+  Title: Estee Lauder Night Repair
+  Brand: Estee Lauder | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[91/159] ID: 69f5d6de92e320f20442678d
+  Title: L'Oreal Revitalift Filler
+  Brand: L'Oreal | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[92/159] ID: 69f5d6de92e320f20442678e
+  Title: Chanel No. 5 Perfume
+  Brand: Chanel | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[93/159] ID: 69f5d6de92e320f20442678f
+  Title: Real Techniques Brush Set
+  Brand: Real Techniques | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[94/159] ID: 69f5d6de92e320f204426790
+  Title: MAC Retro Matte Lipstick
+  Brand: MAC | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[95/159] ID: 69f5d6de92e320f204426791
+  Title: Maybelline Sky High Mascara
+  Brand: Maybelline | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[96/159] ID: 69f5d6de92e320f204426792
+  Title: Fenty Beauty Foundation
+  Brand: Fenty | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[97/159] ID: 69f5d6de92e320f204426793
+  Title: CeraVe Hydrating Cleanser
+  Brand: CeraVe | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[98/159] ID: 69f5d6de92e320f204426794
+  Title: Paula's Choice BHA Exfoliant
+  Brand: Paula's Choice | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[99/159] ID: 69f5d6de92e320f204426795
+  Title: Glossier Cloud Paint
+  Brand: Glossier | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[100/159] ID: 69f5d6de92e320f204426796
+  Title: Olaplex No. 3 Treatment
+  Brand: Olaplex | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[101/159] ID: 69f5d6de92e320f204426797
+  Title: Drunk Elephant C-Firma
+  Brand: Drunk Elephant | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[102/159] ID: 69f5d6de92e320f204426798
+  Title: Kiehl's Ultra Facial Cream
+  Brand: Kiehl's | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[103/159] ID: 69f5d6de92e320f204426799
+  Title: Nars Radiant Concealer
+  Brand: Nars | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[104/159] ID: 69f5d6de92e320f20442679a
+  Title: Laneige Lip Sleeping Mask
+  Brand: Laneige | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[105/159] ID: 69f5d6de92e320f20442679b
+  Title: Dior Sauvage Cologne
+  Brand: Dior | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[106/159] ID: 69f5d6de92e320f20442679c
+  Title: Tatcha The Water Cream
+  Brand: Tatcha | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[107/159] ID: 69f5d6de92e320f20442679d
+  Title: Charlotte Tilbury Magic
+  Brand: Charlotte Tilbury | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[108/159] ID: 69f5d6de92e320f20442679e
+  Title: Sunday Riley Good Genes
+  Brand: Sunday Riley | Category: beauty
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[109/159] ID: 69f5d6de92e320f20442679f
+  Title: The Alchemist
+  Brand: Paulo Coelho | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[110/159] ID: 69f5d6de92e320f2044267a0
+  Title: Atomic Habits
+  Brand: James Clear | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[111/159] ID: 69f5d6de92e320f2044267a1
+  Title: Project Hail Mary
+  Brand: Andy Weir | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[112/159] ID: 69f5d6de92e320f2044267a2
+  Title: The Seven Husbands
+  Brand: Taylor Jenkins Reid | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[113/159] ID: 69f5d6de92e320f2044267a3
+  Title: Sapiens: A Brief History
+  Brand: Yuval Noah Harari | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[114/159] ID: 69f5d6de92e320f2044267a4
+  Title: Lessons in Chemistry
+  Brand: Bonnie Garmus | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[115/159] ID: 69f5d6de92e320f2044267a5
+  Title: The Creative Act
+  Brand: Rick Rubin | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[116/159] ID: 69f5d6de92e320f2044267a6
+  Title: Thinking, Fast and Slow
+  Brand: Daniel Kahneman | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[117/159] ID: 69f5d6de92e320f2044267a7
+  Title: Deep Work
+  Brand: Cal Newport | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[118/159] ID: 69f5d6de92e320f2044267a8
+  Title: Verity
+  Brand: Colleen Hoover | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[119/159] ID: 69f5d6de92e320f2044267a9
+  Title: Man's Search for Meaning
+  Brand: Viktor Frankl | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[120/159] ID: 69f5d6de92e320f2044267aa
+  Title: Shoe Dog
+  Brand: Phil Knight | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[121/159] ID: 69f5d6de92e320f2044267ab
+  Title: The Midnight Library
+  Brand: Matt Haig | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[122/159] ID: 69f5d6de92e320f2044267ac
+  Title: Educated
+  Brand: Tara Westover | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[123/159] ID: 69f5d6de92e320f2044267ad
+  Title: Never Split the Difference
+  Brand: Chris Voss | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[124/159] ID: 69f5d6de92e320f2044267ae
+  Title: Building a Second Brain
+  Brand: Tiago Forte | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[125/159] ID: 69f5d6de92e320f2044267af
+  Title: Great Expectations
+  Brand: Charles Dickens | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[126/159] ID: 69f5d6de92e320f2044267b0
+  Title: The Power of Habit
+  Brand: Charles Duhigg | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[127/159] ID: 69f5d6de92e320f2044267b1
+  Title: Zero to One
+  Brand: Peter Thiel | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[128/159] ID: 69f5d6de92e320f2044267b2
+  Title: The Psychology of Money
+  Brand: Morgan Housel | Category: books
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[129/159] ID: 69f5d6de92e320f2044267b3
+  Title: Moleskine Classic Notebook
+  Brand: Moleskine | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[130/159] ID: 69f5d6de92e320f2044267b4
+  Title: Lamy Safari Fountain Pen
+  Brand: Lamy | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[131/159] ID: 69f5d6de92e320f2044267b5
+  Title: IKEA Forsa Desk Lamp
+  Brand: IKEA | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[132/159] ID: 69f5d6de92e320f2044267b6
+  Title: Hydro Flask Travel Mug
+  Brand: Hydro Flask | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[133/159] ID: 69f5d6de92e320f2044267b7
+  Title: Blunt Metro Umbrella
+  Brand: Blunt | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[134/159] ID: 69f5d6de92e320f2044267b8
+  Title: Orbitkey Key Organizer
+  Brand: Orbitkey | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[135/159] ID: 69f5d6de92e320f2044267b9
+  Title: Seiko Wall Clock
+  Brand: Seiko | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[136/159] ID: 69f5d6de92e320f2044267ba
+  Title: A5 Acrylic Picture Frame
+  Brand: Generic | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[137/159] ID: 69f5d6de92e320f2044267bb
+  Title: Diptyque Baies Candle
+  Brand: Diptyque | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[138/159] ID: 69f5d6de92e320f2044267bc
+  Title: Muji Polypropylene Box
+  Brand: Muji | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[139/159] ID: 69f5d6de92e320f2044267bd
+  Title: Wera Tool-Check Plus
+  Brand: Wera | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[140/159] ID: 69f5d6de92e320f2044267be
+  Title: Maglite Solitaire LED
+  Brand: Maglite | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[141/159] ID: 69f5d6de92e320f2044267bf
+  Title: Samsonite Luggage Scale
+  Brand: Samsonite | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[142/159] ID: 69f5d6de92e320f2044267c0
+  Title: Bellroy Passport Holder
+  Brand: Bellroy | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[143/159] ID: 69f5d6de92e320f2044267c1
+  Title: Trtl Travel Pillow
+  Brand: Trtl | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[144/159] ID: 69f5d6de92e320f2044267c2
+  Title: Gaiam Yoga Block
+  Brand: Gaiam | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[145/159] ID: 69f5d6de92e320f2044267c3
+  Title: TheraBand Resistance Set
+  Brand: TheraBand | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[146/159] ID: 69f5d6de92e320f2044267c4
+  Title: Ravensburger 1000pc Puzzle
+  Brand: Ravensburger | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[147/159] ID: 69f5d6de92e320f2044267c5
+  Title: Catan Board Game
+  Brand: Catan | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[148/159] ID: 69f5d6de92e320f2044267c6
+  Title: Bicycle Standard Deck
+  Brand: Bicycle | Category: others
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[149/159] ID: 6a157fec34bd70483ae9e1ee
+  Title: Jedel Wireless Mouse | Katoya Innovations
+  Brand: Jedel | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[150/159] ID: 6a605fa35f4f80e651742263
+  Title: ASUS ROG Zephyrus G16 Gaming Laptop
+  Brand: ASUS | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[151/159] ID: 6a605faa5f4f80e65174226d
+  Title: Samsung Galaxy S25 Ultra (512GB, Titanium Gray)
+  Brand: Samsung | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[152/159] ID: 6a605fab5f4f80e651742273
+  Title: Sony WH-1000XM6 Wireless Noise Canceling Headphones
+  Brand: Sony | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[153/159] ID: 6a605fad5f4f80e651742279
+  Title: Apple AirPods Pro 2nd Gen (USB-C, Active Noise Cancellation)
+  Brand: Apple | Category: Electronics
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[154/159] ID: 6ab0050644a3fa8764ba8d6e
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[155/159] ID: 6ab0053ca48e398e32585958
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[156/159] ID: 6ab0057f597bbe5602a9ccc7
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[157/159] ID: 6ab005fea90b106fceb7b898
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[158/159] ID: 6ab00637fc7fbf6f67de57b0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------
+[159/159] ID: 6ab006889863c1ae62b989c0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Doc Prices: min=undefined, max=undefined, stock=undefined, activeOffers=undefined
+  Effective Prices: min=LKR null, max=LKR null, stock=0
+  Offers (0): None
+-----------------------------------------------------------------

@@ -1,0 +1,1416 @@
+=================================================================
+ READ-ONLY MONGODB ATLAS PRODUCT PRICE DATA QUALITY AUDIT REPORT
+ Database: MongoDB Atlas (ecommerce.products & selleroffers)
+ Total Products: 159
+=================================================================
+
+-----------------------------------------------------------------
+ SECTION 1: USER-SPECIFIED TARGET PRODUCT AUDIT
+-----------------------------------------------------------------
+
+>>> TARGET KEYWORD: "ASUS ROG Zephyrus G14" (1 matching documents found)
+  ID: 69f5d6de92e320f204426747
+  Title: ASUS ROG Zephyrus G14
+  Brand: ASUS | Category: electronics
+  Document minPrice: LKR 58,072
+  Document maxPrice: LKR 58,072
+  Effective Min Price: LKR 58,072
+  Effective Max Price: LKR 58,072
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d6 | Price: LKR 58072 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  ANOMALY REASONS: Unusually low price for high-end gaming laptop (LKR 58,072)
+
+>>> TARGET KEYWORD: "ASUS ROG Zephyrus G16" (1 matching documents found)
+  ID: 6a605fa35f4f80e651742263
+  Title: ASUS ROG Zephyrus G16 Gaming Laptop
+  Brand: ASUS | Category: Electronics
+  Document minPrice: LKR 580,000
+  Document maxPrice: LKR 580,000
+  Effective Min Price: LKR 580,000
+  Effective Max Price: LKR 580,000
+  Total Stock: 8
+  Active Seller Offers: OfferID: 6a605faa5f4f80e65174226a | Price: LKR 580000 | Stock: 8 | Seller: BEETA Demo Store
+  CLASSIFICATION: [ NORMAL ]
+
+>>> TARGET KEYWORD: "MacBook Air M3" (1 matching documents found)
+  ID: 69f5d6de92e320f204426740
+  Title: Apple MacBook Air M3
+  Brand: Apple | Category: electronics
+  Document minPrice: LKR 42,707
+  Document maxPrice: LKR 42,707
+  Effective Min Price: LKR 42,707
+  Effective Max Price: LKR 42,707
+  Total Stock: 40
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267cf | Price: LKR 42707 | Stock: 40 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  ANOMALY REASONS: Unusually low price for modern Apple MacBook Air laptop (LKR 42,707)
+
+>>> TARGET KEYWORD: "Samsung Galaxy S25 Ultra" (7 matching documents found)
+  ID: 6a605faa5f4f80e65174226d
+  Title: Samsung Galaxy S25 Ultra (512GB, Titanium Gray)
+  Brand: Samsung | Category: Electronics
+  Document minPrice: LKR 290,000
+  Document maxPrice: LKR 290,000
+  Effective Min Price: LKR 290,000
+  Effective Max Price: LKR 290,000
+  Total Stock: 18
+  Active Seller Offers: OfferID: 6a605faa5f4f80e651742270 | Price: LKR 290000 | Stock: 18 | Seller: BEETA Demo Store
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab0050644a3fa8764ba8d6e
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: N/A
+  Document maxPrice: N/A
+  Effective Min Price: N/A
+  Effective Max Price: N/A
+  Total Stock: 0
+  Active Seller Offers: None
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab0053ca48e398e32585958
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: LKR 450,000
+  Document maxPrice: LKR 450,000
+  Effective Min Price: LKR 450,000
+  Effective Max Price: LKR 450,000
+  Total Stock: 10
+  Active Seller Offers: OfferID: 6ab0053ca48e398e32585960 | Price: LKR 450000 | Stock: 10 | Seller: BEETA Tech Store
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab0057f597bbe5602a9ccc7
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: LKR 450,000
+  Document maxPrice: LKR 450,000
+  Effective Min Price: LKR 450,000
+  Effective Max Price: LKR 450,000
+  Total Stock: 10
+  Active Seller Offers: OfferID: 6ab0057f597bbe5602a9cccf | Price: LKR 450000 | Stock: 10 | Seller: BEETA Tech Store
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab005fea90b106fceb7b898
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: LKR 450,000
+  Document maxPrice: LKR 450,000
+  Effective Min Price: LKR 450,000
+  Effective Max Price: LKR 450,000
+  Total Stock: 10
+  Active Seller Offers: OfferID: 6ab005fea90b106fceb7b8a0 | Price: LKR 450000 | Stock: 10 | Seller: BEETA Tech Store
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab00637fc7fbf6f67de57b0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: LKR 450,000
+  Document maxPrice: LKR 450,000
+  Effective Min Price: LKR 450,000
+  Effective Max Price: LKR 450,000
+  Total Stock: 10
+  Active Seller Offers: OfferID: 6ab00637fc7fbf6f67de57b8 | Price: LKR 450000 | Stock: 10 | Seller: BEETA Tech Store
+  CLASSIFICATION: [ NORMAL ]
+
+  ID: 6ab006889863c1ae62b989c0
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Document minPrice: LKR 450,000
+  Document maxPrice: LKR 450,000
+  Effective Min Price: LKR 450,000
+  Effective Max Price: LKR 450,000
+  Total Stock: 10
+  Active Seller Offers: OfferID: 6ab006889863c1ae62b989c8 | Price: LKR 450000 | Stock: 10 | Seller: BEETA Tech Store
+  CLASSIFICATION: [ NORMAL ]
+
+>>> TARGET KEYWORD: "Razer BlackWidow V4 Keyboard" (1 matching documents found)
+  ID: 69f5d6de92e320f20442674b
+  Title: Razer BlackWidow V4 Keyboard
+  Brand: Razer | Category: electronics
+  Document minPrice: LKR 57,824
+  Document maxPrice: LKR 57,824
+  Effective Min Price: LKR 57,824
+  Effective Max Price: LKR 57,824
+  Total Stock: 33
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267da | Price: LKR 57824 | Stock: 33 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+
+-----------------------------------------------------------------
+ SECTION 2: HIGH-VALUE ELECTRONICS / APPLIANCES WITH UNUSUALLY LOW PRICES (< LKR 100,000)
+-----------------------------------------------------------------
+
+  ID: 69f5d6de92e320f2044267b3
+  Title: Moleskine Classic Notebook
+  Brand: Moleskine | Category: others
+  Min Price: LKR 3,654 | Max Price: LKR 3,654
+  Total Stock: 7
+  Seller Offers: OfferID: 69f5d6df92e320f204426842 | Price: LKR 3654 | Stock: 7 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 3,654
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426740
+  Title: Apple MacBook Air M3
+  Brand: Apple | Category: electronics
+  Min Price: LKR 42,707 | Max Price: LKR 42,707
+  Total Stock: 40
+  Seller Offers: OfferID: 69f5d6df92e320f2044267cf | Price: LKR 42707 | Stock: 40 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 42,707
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673e
+  Title: Dell XPS 13 Laptop
+  Brand: Dell | Category: electronics
+  Min Price: LKR 20,435 | Max Price: LKR 20,435
+  Total Stock: 46
+  Seller Offers: OfferID: 69f5d6df92e320f2044267cd | Price: LKR 20435 | Stock: 46 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 20,435
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676e
+  Title: Samsung EcoBubble Washer
+  Brand: Samsung | Category: home appliances
+  Min Price: LKR 78,044 | Max Price: LKR 78,044
+  Total Stock: 9
+  Seller Offers: OfferID: 69f5d6df92e320f2044267fd | Price: LKR 78044 | Stock: 9 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 78,044
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426746
+  Title: Canon EOS R5 Camera
+  Brand: Canon | Category: electronics
+  Min Price: LKR 46,988 | Max Price: LKR 46,988
+  Total Stock: 34
+  Seller Offers: OfferID: 69f5d6df92e320f2044267d5 | Price: LKR 46988 | Stock: 34 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 46,988
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426774
+  Title: Bosch Series 6 Dishwasher
+  Brand: Bosch | Category: home appliances
+  Min Price: LKR 43,519 | Max Price: LKR 43,519
+  Total Stock: 53
+  Seller Offers: OfferID: 69f5d6df92e320f204426803 | Price: LKR 43519 | Stock: 53 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 43,519
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426747
+  Title: ASUS ROG Zephyrus G14
+  Brand: ASUS | Category: electronics
+  Min Price: LKR 58,072 | Max Price: LKR 58,072
+  Total Stock: 54
+  Seller Offers: OfferID: 69f5d6df92e320f2044267d6 | Price: LKR 58072 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 58,072
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426767
+  Title: LG InstaView Refrigerator
+  Brand: LG | Category: home appliances
+  Min Price: LKR 57,434 | Max Price: LKR 57,434
+  Total Stock: 24
+  Seller Offers: OfferID: 69f5d6df92e320f2044267f6 | Price: LKR 57434 | Stock: 24 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Flagship/High-value hardware priced unusually low at LKR 57,434
+--------------------------------------------------
+
+-----------------------------------------------------------------
+ SECTION 3: ALL PRODUCTS WITH PRICE BELOW LKR 100,000
+-----------------------------------------------------------------
+
+Total products under LKR 100,000: 144
+
+  ID: 69f5d6de92e320f20442674b
+  Title: Razer BlackWidow V4 Keyboard
+  Brand: Razer | Category: electronics
+  Min Price: LKR 57,824
+  Total Stock: 33
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267da | Price: LKR 57824 | Stock: 33 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426756
+  Title: Nike Tech Fleece Joggers
+  Brand: Nike | Category: fashion
+  Min Price: LKR 34,229
+  Total Stock: 37
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e5 | Price: LKR 34229 | Stock: 37 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675a
+  Title: The North Face Nuptse
+  Brand: The North Face | Category: fashion
+  Min Price: LKR 66,685
+  Total Stock: 9
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e9 | Price: LKR 66685 | Stock: 9 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676d
+  Title: Dyson Pure Cool Link
+  Brand: Dyson | Category: home appliances
+  Min Price: LKR 68,125
+  Total Stock: 36
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267fc | Price: LKR 68125 | Stock: 36 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426771
+  Title: Tefal Pro Express Steam
+  Brand: Tefal | Category: home appliances
+  Min Price: LKR 58,663
+  Total Stock: 49
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426800 | Price: LKR 58663 | Stock: 49 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426778
+  Title: Nike Air Zoom Pegasus 40
+  Brand: Nike | Category: sports
+  Min Price: LKR 9,023
+  Total Stock: 20
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426807 | Price: LKR 9023 | Stock: 20 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426787
+  Title: Marmot Trestles Sleeping Bag
+  Brand: Marmot | Category: sports
+  Min Price: LKR 3,757
+  Total Stock: 16
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426816 | Price: LKR 3757 | Stock: 16 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426789
+  Title: CamelBak Eddy+ Bottle
+  Brand: CamelBak | Category: sports
+  Min Price: LKR 58,955
+  Total Stock: 10
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426818 | Price: LKR 58955 | Stock: 10 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426793
+  Title: CeraVe Hydrating Cleanser
+  Brand: CeraVe | Category: beauty
+  Min Price: LKR 54,418
+  Total Stock: 9
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426822 | Price: LKR 54418 | Stock: 9 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426796
+  Title: Olaplex No. 3 Treatment
+  Brand: Olaplex | Category: beauty
+  Min Price: LKR 15,109
+  Total Stock: 16
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426825 | Price: LKR 15109 | Stock: 16 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679f
+  Title: The Alchemist
+  Brand: Paulo Coelho | Category: books
+  Min Price: LKR 36,443
+  Total Stock: 36
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442682e | Price: LKR 36443 | Stock: 36 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69b2cb7fbff078a1ca9c5343
+  Title: Galaxy S24 & S24+ | Galaxy AI
+  Brand: Samsung | Category: Electronics
+  Min Price: LKR 12,900
+  Total Stock: 101
+  Active Seller Offers: OfferID: 69b2cc34bff078a1ca9c5384 | Price: LKR 12900 | Stock: 89 | Seller: franchise shop mart; OfferID: 69b2cf4c55c6f958b6744147 | Price: LKR 34000 | Stock: 12 | Seller: franchise shop mart
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676f
+  Title: Miele Complete C3 Vacuum
+  Brand: Miele | Category: home appliances
+  Min Price: LKR 35,789
+  Total Stock: 25
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267fe | Price: LKR 35789 | Stock: 25 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426791
+  Title: Maybelline Sky High Mascara
+  Brand: Maybelline | Category: beauty
+  Min Price: LKR 2,423
+  Total Stock: 22
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426820 | Price: LKR 2423 | Stock: 22 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ae
+  Title: Building a Second Brain
+  Brand: Tiago Forte | Category: books
+  Min Price: LKR 31,351
+  Total Stock: 46
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442683d | Price: LKR 31351 | Stock: 46 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b3
+  Title: Moleskine Classic Notebook
+  Brand: Moleskine | Category: others
+  Min Price: LKR 3,654
+  Total Stock: 7
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426842 | Price: LKR 3654 | Stock: 7 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 3,654) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267be
+  Title: Maglite Solitaire LED
+  Brand: Maglite | Category: others
+  Min Price: LKR 40,908
+  Total Stock: 23
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442684d | Price: LKR 40908 | Stock: 23 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c5
+  Title: Catan Board Game
+  Brand: Catan | Category: others
+  Min Price: LKR 50,868
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426854 | Price: LKR 50868 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426751
+  Title: Levi's 501 Original Jeans
+  Brand: Levi's | Category: fashion
+  Min Price: LKR 81,009
+  Total Stock: 52
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e0 | Price: LKR 81009 | Stock: 52 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676c
+  Title: Instant Pot Duo Plus
+  Brand: Instant Pot | Category: home appliances
+  Min Price: LKR 42,640
+  Total Stock: 52
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267fb | Price: LKR 42640 | Stock: 52 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426776
+  Title: Cuisinart Grind & Brew
+  Brand: Cuisinart | Category: home appliances
+  Min Price: LKR 24,570
+  Total Stock: 30
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426805 | Price: LKR 24570 | Stock: 30 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426782
+  Title: Gray-Nicolls Legend Bat
+  Brand: Gray-Nicolls | Category: sports
+  Min Price: LKR 17,083
+  Total Stock: 29
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426811 | Price: LKR 17083 | Stock: 29 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678f
+  Title: Real Techniques Brush Set
+  Brand: Real Techniques | Category: beauty
+  Min Price: LKR 17,522
+  Total Stock: 15
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442681e | Price: LKR 17522 | Stock: 15 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267aa
+  Title: Shoe Dog
+  Brand: Phil Knight | Category: books
+  Min Price: LKR 74,834
+  Total Stock: 37
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426839 | Price: LKR 74834 | Stock: 37 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b1
+  Title: Zero to One
+  Brand: Peter Thiel | Category: books
+  Min Price: LKR 52,958
+  Total Stock: 7
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426840 | Price: LKR 52958 | Stock: 7 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673c
+  Title: Samsung Galaxy S24 Ultra
+  Brand: Samsung | Category: electronics
+  Min Price: LKR 3,906
+  Total Stock: 47
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267cb | Price: LKR 3906 | Stock: 47 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426740
+  Title: Apple MacBook Air M3
+  Brand: Apple | Category: electronics
+  Min Price: LKR 42,707
+  Total Stock: 40
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267cf | Price: LKR 42707 | Stock: 40 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 42,707) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426760
+  Title: Herschel Little America Bag
+  Brand: Herschel | Category: fashion
+  Min Price: LKR 5,898
+  Total Stock: 6
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ef | Price: LKR 5898 | Stock: 6 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426764
+  Title: Dyson V15 Detect Vacuum
+  Brand: Dyson | Category: home appliances
+  Min Price: LKR 49,948
+  Total Stock: 7
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f3 | Price: LKR 49948 | Stock: 7 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426765
+  Title: Philips Air Fryer XXL
+  Brand: Philips | Category: home appliances
+  Min Price: LKR 2,847
+  Total Stock: 45
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f4 | Price: LKR 2847 | Stock: 45 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426779
+  Title: Wilson Pro Staff Tennis
+  Brand: Wilson | Category: sports
+  Min Price: LKR 59,348
+  Total Stock: 17
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426808 | Price: LKR 59348 | Stock: 17 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677a
+  Title: Bowflex SelectTech 552
+  Brand: Bowflex | Category: sports
+  Min Price: LKR 9,890
+  Total Stock: 10
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426809 | Price: LKR 9890 | Stock: 10 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677c
+  Title: Spalding NBA Game Ball
+  Brand: Spalding | Category: sports
+  Min Price: LKR 76,750
+  Total Stock: 31
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442680b | Price: LKR 76750 | Stock: 31 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426795
+  Title: Glossier Cloud Paint
+  Brand: Glossier | Category: beauty
+  Min Price: LKR 34,209
+  Total Stock: 46
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426824 | Price: LKR 34209 | Stock: 46 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426797
+  Title: Drunk Elephant C-Firma
+  Brand: Drunk Elephant | Category: beauty
+  Min Price: LKR 12,882
+  Total Stock: 8
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426826 | Price: LKR 12882 | Stock: 8 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679d
+  Title: Charlotte Tilbury Magic
+  Brand: Charlotte Tilbury | Category: beauty
+  Min Price: LKR 59,083
+  Total Stock: 9
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442682c | Price: LKR 59083 | Stock: 9 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a6
+  Title: Thinking, Fast and Slow
+  Brand: Daniel Kahneman | Category: books
+  Min Price: LKR 81,488
+  Total Stock: 49
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426835 | Price: LKR 81488 | Stock: 49 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b2
+  Title: The Psychology of Money
+  Brand: Morgan Housel | Category: books
+  Min Price: LKR 51,216
+  Total Stock: 7
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426841 | Price: LKR 51216 | Stock: 7 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c3
+  Title: TheraBand Resistance Set
+  Brand: TheraBand | Category: others
+  Min Price: LKR 28,963
+  Total Stock: 20
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426852 | Price: LKR 28963 | Stock: 20 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673e
+  Title: Dell XPS 13 Laptop
+  Brand: Dell | Category: electronics
+  Min Price: LKR 20,435
+  Total Stock: 46
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267cd | Price: LKR 20435 | Stock: 46 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 20,435) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426745
+  Title: GoPro HERO12 Black
+  Brand: GoPro | Category: electronics
+  Min Price: LKR 42,423
+  Total Stock: 8
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d4 | Price: LKR 42423 | Stock: 8 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674c
+  Title: Anker 737 Power Bank
+  Brand: Anker | Category: electronics
+  Min Price: LKR 37,971
+  Total Stock: 42
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267db | Price: LKR 37971 | Stock: 42 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675c
+  Title: Vans Old Skool Shoes
+  Brand: Vans | Category: fashion
+  Min Price: LKR 14,262
+  Total Stock: 45
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267eb | Price: LKR 14262 | Stock: 45 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679c
+  Title: Tatcha The Water Cream
+  Brand: Tatcha | Category: beauty
+  Min Price: LKR 13,312
+  Total Stock: 5
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442682b | Price: LKR 13312 | Stock: 5 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b5
+  Title: IKEA Forsa Desk Lamp
+  Brand: IKEA | Category: others
+  Min Price: LKR 37,131
+  Total Stock: 27
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426844 | Price: LKR 37131 | Stock: 27 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b6
+  Title: Hydro Flask Travel Mug
+  Brand: Hydro Flask | Category: others
+  Min Price: LKR 74,858
+  Total Stock: 26
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426845 | Price: LKR 74858 | Stock: 26 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b8
+  Title: Orbitkey Key Organizer
+  Brand: Orbitkey | Category: others
+  Min Price: LKR 78,757
+  Total Stock: 38
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426847 | Price: LKR 78757 | Stock: 38 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674f
+  Title: Nike Air Force 1 '07
+  Brand: Nike | Category: fashion
+  Min Price: LKR 39,290
+  Total Stock: 40
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267de | Price: LKR 39290 | Stock: 40 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426750
+  Title: Adidas Essentials Hoodie
+  Brand: Adidas | Category: fashion
+  Min Price: LKR 54,258
+  Total Stock: 48
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267df | Price: LKR 54258 | Stock: 48 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426768
+  Title: iRobot Roomba j7+
+  Brand: iRobot | Category: home appliances
+  Min Price: LKR 43,349
+  Total Stock: 48
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f7 | Price: LKR 43349 | Stock: 48 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426783
+  Title: Callaway Rogue ST Driver
+  Brand: Callaway | Category: sports
+  Min Price: LKR 71,525
+  Total Stock: 12
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426812 | Price: LKR 71525 | Stock: 12 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267af
+  Title: Great Expectations
+  Brand: Charles Dickens | Category: books
+  Min Price: LKR 49,454
+  Total Stock: 51
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442683e | Price: LKR 49454 | Stock: 51 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b9
+  Title: Seiko Wall Clock
+  Brand: Seiko | Category: others
+  Min Price: LKR 10,193
+  Total Stock: 8
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426848 | Price: LKR 10193 | Stock: 8 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ba
+  Title: A5 Acrylic Picture Frame
+  Brand: Generic | Category: others
+  Min Price: LKR 51,456
+  Total Stock: 25
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426849 | Price: LKR 51456 | Stock: 25 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bb
+  Title: Diptyque Baies Candle
+  Brand: Diptyque | Category: others
+  Min Price: LKR 52,640
+  Total Stock: 41
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442684a | Price: LKR 52640 | Stock: 41 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674a
+  Title: HP LaserJet Pro Printer
+  Brand: HP | Category: electronics
+  Min Price: LKR 56,181
+  Total Stock: 11
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d9 | Price: LKR 56181 | Stock: 11 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676e
+  Title: Samsung EcoBubble Washer
+  Brand: Samsung | Category: home appliances
+  Min Price: LKR 78,044
+  Total Stock: 9
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267fd | Price: LKR 78044 | Stock: 9 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 78,044) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677d
+  Title: Adidas Predator Football
+  Brand: Adidas | Category: sports
+  Min Price: LKR 42,245
+  Total Stock: 29
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442680c | Price: LKR 42245 | Stock: 29 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678a
+  Title: Under Armour Hustle 5.0
+  Brand: Under Armour | Category: sports
+  Min Price: LKR 9,022
+  Total Stock: 12
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426819 | Price: LKR 9022 | Stock: 12 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426741
+  Title: Samsung 32-inch 4K Monitor
+  Brand: Samsung | Category: electronics
+  Min Price: LKR 47,182
+  Total Stock: 5
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d0 | Price: LKR 47182 | Stock: 5 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426742
+  Title: Sony PlayStation 5 Slim
+  Brand: Sony | Category: electronics
+  Min Price: LKR 52,438
+  Total Stock: 25
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d1 | Price: LKR 52438 | Stock: 25 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675f
+  Title: Calvin Klein Boxer Briefs
+  Brand: Calvin Klein | Category: fashion
+  Min Price: LKR 54,232
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ee | Price: LKR 54232 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426763
+  Title: Nespresso Pixie Coffee Maker
+  Brand: Nespresso | Category: home appliances
+  Min Price: LKR 63,200
+  Total Stock: 21
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f2 | Price: LKR 63200 | Stock: 21 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677f
+  Title: Giro Agilis Cycling Helmet
+  Brand: Giro | Category: sports
+  Min Price: LKR 69,764
+  Total Stock: 32
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442680e | Price: LKR 69764 | Stock: 32 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426781
+  Title: Speedo Vanquisher 2.0
+  Brand: Speedo | Category: sports
+  Min Price: LKR 61,341
+  Total Stock: 49
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426810 | Price: LKR 61341 | Stock: 49 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426788
+  Title: Salomon Quest 4D GTX Boots
+  Brand: Salomon | Category: sports
+  Min Price: LKR 31,047
+  Total Stock: 25
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426817 | Price: LKR 31047 | Stock: 25 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679e
+  Title: Sunday Riley Good Genes
+  Brand: Sunday Riley | Category: beauty
+  Min Price: LKR 61,372
+  Total Stock: 41
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442682d | Price: LKR 61372 | Stock: 41 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a0
+  Title: Atomic Habits
+  Brand: James Clear | Category: books
+  Min Price: LKR 54,655
+  Total Stock: 40
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442682f | Price: LKR 54655 | Stock: 40 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a9
+  Title: Man's Search for Meaning
+  Brand: Viktor Frankl | Category: books
+  Min Price: LKR 37,109
+  Total Stock: 6
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426838 | Price: LKR 37109 | Stock: 6 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c4
+  Title: Ravensburger 1000pc Puzzle
+  Brand: Ravensburger | Category: others
+  Min Price: LKR 26,809
+  Total Stock: 16
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426853 | Price: LKR 26809 | Stock: 16 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426746
+  Title: Canon EOS R5 Camera
+  Brand: Canon | Category: electronics
+  Min Price: LKR 46,988
+  Total Stock: 34
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d5 | Price: LKR 46988 | Stock: 34 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 46,988) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426749
+  Title: Bose QuietComfort Ultra
+  Brand: Bose | Category: electronics
+  Min Price: LKR 37,973
+  Total Stock: 39
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d8 | Price: LKR 37973 | Stock: 39 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426757
+  Title: Puma Suede Classic Sneakers
+  Brand: Puma | Category: fashion
+  Min Price: LKR 71,555
+  Total Stock: 42
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e6 | Price: LKR 71555 | Stock: 42 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426766
+  Title: KitchenAid Artisan Mixer
+  Brand: KitchenAid | Category: home appliances
+  Min Price: LKR 54,212
+  Total Stock: 39
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f5 | Price: LKR 54212 | Stock: 39 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676a
+  Title: SMEG Retro Style Toaster
+  Brand: SMEG | Category: home appliances
+  Min Price: LKR 19,162
+  Total Stock: 17
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f9 | Price: LKR 19162 | Stock: 17 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426777
+  Title: Wilson Evolution Basketball
+  Brand: Wilson | Category: sports
+  Min Price: LKR 56,107
+  Total Stock: 11
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426806 | Price: LKR 56107 | Stock: 11 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677b
+  Title: Manduka PRO Yoga Mat
+  Brand: Manduka | Category: sports
+  Min Price: LKR 67,839
+  Total Stock: 19
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442680a | Price: LKR 67839 | Stock: 19 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426780
+  Title: Everlast Pro Boxing Gloves
+  Brand: Everlast | Category: sports
+  Min Price: LKR 34,203
+  Total Stock: 33
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442680f | Price: LKR 34203 | Stock: 33 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679b
+  Title: Dior Sauvage Cologne
+  Brand: Dior | Category: beauty
+  Min Price: LKR 64,613
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442682a | Price: LKR 64613 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a2
+  Title: The Seven Husbands
+  Brand: Taylor Jenkins Reid | Category: books
+  Min Price: LKR 20,099
+  Total Stock: 30
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426831 | Price: LKR 20099 | Stock: 30 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ac
+  Title: Educated
+  Brand: Tara Westover | Category: books
+  Min Price: LKR 48,252
+  Total Stock: 41
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442683b | Price: LKR 48252 | Stock: 41 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69b305a5f7ce706a90abdbb1
+  Title: PlayStation 5
+  Brand: Sony | Category: Electronics
+  Min Price: LKR 1,200
+  Total Stock: 101
+  Active Seller Offers: OfferID: 69b30630f7ce706a90abdc3f | Price: LKR 1200 | Stock: 101 | Seller: franchise shop mart
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69b3df3d4d7e986a2231a0a4
+  Title: SOUNDPEATS Wireless Earbuds, Bluetooth Headphones ...
+  Brand: SOUNDPEATS | Category: Electronics
+  Min Price: LKR 12,900
+  Total Stock: 30
+  Active Seller Offers: OfferID: 69b3df914d7e986a2231a0f6 | Price: LKR 12900 | Stock: 30 | Seller: franchise shop mart
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f591ca543867e16b8f50e8
+  Title: Jedel WD-155 Wireless Mouse 
+  Brand: Jedel | Category: Electronics
+  Min Price: LKR 3,500
+  Total Stock: 75
+  Active Seller Offers: OfferID: 69f5928e543867e16b8f512b | Price: LKR 3500 | Stock: 50 | Seller: Gadjet.lk; OfferID: 69f598db543867e16b8f5200 | Price: LKR 3500 | Stock: 25 | Seller: Gadjet.lk
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673b
+  Title: Apple iPhone 15 Pro
+  Brand: Apple | Category: electronics
+  Min Price: LKR 35,579
+  Total Stock: 41
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ca | Price: LKR 35579 | Stock: 41 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673f
+  Title: Logitech MX Master 3S Mouse
+  Brand: Logitech | Category: electronics
+  Min Price: LKR 74,991
+  Total Stock: 35
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ce | Price: LKR 74991 | Stock: 35 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426744
+  Title: Apple Watch Series 9
+  Brand: Apple | Category: electronics
+  Min Price: LKR 17,467
+  Total Stock: 37
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d3 | Price: LKR 17467 | Stock: 37 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426775
+  Title: De'Longhi Magnifica Evo
+  Brand: De'Longhi | Category: home appliances
+  Min Price: LKR 7,643
+  Total Stock: 9
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426804 | Price: LKR 7643 | Stock: 9 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426792
+  Title: Fenty Beauty Foundation
+  Brand: Fenty | Category: beauty
+  Min Price: LKR 21,393
+  Total Stock: 8
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426821 | Price: LKR 21393 | Stock: 8 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426799
+  Title: Nars Radiant Concealer
+  Brand: Nars | Category: beauty
+  Min Price: LKR 43,916
+  Total Stock: 22
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426828 | Price: LKR 43916 | Stock: 22 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a5
+  Title: The Creative Act
+  Brand: Rick Rubin | Category: books
+  Min Price: LKR 29,386
+  Total Stock: 25
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426834 | Price: LKR 29386 | Stock: 25 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b4
+  Title: Lamy Safari Fountain Pen
+  Brand: Lamy | Category: others
+  Min Price: LKR 5,550
+  Total Stock: 8
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426843 | Price: LKR 5550 | Stock: 8 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bd
+  Title: Wera Tool-Check Plus
+  Brand: Wera | Category: others
+  Min Price: LKR 38,670
+  Total Stock: 28
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442684c | Price: LKR 38670 | Stock: 28 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bf
+  Title: Samsonite Luggage Scale
+  Brand: Samsonite | Category: others
+  Min Price: LKR 10,307
+  Total Stock: 11
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442684e | Price: LKR 10307 | Stock: 11 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426758
+  Title: Uniqlo Ultra Light Down
+  Brand: Uniqlo | Category: fashion
+  Min Price: LKR 11,948
+  Total Stock: 29
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e7 | Price: LKR 11948 | Stock: 29 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426759
+  Title: Ralph Lauren Polo Shirt
+  Brand: Ralph Lauren | Category: fashion
+  Min Price: LKR 59,386
+  Total Stock: 37
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e8 | Price: LKR 59386 | Stock: 37 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426770
+  Title: SodaStream Terra Water
+  Brand: SodaStream | Category: home appliances
+  Min Price: LKR 72,532
+  Total Stock: 14
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ff | Price: LKR 72532 | Stock: 14 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442677e
+  Title: Yonex Astrox 88D Pro
+  Brand: Yonex | Category: sports
+  Min Price: LKR 22,252
+  Total Stock: 48
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442680d | Price: LKR 22252 | Stock: 48 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678b
+  Title: The Ordinary Niacinamide
+  Brand: The Ordinary | Category: beauty
+  Min Price: LKR 65,561
+  Total Stock: 7
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442681a | Price: LKR 65561 | Stock: 7 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a4
+  Title: Lessons in Chemistry
+  Brand: Bonnie Garmus | Category: books
+  Min Price: LKR 78,227
+  Total Stock: 52
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426833 | Price: LKR 78227 | Stock: 52 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a8
+  Title: Verity
+  Brand: Colleen Hoover | Category: books
+  Min Price: LKR 81,027
+  Total Stock: 12
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426837 | Price: LKR 81027 | Stock: 12 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674d
+  Title: Google Pixel 8 Pro
+  Brand: Google | Category: electronics
+  Min Price: LKR 72,032
+  Total Stock: 26
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267dc | Price: LKR 72032 | Stock: 26 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426752
+  Title: Zara Leather Biker Jacket
+  Brand: Zara | Category: fashion
+  Min Price: LKR 52,511
+  Total Stock: 34
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e1 | Price: LKR 52511 | Stock: 34 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675b
+  Title: Converse Chuck Taylor 70
+  Brand: Converse | Category: fashion
+  Min Price: LKR 63,594
+  Total Stock: 8
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ea | Price: LKR 63594 | Stock: 8 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675d
+  Title: Lacoste Slim Fit T-Shirt
+  Brand: Lacoste | Category: fashion
+  Min Price: LKR 6,089
+  Total Stock: 27
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ec | Price: LKR 6089 | Stock: 27 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426774
+  Title: Bosch Series 6 Dishwasher
+  Brand: Bosch | Category: home appliances
+  Min Price: LKR 43,519
+  Total Stock: 53
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426803 | Price: LKR 43519 | Stock: 53 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 43,519) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426794
+  Title: Paula's Choice BHA Exfoliant
+  Brand: Paula's Choice | Category: beauty
+  Min Price: LKR 19,812
+  Total Stock: 38
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426823 | Price: LKR 19812 | Stock: 38 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ab
+  Title: The Midnight Library
+  Brand: Matt Haig | Category: books
+  Min Price: LKR 68,692
+  Total Stock: 30
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442683a | Price: LKR 68692 | Stock: 30 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442673d
+  Title: Sony WH-1000XM5 Headphones
+  Brand: Sony | Category: electronics
+  Min Price: LKR 66,439
+  Total Stock: 51
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267cc | Price: LKR 66439 | Stock: 51 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426755
+  Title: Gucci GG Marmont Handbag
+  Brand: Gucci | Category: fashion
+  Min Price: LKR 8,068
+  Total Stock: 11
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e4 | Price: LKR 8068 | Stock: 11 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442676b
+  Title: Breville Barista Express
+  Brand: Breville | Category: home appliances
+  Min Price: LKR 77,662
+  Total Stock: 47
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267fa | Price: LKR 77662 | Stock: 47 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426772
+  Title: Blueair HealthProtect
+  Brand: Blueair | Category: home appliances
+  Min Price: LKR 6,371
+  Total Stock: 47
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426801 | Price: LKR 6371 | Stock: 47 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426785
+  Title: Casall Jump Rope Pro
+  Brand: Casall | Category: sports
+  Min Price: LKR 73,058
+  Total Stock: 19
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426814 | Price: LKR 73058 | Stock: 19 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c1
+  Title: Trtl Travel Pillow
+  Brand: Trtl | Category: others
+  Min Price: LKR 64,086
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426850 | Price: LKR 64086 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c2
+  Title: Gaiam Yoga Block
+  Brand: Gaiam | Category: others
+  Min Price: LKR 54,805
+  Total Stock: 30
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426851 | Price: LKR 54805 | Stock: 30 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426743
+  Title: JBL Flip 6 Speaker
+  Brand: JBL | Category: electronics
+  Min Price: LKR 79,164
+  Total Stock: 20
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d2 | Price: LKR 79164 | Stock: 20 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426747
+  Title: ASUS ROG Zephyrus G14
+  Brand: ASUS | Category: electronics
+  Min Price: LKR 58,072
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d6 | Price: LKR 58072 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 58,072) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442674e
+  Title: Kindle Paperwhite
+  Brand: Amazon | Category: electronics
+  Min Price: LKR 32,555
+  Total Stock: 36
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267dd | Price: LKR 32555 | Stock: 36 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426753
+  Title: Ray-Ban Classic Wayfarer
+  Brand: Ray-Ban | Category: fashion
+  Min Price: LKR 14,419
+  Total Stock: 50
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e2 | Price: LKR 14419 | Stock: 50 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426767
+  Title: LG InstaView Refrigerator
+  Brand: LG | Category: home appliances
+  Min Price: LKR 57,434
+  Total Stock: 24
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f6 | Price: LKR 57434 | Stock: 24 | Seller: matara bath kade
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASONS: Suspiciously low price (LKR 57,434) for high-end hardware
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426769
+  Title: Xiaomi Mi Air Purifier 4
+  Brand: Xiaomi | Category: home appliances
+  Min Price: LKR 77,197
+  Total Stock: 28
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f8 | Price: LKR 77197 | Stock: 28 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426784
+  Title: Santa Cruz Skateboard
+  Brand: Santa Cruz | Category: sports
+  Min Price: LKR 76,428
+  Total Stock: 20
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426813 | Price: LKR 76428 | Stock: 20 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426790
+  Title: MAC Retro Matte Lipstick
+  Brand: MAC | Category: beauty
+  Min Price: LKR 79,847
+  Total Stock: 5
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442681f | Price: LKR 79847 | Stock: 5 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a1
+  Title: Project Hail Mary
+  Brand: Andy Weir | Category: books
+  Min Price: LKR 71,161
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426830 | Price: LKR 71161 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267bc
+  Title: Muji Polypropylene Box
+  Brand: Muji | Category: others
+  Min Price: LKR 58,437
+  Total Stock: 5
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442684b | Price: LKR 58437 | Stock: 5 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c6
+  Title: Bicycle Standard Deck
+  Brand: Bicycle | Category: others
+  Min Price: LKR 33,173
+  Total Stock: 42
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426855 | Price: LKR 33173 | Stock: 42 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442675e
+  Title: Tommy Hilfiger Sport Cap
+  Brand: Tommy Hilfiger | Category: fashion
+  Min Price: LKR 53,081
+  Total Stock: 16
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267ed | Price: LKR 53081 | Stock: 16 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426761
+  Title: Daniel Wellington Watch
+  Brand: Daniel Wellington | Category: fashion
+  Min Price: LKR 19,152
+  Total Stock: 29
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f0 | Price: LKR 19152 | Stock: 29 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678c
+  Title: Estee Lauder Night Repair
+  Brand: Estee Lauder | Category: beauty
+  Min Price: LKR 29,856
+  Total Stock: 8
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442681b | Price: LKR 29856 | Stock: 8 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678d
+  Title: L'Oreal Revitalift Filler
+  Brand: L'Oreal | Category: beauty
+  Min Price: LKR 20,925
+  Total Stock: 34
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442681c | Price: LKR 20925 | Stock: 34 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442678e
+  Title: Chanel No. 5 Perfume
+  Brand: Chanel | Category: beauty
+  Min Price: LKR 13,024
+  Total Stock: 52
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442681d | Price: LKR 13024 | Stock: 52 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a3
+  Title: Sapiens: A Brief History
+  Brand: Yuval Noah Harari | Category: books
+  Min Price: LKR 15,225
+  Total Stock: 7
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426832 | Price: LKR 15225 | Stock: 7 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267a7
+  Title: Deep Work
+  Brand: Cal Newport | Category: books
+  Min Price: LKR 49,066
+  Total Stock: 49
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426836 | Price: LKR 49066 | Stock: 49 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267ad
+  Title: Never Split the Difference
+  Brand: Chris Voss | Category: books
+  Min Price: LKR 26,442
+  Total Stock: 38
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442683c | Price: LKR 26442 | Stock: 38 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b7
+  Title: Blunt Metro Umbrella
+  Brand: Blunt | Category: others
+  Min Price: LKR 49,125
+  Total Stock: 43
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426846 | Price: LKR 49125 | Stock: 43 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267c0
+  Title: Bellroy Passport Holder
+  Brand: Bellroy | Category: others
+  Min Price: LKR 77,111
+  Total Stock: 29
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442684f | Price: LKR 77111 | Stock: 29 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426748
+  Title: Nintendo Switch OLED
+  Brand: Nintendo | Category: electronics
+  Min Price: LKR 22,310
+  Total Stock: 39
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267d7 | Price: LKR 22310 | Stock: 39 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426754
+  Title: H&M V-Neck Summer Dress
+  Brand: H&M | Category: fashion
+  Min Price: LKR 63,117
+  Total Stock: 47
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267e3 | Price: LKR 63117 | Stock: 47 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426762
+  Title: Fjallraven Kanken Backpack
+  Brand: Fjallraven | Category: fashion
+  Min Price: LKR 76,186
+  Total Stock: 38
+  Active Seller Offers: OfferID: 69f5d6df92e320f2044267f1 | Price: LKR 76186 | Stock: 38 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426773
+  Title: Ninja Professional Blender
+  Brand: Ninja | Category: home appliances
+  Min Price: LKR 56,304
+  Total Stock: 23
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426802 | Price: LKR 56304 | Stock: 23 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426786
+  Title: Coleman Sundome Tent
+  Brand: Coleman | Category: sports
+  Min Price: LKR 54,596
+  Total Stock: 24
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426815 | Price: LKR 54596 | Stock: 24 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f204426798
+  Title: Kiehl's Ultra Facial Cream
+  Brand: Kiehl's | Category: beauty
+  Min Price: LKR 14,077
+  Total Stock: 19
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426827 | Price: LKR 14077 | Stock: 19 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f20442679a
+  Title: Laneige Lip Sleeping Mask
+  Brand: Laneige | Category: beauty
+  Min Price: LKR 58,884
+  Total Stock: 45
+  Active Seller Offers: OfferID: 69f5d6df92e320f204426829 | Price: LKR 58884 | Stock: 45 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+  ID: 69f5d6de92e320f2044267b0
+  Title: The Power of Habit
+  Brand: Charles Duhigg | Category: books
+  Min Price: LKR 16,894
+  Total Stock: 54
+  Active Seller Offers: OfferID: 69f5d6df92e320f20442683f | Price: LKR 16894 | Stock: 54 | Seller: matara bath kade
+  CLASSIFICATION: [ NORMAL ]
+--------------------------------------------------
+
+-----------------------------------------------------------------
+ SECTION 4: PRODUCTS WITHOUT ACTIVE SELLER OFFERS OR DOCUMENT PRICES
+-----------------------------------------------------------------
+
+Total products with missing/zero price: 4
+
+  ID: 69b306bff7ce706a90abdc57
+  Title: MacBook
+  Brand: Apple | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6a157fec34bd70483ae9e1ee
+  Title: Jedel Wireless Mouse | Katoya Innovations
+  Brand: Jedel | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6a605fad5f4f80e651742279
+  Title: Apple AirPods Pro 2nd Gen (USB-C, Active Noise Cancellation)
+  Brand: Apple | Category: Electronics
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------
+  ID: 6ab0050644a3fa8764ba8d6e
+  Title: Samsung Galaxy S25 Ultra
+  Brand: N/A | Category: Mobile Phones
+  Active Offers: No active seller offers
+  CLASSIFICATION: [ POSSIBLE DATA ANOMALY ]
+  REASON: Product has no active price or seller offers in Atlas database
+--------------------------------------------------

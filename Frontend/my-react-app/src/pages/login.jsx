@@ -101,15 +101,28 @@ async function syncBackendSession(idToken) {
 
 // ─── Component ────────────────────────────────────────────────────────────
 const Login = ({ onClose }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [error, setError] = React.useState("");
   const [isSuccess, setIsSuccess] = React.useState(false);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+  const params = new URLSearchParams(location.search);
+  const redirectUrl = params.get("redirect");
+  const from = location.state?.from?.pathname || redirectUrl || "/";
+
+  // Check for session expiration message passed via sessionStorage
+  useEffect(() => {
+    try {
+      const authMsg = sessionStorage.getItem("authMessage");
+      if (authMsg) {
+        setError(authMsg);
+        sessionStorage.removeItem("authMessage");
+      }
+    } catch (e) {}
+  }, []);
 
   // Stable navigate ref so async callbacks always reach the latest navigate
   const navigateRef = useRef(navigate);
@@ -118,7 +131,6 @@ const Login = ({ onClose }) => {
   // Stable onDone for SuccessAnimation — fires navigate once on mount
   const handleLoginDone = useCallback(() => {
     console.log("🚀 REDIRECTION STARTING...");
-    const from = location.state?.from?.pathname || "/";
     console.log(`📍 Target destination: ${from}`);
 
     try {
@@ -136,7 +148,7 @@ const Login = ({ onClose }) => {
       console.error("❌ Navigation error, forcing hard redirect:", err);
       window.location.href = from;
     }
-  }, [navigate, location.state]);
+  }, [navigate, from]);
 
   // ── Handle any leftover redirect result (legacy / fallback) ──────────────
   // We no longer initiate signInWithRedirect, but handle any stored result

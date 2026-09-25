@@ -1,0 +1,78 @@
+{
+  "executionTimestamp": "2026-09-25T05:27:27.606Z",
+  "executionLog": [
+    "SellerOffers deactivated: matched 4, modified 4",
+    "Products updated: matched 5, modified 5"
+  ],
+  "updatedProducts": [
+    {
+      "_id": "6a605faa5f4f80e65174226d",
+      "productName": "Samsung Galaxy S25 Ultra (512GB, Titanium Gray)",
+      "minPrice": 290000,
+      "maxPrice": 290000,
+      "totalStock": 18,
+      "hasActiveOffers": true,
+      "activeOffersCount": 1
+    },
+    {
+      "_id": "6ab006889863c1ae62b989c0",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "approvalStatus": "approved",
+      "minPrice": 450000,
+      "maxPrice": 450000,
+      "totalStock": 10,
+      "hasActiveOffers": true,
+      "activeOffersCount": 1
+    },
+    {
+      "_id": "6ab0053ca48e398e32585958",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "approvalStatus": "rejected",
+      "minPrice": null,
+      "maxPrice": null,
+      "totalStock": 0,
+      "hasActiveOffers": false,
+      "activeOffersCount": 0
+    },
+    {
+      "_id": "6ab0057f597bbe5602a9ccc7",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "approvalStatus": "rejected",
+      "minPrice": null,
+      "maxPrice": null,
+      "totalStock": 0,
+      "hasActiveOffers": false,
+      "activeOffersCount": 0
+    },
+    {
+      "_id": "6ab005fea90b106fceb7b898",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "approvalStatus": "rejected",
+      "minPrice": null,
+      "maxPrice": null,
+      "totalStock": 0,
+      "hasActiveOffers": false,
+      "activeOffersCount": 0
+    },
+    {
+      "_id": "6ab00637fc7fbf6f67de57b0",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "approvalStatus": "rejected",
+      "minPrice": null,
+      "maxPrice": null,
+      "totalStock": 0,
+      "hasActiveOffers": false,
+      "activeOffersCount": 0
+    },
+    {
+      "_id": "6ab0050644a3fa8764ba8d6e",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "approvalStatus": "rejected",
+      "minPrice": null,
+      "maxPrice": null,
+      "totalStock": 0,
+      "hasActiveOffers": false,
+      "activeOffersCount": 0
+    }
+  ]
+}

@@ -68,9 +68,13 @@ class RAGRuntime:
         self.max_tokens = int(os.getenv("RAG_MAX_TOKENS", "450"))
 
         nomic_api_key = os.getenv("NOMIC_API_KEY")
-        if not nomic_api_key:
-            raise EnvironmentError("NOMIC_API_KEY is required for RAG embedding search.")
-        login(nomic_api_key)
+        if nomic_api_key:
+            try:
+                login(nomic_api_key)
+            except Exception as login_err:
+                print(f"Warning: Nomic login failed: {login_err}")
+        else:
+            print("Warning: NOMIC_API_KEY is not set. Nomic features will be in standby mode.")
 
         self.chroma_client = chromadb.PersistentClient(path=str(self.db_dir))
         self.collection = self.chroma_client.get_or_create_collection(

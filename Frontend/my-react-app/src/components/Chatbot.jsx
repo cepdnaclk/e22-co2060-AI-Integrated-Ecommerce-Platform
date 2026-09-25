@@ -1,7 +1,60 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../config/api";
 
 const API = `${API_BASE_URL}/api/chat`;
+
+const ChatProductCard = ({ product }) => {
+    const navigate = useNavigate();
+    const [imgError, setImgError] = useState(false);
+
+    if (!product || (!product.productId && !product._id) || !product.productName) {
+        return null;
+    }
+
+    const pId = product.productId || product._id;
+    const priceText = (product.minPrice !== null && product.minPrice !== undefined)
+        ? `From LKR ${Number(product.minPrice).toLocaleString()}`
+        : "Price unavailable";
+
+    const inStock = product.totalStock > 0;
+
+    return (
+        <div style={styles.card}>
+            <div style={styles.cardImageWrapper}>
+                {!imgError && product.image ? (
+                    <img
+                        src={product.image}
+                        alt={product.productName}
+                        style={styles.cardImage}
+                        onError={() => setImgError(true)}
+                    />
+                ) : (
+                    <div style={styles.cardPlaceholder}>📦</div>
+                )}
+            </div>
+            <div style={styles.cardContent}>
+                <div style={styles.cardTitle} title={product.productName}>
+                    {product.productName}
+                </div>
+                {product.brand && product.brand !== "N/A" && (
+                    <div style={styles.cardBrand}>{product.brand}</div>
+                )}
+                <div style={styles.cardPrice}>{priceText}</div>
+                <div style={{ ...styles.cardStock, color: inStock ? "#4ade80" : "#f87171" }}>
+                    {inStock ? "✓ In Stock" : "Out of Stock"}
+                </div>
+                <button
+                    onClick={() => navigate(`/products/${pId}`)}
+                    style={styles.viewBtn}
+                    className="chatbot-card-btn"
+                >
+                    View Product
+                </button>
+            </div>
+        </div>
+    );
+};
 
 const Chatbot = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +99,14 @@ const Chatbot = () => {
                 throw new Error(data.error || "Failed to connect to support.");
             }
 
-            setMessages((prev) => [...prev, { role: "model", text: data.reply }]);
+            setMessages((prev) => [
+                ...prev,
+                {
+                    role: "model",
+                    text: data.reply,
+                    sources: Array.isArray(data.sources) ? data.sources : []
+                }
+            ]);
         } catch (err) {
             setMessages((prev) => [...prev, { role: "model", text: `Error: ${err.message}` }]);
         } finally {
@@ -54,6 +114,34 @@ const Chatbot = () => {
         }
     };
 
+<<<<<<< HEAD
+    const renderProductCards = (sources) => {
+        if (!sources || !Array.isArray(sources) || sources.length === 0) return null;
+
+        const validSources = [];
+        const seenIds = new Set();
+
+        for (const s of sources) {
+            const id = s.productId || s._id;
+            if (id && s.productName && !seenIds.has(id)) {
+                seenIds.add(id);
+                validSources.push(s);
+            }
+            if (validSources.length >= 5) break;
+        }
+
+        if (validSources.length === 0) return null;
+
+        return (
+            <div style={styles.cardsContainer} className="chatbot-cards-scroll">
+                {validSources.map((product) => (
+                    <ChatProductCard key={product.productId || product._id} product={product} />
+                ))}
+            </div>
+        );
+    };
+
+=======
     const handleSend = async (e) => {
         e.preventDefault();
         if (!input.trim()) return;
@@ -67,6 +155,7 @@ const Chatbot = () => {
         "🛡️ What is your return & warranty policy?"
     ];
 
+>>>>>>> origin/RAG_FBAUTOMATION
     return (
         <div style={styles.wrapper}>
             {/* ── CHAT WINDOW ── */}
@@ -95,8 +184,9 @@ const Chatbot = () => {
                         {messages.map((msg, idx) => (
                             <div key={idx} style={{
                                 display: "flex",
-                                justifyContent: msg.role === "user" ? "flex-end" : "flex-start",
-                                marginBottom: 12
+                                flexDirection: "column",
+                                alignItems: msg.role === "user" ? "flex-end" : "flex-start",
+                                marginBottom: 16
                             }}>
                                 <div style={{
                                     ...styles.messageBubble,
@@ -106,6 +196,7 @@ const Chatbot = () => {
                                 }}>
                                     {msg.text}
                                 </div>
+                                {msg.role === "model" && renderProductCards(msg.sources)}
                             </div>
                         ))}
                         {loading && (
@@ -176,6 +267,14 @@ const Chatbot = () => {
                 .chatbot-toggle-hover { transition: transform 0.2s, box-shadow 0.2s; }
                 .chatbot-toggle-hover:hover { transform: translateY(-4px) scale(1.05); box-shadow: 0 12px 30px rgba(5,130,202,0.5); }
                 
+                .chatbot-card-btn { transition: opacity 0.2s, transform 0.15s; }
+                .chatbot-card-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+                
+                .chatbot-cards-scroll::-webkit-scrollbar { height: 6px; }
+                .chatbot-cards-scroll::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 3px; }
+                .chatbot-cards-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+                .chatbot-cards-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+
                 .dot-flashing {
                     position: relative; width: 6px; height: 6px; border-radius: 5px; background-color: #4ac6ff; color: #4ac6ff;
                     animation: dot-flashing 1s infinite linear alternate; animation-delay: 0.5s;
@@ -272,35 +371,92 @@ const styles = {
         lineHeight: 1.5,
         wordWrap: "break-word",
     },
-    inputArea: {
-        padding: "16px 20px",
-        background: "rgba(0,0,0,0.2)",
-        borderTop: "1px solid rgba(255,255,255,0.08)",
+    cardsContainer: {
         display: "flex",
-        gap: 12,
+        gap: 10,
+        overflowX: "auto",
+        padding: "8px 2px 10px 2px",
+        marginTop: 6,
+        maxWidth: "100%",
+        scrollSnapType: "x mandatory",
     },
-    input: {
-        flex: 1,
-        background: "rgba(255,255,255,0.06)",
-        border: "1px solid rgba(255,255,255,0.15)",
-        borderRadius: "999px",
-        padding: "10px 16px",
-        color: "#fff",
-        fontSize: 14,
-        outline: "none",
+    card: {
+        minWidth: 150,
+        maxWidth: 150,
+        background: "rgba(255, 255, 255, 0.06)",
+        border: "1px solid rgba(255, 255, 255, 0.12)",
+        borderRadius: 12,
+        padding: 10,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        scrollSnapAlign: "start",
+        flexShrink: 0,
     },
-    sendBtn: {
-        width: 42,
-        height: 42,
-        borderRadius: "50%",
-        background: "linear-gradient(135deg, #006494, #0582ca)",
-        color: "#fff",
-        border: "none",
-        cursor: "pointer",
+    cardImageWrapper: {
+        width: "100%",
+        height: 85,
+        borderRadius: 8,
+        overflow: "hidden",
+        background: "rgba(0,0,0,0.25)",
+        marginBottom: 6,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontSize: 16,
+    },
+    cardImage: {
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+    },
+    cardPlaceholder: {
+        fontSize: 32,
+        color: "#94a3b8",
+    },
+    cardContent: {
+        display: "flex",
+        flexDirection: "column",
+        flex: 1,
+    },
+    cardTitle: {
+        fontSize: 12,
+        fontWeight: 600,
+        color: "#f8fafc",
+        marginBottom: 3,
+        display: "-webkit-box",
+        WebkitLineClamp: 2,
+        WebkitBoxOrient: "vertical",
+        overflow: "hidden",
+        lineHeight: "1.3",
+    },
+    cardBrand: {
+        fontSize: 11,
+        color: "#94a3b8",
+        marginBottom: 3,
+    },
+    cardPrice: {
+        fontSize: 11,
+        fontWeight: 700,
+        color: "#38bdf8",
+        marginBottom: 3,
+    },
+    cardStock: {
+        fontSize: 10,
+        fontWeight: 500,
+        marginBottom: 8,
+    },
+    viewBtn: {
+        width: "100%",
+        padding: "6px 0",
+        background: "linear-gradient(135deg, #006494, #0582ca)",
+        color: "#ffffff",
+        border: "none",
+        borderRadius: 6,
+        fontSize: 11,
+        fontWeight: 600,
+        cursor: "pointer",
+        marginTop: "auto",
+        textAlign: "center",
     }
 };
 

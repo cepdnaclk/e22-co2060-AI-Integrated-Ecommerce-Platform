@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate, Link } from "react-router-dom";
 import { getPaymentStatus } from "../services/paymentService";
+import { getPaymentsLkStatus } from "../services/paymentsLkService";
 
 const S = {
   page: {
@@ -55,7 +56,10 @@ const S = {
 };
 
 export default function PaymentStatusPage() {
-  const { orderId } = useParams();
+  const { orderId: pathOrderId } = useParams();
+  const [searchParams] = useSearchParams();
+  const queryOrderId = searchParams.get("orderId");
+  const orderId = pathOrderId || queryOrderId;
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -64,8 +68,20 @@ export default function PaymentStatusPage() {
   const [pollingCount, setPollingCount] = useState(0);
 
   const fetchStatus = async () => {
+    const token = localStorage.getItem("token");
     try {
-      const data = await getPaymentStatus(orderId);
+      let data = null;
+      if (token) {
+        try {
+          data = await getPaymentsLkStatus(token, orderId);
+        } catch (plkErr) {
+          // Fallback to PayHere / general payment status
+          data = await getPaymentStatus(orderId);
+        }
+      } else {
+        data = await getPaymentStatus(orderId);
+      }
+
       setPaymentData(data);
       setError(null);
       return data;
@@ -109,7 +125,7 @@ export default function PaymentStatusPage() {
           />
           <h2 style={{ fontSize: 20, fontWeight: 700 }}>Checking Payment Status…</h2>
           <p style={{ color: "#94a3b8", fontSize: 14, marginTop: 8 }}>
-            Please wait while we verify your PayHere transaction with the server.
+            Please wait while we verify your transaction with the server.
           </p>
           <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
@@ -138,6 +154,8 @@ export default function PaymentStatusPage() {
   }
 
   const status = paymentData?.paymentStatus || "pending";
+  const provider = paymentData?.paymentProvider === "payments_lk" ? "Payments.lk" : "PayHere";
+  const amountVal = paymentData?.total || paymentData?.totalAmount || 0;
 
   const renderStatusContent = () => {
     switch (status) {
@@ -149,7 +167,7 @@ export default function PaymentStatusPage() {
               Payment Successful!
             </h2>
             <p style={{ color: "#cbd5e1", fontSize: 15, marginBottom: 20 }}>
-              Your payment has been received and verified by PayHere. Your order has been placed.
+              Your payment has been received and verified by {provider}. Your order is confirmed.
             </p>
 
             <div
@@ -171,20 +189,24 @@ export default function PaymentStatusPage() {
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                 <span>Amount Paid:</span>
                 <span style={{ color: "#4ade80", fontWeight: 700 }}>
-                  Rs. {Number(paymentData.totalAmount || 0).toLocaleString()} {paymentData.currency || "LKR"}
+                  Rs. {Number(amountVal).toLocaleString()} {paymentData.currency || "LKR"}
                 </span>
               </div>
-              {paymentData.payhereMethod && (
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                <span>Payment Gateway:</span>
+                <span style={{ color: "#38bdf8", fontWeight: 600 }}>{provider}</span>
+              </div>
+              {paymentData.paymentMethod && (
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                   <span>Payment Method:</span>
-                  <span style={{ color: "#fff", fontWeight: 600 }}>{paymentData.payhereMethod}</span>
+                  <span style={{ color: "#fff", fontWeight: 600 }}>{paymentData.paymentMethod}</span>
                 </div>
               )}
-              {paymentData.paymentDate && (
+              {(paymentData.paidAt || paymentData.paymentDate) && (
                 <div style={{ display: "flex", justifyContent: "space-between" }}>
                   <span>Payment Date:</span>
                   <span style={{ color: "#cbd5e1" }}>
-                    {new Date(paymentData.paymentDate).toLocaleString()}
+                    {new Date(paymentData.paidAt || paymentData.paymentDate).toLocaleString()}
                   </span>
                 </div>
               )}
@@ -204,7 +226,7 @@ export default function PaymentStatusPage() {
               Payment Pending
             </h2>
             <p style={{ color: "#cbd5e1", fontSize: 15, marginBottom: 20 }}>
-              We are awaiting PayHere payment notification. If you have completed the payment, this page will update automatically.
+              We are awaiting payment webhook notification from {provider}. If you completed payment, this page will update automatically.
             </p>
 
             <div style={{ marginTop: 20 }}>
@@ -246,7 +268,7 @@ export default function PaymentStatusPage() {
               Payment Cancelled
             </h2>
             <p style={{ color: "#cbd5e1", fontSize: 15, marginBottom: 20 }}>
-              You cancelled the PayHere payment process. Your order has not been charged.
+              You cancelled the payment process. Your order has not been charged.
             </p>
 
             <Link to="/checkout" style={S.btnPrimary}>
@@ -254,6 +276,40 @@ export default function PaymentStatusPage() {
             </Link>
             <Link to="/cart" style={S.btnSecondary}>
               Back to Cart
+            </Link>
+          </>
+        );
+
+      case "expired":
+        return (
+          <>
+            <div style={{ fontSize: 72, marginBottom: 16 }}>⌛</div>
+            <h2 style={{ fontSize: 26, fontWeight: 800, color: "#a855f7", margin: "0 0 10px" }}>
+              Checkout Expired
+            </h2>
+            <p style={{ color: "#cbd5e1", fontSize: 15, marginBottom: 20 }}>
+              This payment session has expired before completion. Please return to checkout to create a new session.
+            </p>
+
+            <Link to="/checkout" style={S.btnPrimary}>
+              💳 Return to Checkout
+            </Link>
+          </>
+        );
+
+      case "refunded":
+        return (
+          <>
+            <div style={{ fontSize: 72, marginBottom: 16 }}>↩️</div>
+            <h2 style={{ fontSize: 26, fontWeight: 800, color: "#38bdf8", margin: "0 0 10px" }}>
+              Payment Refunded
+            </h2>
+            <p style={{ color: "#cbd5e1", fontSize: 15, marginBottom: 20 }}>
+              This payment has been refunded to your original payment method.
+            </p>
+
+            <Link to="/orders" style={S.btnPrimary}>
+              View Orders
             </Link>
           </>
         );

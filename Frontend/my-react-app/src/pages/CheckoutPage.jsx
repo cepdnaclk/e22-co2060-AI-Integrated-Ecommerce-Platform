@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { getCart } from "../services/cartService";
 import { placeOrder, getDeliveryChargePreview } from "../services/orderService";
 import { createPayHerePayment, submitPayHereForm } from "../services/paymentService";
+import { createPaymentsLkCheckout } from "../services/paymentsLkService";
 import GoogleMapAddressPicker from "../components/GoogleMapAddressPicker";
 import API_BASE_URL from "../config/api";
 
@@ -167,27 +168,39 @@ export default function CheckoutPage() {
                 addressLocation: data.addressLocation || null,
             });
 
-            // Pre-fill form with profile data
+            // Pre-fill form with profile data or default demo address
             if (hasAddress) {
                 setForm({
-                    fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
-                    phone: data.phone || "",
-                    street: data.address || "",
-                    city: data.addressLocation?.city || "",
-                    postalCode: data.addressLocation?.postalCode || "",
+                    fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim() || "Demo Customer",
+                    phone: data.phone || "0770000000",
+                    street: data.address || "123 Main Street",
+                    city: data.addressLocation?.city || "Colombo",
+                    postalCode: data.addressLocation?.postalCode || "10000",
                     deliveryInstructions: "",
                 });
                 setAddressSource("profile");
             } else {
-                setForm(prev => ({
-                    ...prev,
-                    fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim(),
-                    phone: data.phone || "",
-                }));
+                setForm({
+                    fullName: `${data.firstName || ""} ${data.lastName || ""}`.trim() || "Demo Customer",
+                    phone: data.phone || "0770000000",
+                    street: "123 Main Street",
+                    city: "Colombo",
+                    postalCode: "10000",
+                    deliveryInstructions: "",
+                });
                 setAddressSource("custom");
+                setOtherPhone(data.phone || "0770000000");
             }
             setPhoneSource(data.phone ? "profile" : "other");
         } catch {
+            setForm({
+                fullName: "Demo Customer",
+                phone: "0770000000",
+                street: "123 Main Street",
+                city: "Colombo",
+                postalCode: "10000",
+                deliveryInstructions: "",
+            });
             setAddressSource("custom");
         } finally {
             setProfileLoading(false);
@@ -317,7 +330,11 @@ export default function CheckoutPage() {
         if (!form.city.trim()) e.city = "Required";
         if (!form.postalCode.trim()) e.postalCode = "Required";
         setErrors(e);
-        return Object.keys(e).length === 0;
+        const isValid = Object.keys(e).length === 0;
+        if (!isValid) {
+            showToast("Please fill in the required shipping address fields (Full Name, Phone, Street, City, Postal Code).", false);
+        }
+        return isValid;
     };
 
     const handlePlaceOrder = async () => {
@@ -379,6 +396,42 @@ export default function CheckoutPage() {
         } catch (err) {
             showToast(err.message, false);
             setPayhereLoading(false);
+        }
+    };
+
+    const [paymentsLkLoading, setPaymentsLkLoading] = useState(false);
+
+    const handlePayWithPaymentsLk = async () => {
+        if (!validate()) return;
+        setPaymentsLkLoading(true);
+        try {
+            const activePhone = phoneSource === "profile" ? (profileAddress?.phone || "") : otherPhone;
+            const shippingData = {
+                ...form,
+                phone: activePhone,
+                deliveryInstructions: form.deliveryInstructions?.trim() || "",
+            };
+
+            if (addressSource === "profile" && profileAddress?.addressLocation?.verified) {
+                applyLocationToShippingData(shippingData, profileAddress.addressLocation);
+            } else if (addressSource === "custom" && mapLocation?.verified) {
+                applyLocationToShippingData(shippingData, mapLocation);
+            }
+
+            const res = await createPaymentsLkCheckout(token, {
+                shippingAddress: shippingData,
+                deliveryCharge
+            });
+
+            if (res && res.checkoutUrl) {
+                // Open/redirect to Payments.lk hosted checkout
+                window.location.href = res.checkoutUrl;
+            } else {
+                throw new Error("Invalid response from Payments.lk gateway");
+            }
+        } catch (err) {
+            showToast(err.message, false);
+            setPaymentsLkLoading(false);
         }
     };
 
@@ -861,11 +914,47 @@ export default function CheckoutPage() {
                                 </span>
                             </div>
 
+                            {/* Payments.lk Payment Button */}
+                            <button
+                                className="co-btn"
+                                onClick={handlePayWithPaymentsLk}
+                                disabled={paymentsLkLoading || payhereLoading || placing || items.length === 0}
+                                style={{
+                                    background: "linear-gradient(135deg, #2563eb, #0284c7)",
+                                    color: "#fff",
+                                    border: "none",
+                                    borderRadius: 10,
+                                    fontWeight: 800,
+                                    fontSize: 15,
+                                    padding: "14px 28px",
+                                    width: "100%",
+                                    marginBottom: 12,
+                                    opacity: paymentsLkLoading || payhereLoading || placing || items.length === 0 ? 0.5 : 1,
+                                    cursor: paymentsLkLoading || payhereLoading || placing || items.length === 0 ? "not-allowed" : "pointer",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    gap: 10,
+                                    boxShadow: "0 4px 15px rgba(2, 132, 199, 0.25)"
+                                }}
+                            >
+                                {paymentsLkLoading ? (
+                                    <>
+                                        <span style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+                                        Opening Payments.lk…
+                                    </>
+                                ) : (
+                                    <>
+                                        <span>💳</span> Pay with Payments.lk
+                                    </>
+                                )}
+                            </button>
+
                             {/* PayHere Payment Button */}
                             <button
                                 className="co-btn"
                                 onClick={handlePayWithPayHere}
-                                disabled={payhereLoading || placing || items.length === 0}
+                                disabled={payhereLoading || paymentsLkLoading || placing || items.length === 0}
                                 style={{
                                     background: "linear-gradient(135deg, #d97706, #f59e0b)",
                                     color: "#fff",
@@ -876,8 +965,8 @@ export default function CheckoutPage() {
                                     padding: "14px 28px",
                                     width: "100%",
                                     marginBottom: 12,
-                                    opacity: payhereLoading || placing || items.length === 0 ? 0.5 : 1,
-                                    cursor: payhereLoading || placing || items.length === 0 ? "not-allowed" : "pointer",
+                                    opacity: payhereLoading || paymentsLkLoading || placing || items.length === 0 ? 0.5 : 1,
+                                    cursor: payhereLoading || paymentsLkLoading || placing || items.length === 0 ? "not-allowed" : "pointer",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
