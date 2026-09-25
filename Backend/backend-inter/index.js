@@ -28,6 +28,7 @@ import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trendin
 import automationRouter from "./router/automationRouter.js"; // 🤖 LangChain Automation Agent
 import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
 import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
+import accountingRouter from "./router/accountingRouter.js"; // 📒 Marketplace Accounting
 
 
 // ================== CRON & WORKERS ==================
@@ -140,6 +141,9 @@ app.use("/api/orders", orderRouter);
 
 // 💳 PayHere Payments
 app.use("/api/payment", paymentRouter);
+
+// 📒 Marketplace Accounting & Bookkeeping
+app.use("/api/accounting", accountingRouter);
 
 
 app.use("/api/export", exportRouter);

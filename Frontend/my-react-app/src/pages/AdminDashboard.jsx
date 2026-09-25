@@ -161,6 +161,7 @@ export default function AdminDashboard() {
                   .ad-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(168,85,247,0.15); }
                 `}</style>
 
+
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-10 pb-8 border-b border-white/10">
                     <div className="text-center md:text-left">
@@ -529,7 +530,6 @@ export default function AdminDashboard() {
 
                 </div>
 
-            </div>
             <AdminMobileNav />
         </div>
     );
