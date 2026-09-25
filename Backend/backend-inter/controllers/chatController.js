@@ -1,5 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { isRagChatEnabled, requestRagChat } from "../services/ragChatService.js";
+import { processMongoDbRagQuery } from "../services/mongodbRagService.js";
 import Product from "../models/products.js";
 
 const PRODUCT_COUNT_PATTERNS = [
@@ -32,6 +33,22 @@ const GREETING_PATTERNS = [
     /^(good morning|good afternoon|good evening)\b/i,
 ];
 
+const ORDERING_PATTERNS = [
+    /\b(how (can i|to|do i|does one) order|how does ordering work|ordering process|how to buy|place an order)\b/i,
+];
+
+const SHIPPING_PATTERNS = [
+    /\b(shipping|delivery|deliver|where do you deliver|how long (for|does) delivery|delivery fee|delivery time|shipping info)\b/i,
+];
+
+const RETURNS_PATTERNS = [
+    /\b(return|returns|refund|how (do|can) i return|return policy|refund policy|30[- ]day return)\b/i,
+];
+
+const OVERVIEW_PATTERNS = [
+    /\b(tell me about your products|what products (do you|u) sell|what do (you|u) sell|what kind of products|catalog overview)\b/i,
+];
+
 function isProductCountQuestion(message) {
     return PRODUCT_COUNT_PATTERNS.some((pattern) => pattern.test(message));
 }
@@ -51,7 +68,71 @@ function isGreetingMessage(message) {
 }
 
 /**
- * AI Chatbot Controller (Weather + E-Commerce RAG with Gemini fallback)
+ * Detects if a user message is a product search, recommendation, or catalog query
+ * that should be routed to MongoDB Atlas RAG.
+ */
+function isProductSearchQuery(message = "", history = []) {
+    const normalized = message.trim().toLowerCase();
+
+    // Non-product administrative / policy / general question exclusions
+    const nonProductExclusions = [
+        /\b(how (can i|to|do i|does one) order|how does ordering work|ordering process)\b/i,
+        /\b(shipping (time|cost|policy)|how long (for|does) delivery|delivery fee)\b/i,
+        /\b(return policy|how to return|refund policy|30[- ]day return)\b/i,
+        /\b(what can you do|who are you|help me|what are your features)\b/i
+    ];
+
+    for (const excl of nonProductExclusions) {
+        if (excl.test(normalized)) return false;
+    }
+
+    // Product intent indicators (with optional plural support)
+    const productPatterns = [
+        /\b(laptops?|notebooks?|macbooks?|zephyrus|g14|g16|xps|pcs?|computers?)\b/i,
+        /\b(phones?|smartphones?|mobiles?|galaxys?|iphones?|pixels?)\b/i,
+        /\b(keyboards?|mou(se|ce)|headphones?|earbuds?|audio|monitors?|displays?|tvs?)\b/i,
+        /\b(clothings?|clothes|apparel|shirts?|t-shirts?|pants?|joggers?|hoodies?|jackets?|wear|shoes|footwear|boots?|sneakers?)\b/i,
+        /\b(appliances?|vacuums?|cleaning|dishwashers?|purifiers?|refrigerators?|washers?)\b/i,
+        /\b(samsung|apple|razer|asus|nike|dyson|sony|logitech|dell|bosch|miele|irobot|xiaomi|nintendo|jedel|canon|lg|bowflex|marmot|morgan)\b/i,
+        /\b(under|below|less than|above|over|between|from)\s+(?:lkr|rs\.?)?\s*\d+/i,
+        /\b(in stock|available|currently in stock|unit in stock)\b/i,
+        /\b(gaming|game|cleaning|sports)\b/i,
+        /\b(show me|looking for|i need|i want|do you have|can i get|recommend|find|search|products?|items?|catalog|store)\b/i
+    ];
+
+    if (productPatterns.some((p) => p.test(normalized))) {
+        return true;
+    }
+
+    // Conversational Follow-up Indicators (enabled when prior product search history exists)
+    const followupPatterns = [
+        /\b(cheaper|cheapest|cheaper ones)\b/i,
+        /\b(which\s+(one|item|model|phone|laptop|keyboard|appliance|product)|which\s+is|which\s+has)\b/i,
+        /\b(what\s+about|how\s+about)\b/i,
+        /\b(do\s+you\s+have\s+another|another\s+one|more\s+stock|most\s+stock)\b/i,
+        /\b(is\s+it|are\s+they)\s+(available|in\s+stock|cheaper)\b/i,
+        /\b(how\s+much\s+is\s+it|what('s|\s+is)\s+the\s+price)\b/i
+    ];
+
+    const isFollowupPhrase = followupPatterns.some((p) => p.test(normalized));
+
+    if (isFollowupPhrase && Array.isArray(history) && history.length > 0) {
+        // Verify that history contains product search intent in user messages
+        const hasRecentProductContext = history.some(msg => {
+            if (!msg || !msg.text || msg.role !== "user") return false;
+            return productPatterns.some(p => p.test(msg.text.toLowerCase()));
+        });
+
+        if (hasRecentProductContext) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+/**
+ * AI Chatbot Controller (Integrated MongoDB Atlas RAG + Fallback)
  */
 export async function handleChatMessage(req, res) {
     const { currentMessage, history = [] } = req.body || {};
@@ -61,12 +142,48 @@ export async function handleChatMessage(req, res) {
         return res.status(400).json({ error: "Message is required." });
     }
 
-    // Keep greetings out of retrieval to avoid irrelevant catalog/weather responses.
+    // 1. Keep greetings out of retrieval to avoid irrelevant catalog responses.
     if (isGreetingMessage(message)) {
         return res.status(200).json({
             reply: "Hi! I am your I-Computers Weather + Shopping assistant. Ask me about weather-ready product choices, product count, price checks, delivery, or returns.",
             provider: "rule-greeting",
             sources: [],
+        });
+    }
+
+    // 2. Ordering process inquiry.
+    if (ORDERING_PATTERNS.some(p => p.test(message))) {
+        return res.status(200).json({
+            reply: "Ordering on I-Computers is simple:\n1. Browse or search for products in our store catalog.\n2. Select your desired item and click **Add to Cart**.\n3. Proceed to Checkout, enter your delivery address, and complete payment securely.",
+            provider: "rule-ordering",
+            sources: []
+        });
+    }
+
+    // 3. Shipping info inquiry.
+    if (SHIPPING_PATTERNS.some(p => p.test(message))) {
+        return res.status(200).json({
+            reply: "Standard shipping takes **3-5 business days** across Sri Lanka. Express delivery options are available at checkout.",
+            provider: "rule-shipping",
+            sources: []
+        });
+    }
+
+    // 4. Return policy inquiry.
+    if (RETURNS_PATTERNS.some(p => p.test(message))) {
+        return res.status(200).json({
+            reply: "We offer a **30-day return policy** for unused items in original packaging. Contact customer support to initiate a return.",
+            provider: "rule-returns",
+            sources: []
+        });
+    }
+
+    // 5. Store overview inquiry.
+    if (OVERVIEW_PATTERNS.some(p => p.test(message))) {
+        return res.status(200).json({
+            reply: "I-Computers offers a wide selection of electronics (laptops, gaming keyboards, smartphones, audio), home appliances, books, fashion, and sports apparel.",
+            provider: "rule-overview",
+            sources: []
         });
     }
 
@@ -79,7 +196,7 @@ export async function handleChatMessage(req, res) {
             }))
         : [];
 
-    // Direct database answer for stock-size questions.
+    // 2. Direct database answer for stock-size questions.
     if (isProductCountQuestion(message)) {
         try {
             const totalProducts = await Product.countDocuments({});
@@ -93,7 +210,7 @@ export async function handleChatMessage(req, res) {
         }
     }
 
-    // Direct database answer for "what are the prices of them/latest products".
+    // 3. Direct database answer for "what are the prices of them/latest products".
     if (isLatestProductsPriceQuestion(message)) {
         try {
             const latestWithPrices = await Product.aggregate([
@@ -165,7 +282,7 @@ export async function handleChatMessage(req, res) {
         }
     }
 
-    // Direct database answer for "latest/new products" questions.
+    // 4. Direct database answer for "latest/new products" questions.
     if (isLatestProductsQuestion(message)) {
         try {
             const latestProducts = await Product.find({})
@@ -201,6 +318,36 @@ export async function handleChatMessage(req, res) {
         }
     }
 
+    // 5. MONGODB ATLAS VECTOR SEARCH RAG (Primary Product Retrieval Path)
+    const isProductSearch = isProductSearchQuery(message, normalizedHistory);
+
+    if (isProductSearch) {
+        console.log(`[CHAT ROUTE] message="${message}"`);
+        console.log(`[CHAT ROUTE] classification=PRODUCT_SEARCH`);
+        console.log(`[CHAT ROUTE] handler=MONGODB_RAG`);
+
+        try {
+            const ragResult = await processMongoDbRagQuery(message, { history: normalizedHistory });
+            if (ragResult && ragResult.success) {
+                return res.status(200).json({
+                    reply: ragResult.answer,
+                    provider: "mongodb-atlas-rag",
+                    sources: ragResult.sources || [],
+                    matchType: ragResult.matchType
+                });
+            } else {
+                console.error("[CHAT ROUTE] MONGODB_RAG returned unsuccessful result:", ragResult);
+            }
+        } catch (atlasRagErr) {
+            console.error("[CHAT ROUTE] MONGODB_RAG Error:", atlasRagErr.message);
+        }
+    } else {
+        console.log(`[CHAT ROUTE] message="${message}"`);
+        console.log(`[CHAT ROUTE] classification=GENERAL`);
+        console.log(`[CHAT ROUTE] handler=LEGACY_RAG`);
+    }
+
+    // 6. Legacy Python / ChromaDB RAG (Fallback Path if RAG enabled)
     let ragError = null;
     if (isRagChatEnabled()) {
         try {
@@ -216,10 +363,11 @@ export async function handleChatMessage(req, res) {
             });
         } catch (error) {
             ragError = error;
-            console.error("RAG Chat Error:", error.message);
+            console.error("Legacy RAG Chat Error:", error.message);
         }
     }
 
+    // 7. General Gemini LLM Fallback (for non-product inquiries)
     try {
         const llmProvider = (process.env.LLM_PROVIDER || "").trim().toLowerCase();
         const geminiFallbackEnabled = process.env.GEMINI_FALLBACK_ENABLED
@@ -242,7 +390,7 @@ export async function handleChatMessage(req, res) {
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);
-        const geminiModel = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+        const geminiModel = process.env.GEMINI_MODEL || "gemini-3.6-flash";
         const model = genAI.getGenerativeModel({ model: geminiModel });
 
         // Gemini requires the first history message to be from user.
@@ -268,13 +416,11 @@ export async function handleChatMessage(req, res) {
 You are the official assistant for "I-Computers", a premium e-commerce platform.
 Follow these rules:
 1. Be helpful, professional, and friendly.
-2. If asked about weather, provide practical weather guidance with brief, clear language.
-3. If asked about shipping, say standard shipping is 3-5 business days.
-4. If asked about returns, mention our 30-day return policy.
+2. If asked about shipping, say standard shipping is 3-5 business days.
+3. If asked about returns, mention our 30-day return policy.
+4. If asked how ordering works, explain that customers can select items, add to cart, and checkout securely.
 5. If answer is uncertain, say what is missing.
 6. Format your response clearly using markdown.
-
-Conversation mode: fallback (RAG service unavailable).
 
 User's message: ${message}
         `;
@@ -292,3 +438,4 @@ User's message: ${message}
         res.status(500).json({ error: "Failed to generate AI response. Please try again later." });
     }
 }
+

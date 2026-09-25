@@ -25,6 +25,7 @@ import dmsRouter from "./dms/routes/dmsRouter.js"; // 🚚 Enterprise Delivery M
 import trendingRouter from "./router/trendingRouter.js"; // 📈 YouTube Trending
 import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
 import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
+import paymentsLkRouter from "./router/paymentsLkRouter.js"; // 💳 Payments.lk Sandbox Gateway
 
 
 // ================== CRON & WORKERS ==================
@@ -46,8 +47,12 @@ const app = express();
 
 // ================== MIDDLEWARE ==================
 
-// Parse JSON request bodies
-app.use(express.json());
+// Parse JSON request bodies (with verify callback to retain rawBody for webhook HMAC signatures)
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 
 // Parse URL-encoded request bodies (for PayHere notify callback)
 app.use(express.urlencoded({ extended: true }));
@@ -132,6 +137,9 @@ app.use("/api/orders", orderRouter);
 
 // 💳 PayHere Payments
 app.use("/api/payment", paymentRouter);
+
+// 💳 Payments.lk Sandbox Gateway
+app.use("/api/payments", paymentsLkRouter);
 
 
 app.use("/api/export", exportRouter);

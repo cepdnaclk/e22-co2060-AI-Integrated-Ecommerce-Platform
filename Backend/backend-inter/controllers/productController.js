@@ -205,6 +205,13 @@ export async function getAllProducts(req, res) {
 
     const pipeline = [];
 
+    /* 🛡️ PUBLIC MARKETPLACE FILTER: Exclude rejected or pending products */
+    pipeline.push({
+      $match: {
+        approvalStatus: { $nin: ["rejected", "pending"] }
+      }
+    });
+
     /* 🔍 SAFE SEARCH (NO $text BUGS) */
     if (search) {
       pipeline.push({
@@ -259,6 +266,13 @@ export async function getAllProducts(req, res) {
             }
           }
         }
+      }
+    });
+
+    /* 🛒 MARKETPLACE FILTER: Must have at least 1 active seller offer */
+    pipeline.push({
+      $match: {
+        sellerCount: { $gt: 0 }
       }
     });
 

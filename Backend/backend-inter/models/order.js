@@ -112,7 +112,7 @@ const orderSchema = new mongoose.Schema(
       required: false
     },
 
-    // 💳 PayHere & Payment Details
+    // 💳 Payment Details (PayHere & Payments.lk)
     orderId: {
       type: String,
       index: true
@@ -123,8 +123,44 @@ const orderSchema = new mongoose.Schema(
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed", "cancelled", "chargedback"],
+      enum: ["pending", "paid", "failed", "cancelled", "expired", "refunded", "chargedback"],
       default: "pending"
+    },
+    paymentProvider: {
+      type: String,
+      default: "payments_lk"
+    },
+    paymentId: {
+      type: String,
+      default: null
+    },
+    checkoutId: {
+      type: String,
+      default: null
+    },
+    checkoutUrl: {
+      type: String,
+      default: null
+    },
+    paymentMethod: {
+      type: String,
+      default: null
+    },
+    paymentEventId: {
+      type: String,
+      default: null
+    },
+    paidAt: {
+      type: Date,
+      default: null
+    },
+    subtotal: {
+      type: Number,
+      default: 0
+    },
+    total: {
+      type: Number,
+      default: 0
     },
     payherePaymentId: {
       type: String,

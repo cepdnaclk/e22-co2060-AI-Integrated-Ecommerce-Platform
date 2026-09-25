@@ -1,0 +1,1275 @@
+Total Products: 159
+Total Seller Offers: 158
+
+[1/159] ID: 69b24a298a4de71fa6f2950a
+   Title/Name: Apple i phone 15 pro
+   Brand: Apple
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[2/159] ID: 69b297243909cd16794fedb2
+   Title/Name: DJI MAVIC 4 PRO
+   Brand: DJI
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[3/159] ID: 69b298693909cd16794fedfd
+   Title/Name: DJI MINI 5 PRO
+   Brand: DJI
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[4/159] ID: 69b2cb7fbff078a1ca9c5343
+   Title/Name: Galaxy S24 & S24+ | Galaxy AI
+   Brand: Samsung
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[5/159] ID: 69b305a5f7ce706a90abdbb1
+   Title/Name: PlayStation 5
+   Brand: Sony
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[6/159] ID: 69b306bff7ce706a90abdc57
+   Title/Name: MacBook
+   Brand: Apple
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[7/159] ID: 69b3df3d4d7e986a2231a0a4
+   Title/Name: SOUNDPEATS Wireless Earbuds, Bluetooth Headphones ...
+   Brand: SOUNDPEATS
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[8/159] ID: 69f591ca543867e16b8f50e8
+   Title/Name: Jedel WD-155 Wireless Mouse 
+   Brand: Jedel
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[9/159] ID: 69f5d6de92e320f20442673b
+   Title/Name: Apple iPhone 15 Pro
+   Brand: Apple
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[10/159] ID: 69f5d6de92e320f20442673c
+   Title/Name: Samsung Galaxy S24 Ultra
+   Brand: Samsung
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[11/159] ID: 69f5d6de92e320f20442673d
+   Title/Name: Sony WH-1000XM5 Headphones
+   Brand: Sony
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[12/159] ID: 69f5d6de92e320f20442673e
+   Title/Name: Dell XPS 13 Laptop
+   Brand: Dell
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[13/159] ID: 69f5d6de92e320f20442673f
+   Title/Name: Logitech MX Master 3S Mouse
+   Brand: Logitech
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[14/159] ID: 69f5d6de92e320f204426740
+   Title/Name: Apple MacBook Air M3
+   Brand: Apple
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[15/159] ID: 69f5d6de92e320f204426741
+   Title/Name: Samsung 32-inch 4K Monitor
+   Brand: Samsung
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[16/159] ID: 69f5d6de92e320f204426742
+   Title/Name: Sony PlayStation 5 Slim
+   Brand: Sony
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[17/159] ID: 69f5d6de92e320f204426743
+   Title/Name: JBL Flip 6 Speaker
+   Brand: JBL
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[18/159] ID: 69f5d6de92e320f204426744
+   Title/Name: Apple Watch Series 9
+   Brand: Apple
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[19/159] ID: 69f5d6de92e320f204426745
+   Title/Name: GoPro HERO12 Black
+   Brand: GoPro
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[20/159] ID: 69f5d6de92e320f204426746
+   Title/Name: Canon EOS R5 Camera
+   Brand: Canon
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[21/159] ID: 69f5d6de92e320f204426747
+   Title/Name: ASUS ROG Zephyrus G14
+   Brand: ASUS
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[22/159] ID: 69f5d6de92e320f204426748
+   Title/Name: Nintendo Switch OLED
+   Brand: Nintendo
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[23/159] ID: 69f5d6de92e320f204426749
+   Title/Name: Bose QuietComfort Ultra
+   Brand: Bose
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[24/159] ID: 69f5d6de92e320f20442674a
+   Title/Name: HP LaserJet Pro Printer
+   Brand: HP
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[25/159] ID: 69f5d6de92e320f20442674b
+   Title/Name: Razer BlackWidow V4 Keyboard
+   Brand: Razer
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[26/159] ID: 69f5d6de92e320f20442674c
+   Title/Name: Anker 737 Power Bank
+   Brand: Anker
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[27/159] ID: 69f5d6de92e320f20442674d
+   Title/Name: Google Pixel 8 Pro
+   Brand: Google
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[28/159] ID: 69f5d6de92e320f20442674e
+   Title/Name: Kindle Paperwhite
+   Brand: Amazon
+   Category: electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[29/159] ID: 69f5d6de92e320f20442674f
+   Title/Name: Nike Air Force 1 '07
+   Brand: Nike
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[30/159] ID: 69f5d6de92e320f204426750
+   Title/Name: Adidas Essentials Hoodie
+   Brand: Adidas
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[31/159] ID: 69f5d6de92e320f204426751
+   Title/Name: Levi's 501 Original Jeans
+   Brand: Levi's
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[32/159] ID: 69f5d6de92e320f204426752
+   Title/Name: Zara Leather Biker Jacket
+   Brand: Zara
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[33/159] ID: 69f5d6de92e320f204426753
+   Title/Name: Ray-Ban Classic Wayfarer
+   Brand: Ray-Ban
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[34/159] ID: 69f5d6de92e320f204426754
+   Title/Name: H&M V-Neck Summer Dress
+   Brand: H&M
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[35/159] ID: 69f5d6de92e320f204426755
+   Title/Name: Gucci GG Marmont Handbag
+   Brand: Gucci
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[36/159] ID: 69f5d6de92e320f204426756
+   Title/Name: Nike Tech Fleece Joggers
+   Brand: Nike
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[37/159] ID: 69f5d6de92e320f204426757
+   Title/Name: Puma Suede Classic Sneakers
+   Brand: Puma
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[38/159] ID: 69f5d6de92e320f204426758
+   Title/Name: Uniqlo Ultra Light Down
+   Brand: Uniqlo
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[39/159] ID: 69f5d6de92e320f204426759
+   Title/Name: Ralph Lauren Polo Shirt
+   Brand: Ralph Lauren
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[40/159] ID: 69f5d6de92e320f20442675a
+   Title/Name: The North Face Nuptse
+   Brand: The North Face
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[41/159] ID: 69f5d6de92e320f20442675b
+   Title/Name: Converse Chuck Taylor 70
+   Brand: Converse
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[42/159] ID: 69f5d6de92e320f20442675c
+   Title/Name: Vans Old Skool Shoes
+   Brand: Vans
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[43/159] ID: 69f5d6de92e320f20442675d
+   Title/Name: Lacoste Slim Fit T-Shirt
+   Brand: Lacoste
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[44/159] ID: 69f5d6de92e320f20442675e
+   Title/Name: Tommy Hilfiger Sport Cap
+   Brand: Tommy Hilfiger
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[45/159] ID: 69f5d6de92e320f20442675f
+   Title/Name: Calvin Klein Boxer Briefs
+   Brand: Calvin Klein
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[46/159] ID: 69f5d6de92e320f204426760
+   Title/Name: Herschel Little America Bag
+   Brand: Herschel
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[47/159] ID: 69f5d6de92e320f204426761
+   Title/Name: Daniel Wellington Watch
+   Brand: Daniel Wellington
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[48/159] ID: 69f5d6de92e320f204426762
+   Title/Name: Fjallraven Kanken Backpack
+   Brand: Fjallraven
+   Category: fashion
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[49/159] ID: 69f5d6de92e320f204426763
+   Title/Name: Nespresso Pixie Coffee Maker
+   Brand: Nespresso
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[50/159] ID: 69f5d6de92e320f204426764
+   Title/Name: Dyson V15 Detect Vacuum
+   Brand: Dyson
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[51/159] ID: 69f5d6de92e320f204426765
+   Title/Name: Philips Air Fryer XXL
+   Brand: Philips
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[52/159] ID: 69f5d6de92e320f204426766
+   Title/Name: KitchenAid Artisan Mixer
+   Brand: KitchenAid
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[53/159] ID: 69f5d6de92e320f204426767
+   Title/Name: LG InstaView Refrigerator
+   Brand: LG
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[54/159] ID: 69f5d6de92e320f204426768
+   Title/Name: iRobot Roomba j7+
+   Brand: iRobot
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[55/159] ID: 69f5d6de92e320f204426769
+   Title/Name: Xiaomi Mi Air Purifier 4
+   Brand: Xiaomi
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[56/159] ID: 69f5d6de92e320f20442676a
+   Title/Name: SMEG Retro Style Toaster
+   Brand: SMEG
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[57/159] ID: 69f5d6de92e320f20442676b
+   Title/Name: Breville Barista Express
+   Brand: Breville
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[58/159] ID: 69f5d6de92e320f20442676c
+   Title/Name: Instant Pot Duo Plus
+   Brand: Instant Pot
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[59/159] ID: 69f5d6de92e320f20442676d
+   Title/Name: Dyson Pure Cool Link
+   Brand: Dyson
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[60/159] ID: 69f5d6de92e320f20442676e
+   Title/Name: Samsung EcoBubble Washer
+   Brand: Samsung
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[61/159] ID: 69f5d6de92e320f20442676f
+   Title/Name: Miele Complete C3 Vacuum
+   Brand: Miele
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[62/159] ID: 69f5d6de92e320f204426770
+   Title/Name: SodaStream Terra Water
+   Brand: SodaStream
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[63/159] ID: 69f5d6de92e320f204426771
+   Title/Name: Tefal Pro Express Steam
+   Brand: Tefal
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[64/159] ID: 69f5d6de92e320f204426772
+   Title/Name: Blueair HealthProtect
+   Brand: Blueair
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[65/159] ID: 69f5d6de92e320f204426773
+   Title/Name: Ninja Professional Blender
+   Brand: Ninja
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[66/159] ID: 69f5d6de92e320f204426774
+   Title/Name: Bosch Series 6 Dishwasher
+   Brand: Bosch
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[67/159] ID: 69f5d6de92e320f204426775
+   Title/Name: De'Longhi Magnifica Evo
+   Brand: De'Longhi
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[68/159] ID: 69f5d6de92e320f204426776
+   Title/Name: Cuisinart Grind & Brew
+   Brand: Cuisinart
+   Category: home appliances
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[69/159] ID: 69f5d6de92e320f204426777
+   Title/Name: Wilson Evolution Basketball
+   Brand: Wilson
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[70/159] ID: 69f5d6de92e320f204426778
+   Title/Name: Nike Air Zoom Pegasus 40
+   Brand: Nike
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[71/159] ID: 69f5d6de92e320f204426779
+   Title/Name: Wilson Pro Staff Tennis
+   Brand: Wilson
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[72/159] ID: 69f5d6de92e320f20442677a
+   Title/Name: Bowflex SelectTech 552
+   Brand: Bowflex
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[73/159] ID: 69f5d6de92e320f20442677b
+   Title/Name: Manduka PRO Yoga Mat
+   Brand: Manduka
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[74/159] ID: 69f5d6de92e320f20442677c
+   Title/Name: Spalding NBA Game Ball
+   Brand: Spalding
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[75/159] ID: 69f5d6de92e320f20442677d
+   Title/Name: Adidas Predator Football
+   Brand: Adidas
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[76/159] ID: 69f5d6de92e320f20442677e
+   Title/Name: Yonex Astrox 88D Pro
+   Brand: Yonex
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[77/159] ID: 69f5d6de92e320f20442677f
+   Title/Name: Giro Agilis Cycling Helmet
+   Brand: Giro
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[78/159] ID: 69f5d6de92e320f204426780
+   Title/Name: Everlast Pro Boxing Gloves
+   Brand: Everlast
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[79/159] ID: 69f5d6de92e320f204426781
+   Title/Name: Speedo Vanquisher 2.0
+   Brand: Speedo
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[80/159] ID: 69f5d6de92e320f204426782
+   Title/Name: Gray-Nicolls Legend Bat
+   Brand: Gray-Nicolls
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[81/159] ID: 69f5d6de92e320f204426783
+   Title/Name: Callaway Rogue ST Driver
+   Brand: Callaway
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[82/159] ID: 69f5d6de92e320f204426784
+   Title/Name: Santa Cruz Skateboard
+   Brand: Santa Cruz
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[83/159] ID: 69f5d6de92e320f204426785
+   Title/Name: Casall Jump Rope Pro
+   Brand: Casall
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[84/159] ID: 69f5d6de92e320f204426786
+   Title/Name: Coleman Sundome Tent
+   Brand: Coleman
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[85/159] ID: 69f5d6de92e320f204426787
+   Title/Name: Marmot Trestles Sleeping Bag
+   Brand: Marmot
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[86/159] ID: 69f5d6de92e320f204426788
+   Title/Name: Salomon Quest 4D GTX Boots
+   Brand: Salomon
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[87/159] ID: 69f5d6de92e320f204426789
+   Title/Name: CamelBak Eddy+ Bottle
+   Brand: CamelBak
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[88/159] ID: 69f5d6de92e320f20442678a
+   Title/Name: Under Armour Hustle 5.0
+   Brand: Under Armour
+   Category: sports
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[89/159] ID: 69f5d6de92e320f20442678b
+   Title/Name: The Ordinary Niacinamide
+   Brand: The Ordinary
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[90/159] ID: 69f5d6de92e320f20442678c
+   Title/Name: Estee Lauder Night Repair
+   Brand: Estee Lauder
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[91/159] ID: 69f5d6de92e320f20442678d
+   Title/Name: L'Oreal Revitalift Filler
+   Brand: L'Oreal
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[92/159] ID: 69f5d6de92e320f20442678e
+   Title/Name: Chanel No. 5 Perfume
+   Brand: Chanel
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[93/159] ID: 69f5d6de92e320f20442678f
+   Title/Name: Real Techniques Brush Set
+   Brand: Real Techniques
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[94/159] ID: 69f5d6de92e320f204426790
+   Title/Name: MAC Retro Matte Lipstick
+   Brand: MAC
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[95/159] ID: 69f5d6de92e320f204426791
+   Title/Name: Maybelline Sky High Mascara
+   Brand: Maybelline
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[96/159] ID: 69f5d6de92e320f204426792
+   Title/Name: Fenty Beauty Foundation
+   Brand: Fenty
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[97/159] ID: 69f5d6de92e320f204426793
+   Title/Name: CeraVe Hydrating Cleanser
+   Brand: CeraVe
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[98/159] ID: 69f5d6de92e320f204426794
+   Title/Name: Paula's Choice BHA Exfoliant
+   Brand: Paula's Choice
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[99/159] ID: 69f5d6de92e320f204426795
+   Title/Name: Glossier Cloud Paint
+   Brand: Glossier
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[100/159] ID: 69f5d6de92e320f204426796
+   Title/Name: Olaplex No. 3 Treatment
+   Brand: Olaplex
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[101/159] ID: 69f5d6de92e320f204426797
+   Title/Name: Drunk Elephant C-Firma
+   Brand: Drunk Elephant
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[102/159] ID: 69f5d6de92e320f204426798
+   Title/Name: Kiehl's Ultra Facial Cream
+   Brand: Kiehl's
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[103/159] ID: 69f5d6de92e320f204426799
+   Title/Name: Nars Radiant Concealer
+   Brand: Nars
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[104/159] ID: 69f5d6de92e320f20442679a
+   Title/Name: Laneige Lip Sleeping Mask
+   Brand: Laneige
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[105/159] ID: 69f5d6de92e320f20442679b
+   Title/Name: Dior Sauvage Cologne
+   Brand: Dior
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[106/159] ID: 69f5d6de92e320f20442679c
+   Title/Name: Tatcha The Water Cream
+   Brand: Tatcha
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[107/159] ID: 69f5d6de92e320f20442679d
+   Title/Name: Charlotte Tilbury Magic
+   Brand: Charlotte Tilbury
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[108/159] ID: 69f5d6de92e320f20442679e
+   Title/Name: Sunday Riley Good Genes
+   Brand: Sunday Riley
+   Category: beauty
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[109/159] ID: 69f5d6de92e320f20442679f
+   Title/Name: The Alchemist
+   Brand: Paulo Coelho
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[110/159] ID: 69f5d6de92e320f2044267a0
+   Title/Name: Atomic Habits
+   Brand: James Clear
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[111/159] ID: 69f5d6de92e320f2044267a1
+   Title/Name: Project Hail Mary
+   Brand: Andy Weir
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[112/159] ID: 69f5d6de92e320f2044267a2
+   Title/Name: The Seven Husbands
+   Brand: Taylor Jenkins Reid
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[113/159] ID: 69f5d6de92e320f2044267a3
+   Title/Name: Sapiens: A Brief History
+   Brand: Yuval Noah Harari
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[114/159] ID: 69f5d6de92e320f2044267a4
+   Title/Name: Lessons in Chemistry
+   Brand: Bonnie Garmus
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[115/159] ID: 69f5d6de92e320f2044267a5
+   Title/Name: The Creative Act
+   Brand: Rick Rubin
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[116/159] ID: 69f5d6de92e320f2044267a6
+   Title/Name: Thinking, Fast and Slow
+   Brand: Daniel Kahneman
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[117/159] ID: 69f5d6de92e320f2044267a7
+   Title/Name: Deep Work
+   Brand: Cal Newport
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[118/159] ID: 69f5d6de92e320f2044267a8
+   Title/Name: Verity
+   Brand: Colleen Hoover
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[119/159] ID: 69f5d6de92e320f2044267a9
+   Title/Name: Man's Search for Meaning
+   Brand: Viktor Frankl
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[120/159] ID: 69f5d6de92e320f2044267aa
+   Title/Name: Shoe Dog
+   Brand: Phil Knight
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[121/159] ID: 69f5d6de92e320f2044267ab
+   Title/Name: The Midnight Library
+   Brand: Matt Haig
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[122/159] ID: 69f5d6de92e320f2044267ac
+   Title/Name: Educated
+   Brand: Tara Westover
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[123/159] ID: 69f5d6de92e320f2044267ad
+   Title/Name: Never Split the Difference
+   Brand: Chris Voss
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[124/159] ID: 69f5d6de92e320f2044267ae
+   Title/Name: Building a Second Brain
+   Brand: Tiago Forte
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[125/159] ID: 69f5d6de92e320f2044267af
+   Title/Name: Great Expectations
+   Brand: Charles Dickens
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[126/159] ID: 69f5d6de92e320f2044267b0
+   Title/Name: The Power of Habit
+   Brand: Charles Duhigg
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[127/159] ID: 69f5d6de92e320f2044267b1
+   Title/Name: Zero to One
+   Brand: Peter Thiel
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[128/159] ID: 69f5d6de92e320f2044267b2
+   Title/Name: The Psychology of Money
+   Brand: Morgan Housel
+   Category: books
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[129/159] ID: 69f5d6de92e320f2044267b3
+   Title/Name: Moleskine Classic Notebook
+   Brand: Moleskine
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[130/159] ID: 69f5d6de92e320f2044267b4
+   Title/Name: Lamy Safari Fountain Pen
+   Brand: Lamy
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[131/159] ID: 69f5d6de92e320f2044267b5
+   Title/Name: IKEA Forsa Desk Lamp
+   Brand: IKEA
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[132/159] ID: 69f5d6de92e320f2044267b6
+   Title/Name: Hydro Flask Travel Mug
+   Brand: Hydro Flask
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[133/159] ID: 69f5d6de92e320f2044267b7
+   Title/Name: Blunt Metro Umbrella
+   Brand: Blunt
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[134/159] ID: 69f5d6de92e320f2044267b8
+   Title/Name: Orbitkey Key Organizer
+   Brand: Orbitkey
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[135/159] ID: 69f5d6de92e320f2044267b9
+   Title/Name: Seiko Wall Clock
+   Brand: Seiko
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[136/159] ID: 69f5d6de92e320f2044267ba
+   Title/Name: A5 Acrylic Picture Frame
+   Brand: Generic
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[137/159] ID: 69f5d6de92e320f2044267bb
+   Title/Name: Diptyque Baies Candle
+   Brand: Diptyque
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[138/159] ID: 69f5d6de92e320f2044267bc
+   Title/Name: Muji Polypropylene Box
+   Brand: Muji
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[139/159] ID: 69f5d6de92e320f2044267bd
+   Title/Name: Wera Tool-Check Plus
+   Brand: Wera
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[140/159] ID: 69f5d6de92e320f2044267be
+   Title/Name: Maglite Solitaire LED
+   Brand: Maglite
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[141/159] ID: 69f5d6de92e320f2044267bf
+   Title/Name: Samsonite Luggage Scale
+   Brand: Samsonite
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[142/159] ID: 69f5d6de92e320f2044267c0
+   Title/Name: Bellroy Passport Holder
+   Brand: Bellroy
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[143/159] ID: 69f5d6de92e320f2044267c1
+   Title/Name: Trtl Travel Pillow
+   Brand: Trtl
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[144/159] ID: 69f5d6de92e320f2044267c2
+   Title/Name: Gaiam Yoga Block
+   Brand: Gaiam
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[145/159] ID: 69f5d6de92e320f2044267c3
+   Title/Name: TheraBand Resistance Set
+   Brand: TheraBand
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[146/159] ID: 69f5d6de92e320f2044267c4
+   Title/Name: Ravensburger 1000pc Puzzle
+   Brand: Ravensburger
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[147/159] ID: 69f5d6de92e320f2044267c5
+   Title/Name: Catan Board Game
+   Brand: Catan
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[148/159] ID: 69f5d6de92e320f2044267c6
+   Title/Name: Bicycle Standard Deck
+   Brand: Bicycle
+   Category: others
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[149/159] ID: 6a157fec34bd70483ae9e1ee
+   Title/Name: Jedel Wireless Mouse | Katoya Innovations
+   Brand: Jedel
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[150/159] ID: 6a605fa35f4f80e651742263
+   Title/Name: ASUS ROG Zephyrus G16 Gaming Laptop
+   Brand: ASUS
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[151/159] ID: 6a605faa5f4f80e65174226d
+   Title/Name: Samsung Galaxy S25 Ultra (512GB, Titanium Gray)
+   Brand: Samsung
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[152/159] ID: 6a605fab5f4f80e651742273
+   Title/Name: Sony WH-1000XM6 Wireless Noise Canceling Headphones
+   Brand: Sony
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[153/159] ID: 6a605fad5f4f80e651742279
+   Title/Name: Apple AirPods Pro 2nd Gen (USB-C, Active Noise Cancellation)
+   Brand: Apple
+   Category: Electronics
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[154/159] ID: 6ab0050644a3fa8764ba8d6e
+   Title/Name: Samsung Galaxy S25 Ultra
+   Brand: N/A
+   Category: Mobile Phones
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[155/159] ID: 6ab0053ca48e398e32585958
+   Title/Name: Samsung Galaxy S25 Ultra
+   Brand: N/A
+   Category: Mobile Phones
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[156/159] ID: 6ab0057f597bbe5602a9ccc7
+   Title/Name: Samsung Galaxy S25 Ultra
+   Brand: N/A
+   Category: Mobile Phones
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[157/159] ID: 6ab005fea90b106fceb7b898
+   Title/Name: Samsung Galaxy S25 Ultra
+   Brand: N/A
+   Category: Mobile Phones
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[158/159] ID: 6ab00637fc7fbf6f67de57b0
+   Title/Name: Samsung Galaxy S25 Ultra
+   Brand: N/A
+   Category: Mobile Phones
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------
+[159/159] ID: 6ab006889863c1ae62b989c0
+   Title/Name: Samsung Galaxy S25 Ultra
+   Brand: N/A
+   Category: Mobile Phones
+   minPrice: N/A | maxPrice: N/A
+   totalStock: N/A
+   Seller Offers: No active seller offers
+-----------------------------------------------------------------

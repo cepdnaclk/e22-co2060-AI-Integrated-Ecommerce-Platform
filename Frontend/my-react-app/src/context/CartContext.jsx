@@ -26,55 +26,77 @@ const CartContext = createContext(null);
 
 /* ── Provider ──────────────────────────────────────────────────── */
 export function CartProvider({ children }) {
-    const token = localStorage.getItem("token");
-
     const [cart,    setCart]    = useState({ items: [], totalPrice: 0 });
     const [loading, setLoading] = useState(false);
     const [error,   setError]   = useState(null);
 
     /* ── Fetch / refresh cart from backend ── */
     const refreshCart = useCallback(async () => {
-        if (!token) { setCart({ items: [], totalPrice: 0 }); return; }
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setCart({ items: [], totalPrice: 0 });
+            setError(null);
+            return;
+        }
         setLoading(true);
         setError(null);
         try {
             const data = await getCart(token);
-            // Backend may return { cart: { items:[], totalPrice } }  or  { items:[], totalPrice }
             const resolved = data?.cart ?? data;
             setCart(resolved || { items: [], totalPrice: 0 });
         } catch (e) {
-            setError(e.message);
+            // Ignore auth expiration errors here as they are handled by the central auth handler
+            if (e.message?.includes("expired") || e.message?.includes("Invalid")) {
+                setError(null);
+                setCart({ items: [], totalPrice: 0 });
+            } else {
+                setError(e.message);
+            }
         } finally {
             setLoading(false);
         }
-    }, [token]);
+    }, []);
 
-    /* Load on mount */
-    useEffect(() => { refreshCart(); }, [refreshCart]);
+    /* Load on mount & listen for session expiration events */
+    useEffect(() => {
+        refreshCart();
+
+        const handleSessionExpired = () => {
+            setCart({ items: [], totalPrice: 0 });
+            setError(null);
+        };
+
+        window.addEventListener("auth:session-expired", handleSessionExpired);
+        return () => window.removeEventListener("auth:session-expired", handleSessionExpired);
+    }, [refreshCart]);
 
     /* ── Add item ── */
     const addItem = useCallback(async (sellerOfferId, quantity = 1, variantId = null) => {
+        const token = localStorage.getItem("token");
         if (!token) return;
         await addToCart(token, sellerOfferId, quantity, variantId);
         await refreshCart();   // re-sync so badge reflects real backend data
-    }, [token, refreshCart]);
+    }, [refreshCart]);
 
     /* ── Update quantity ── */
     const updateItem = useCallback(async (sellerOfferId, quantity) => {
+        const token = localStorage.getItem("token");
         if (!token || quantity < 1) return;
         await updateCartItem(token, sellerOfferId, quantity);
         await refreshCart();
-    }, [token, refreshCart]);
+    }, [refreshCart]);
 
     /* ── Remove single item ── */
     const removeItem = useCallback(async (sellerOfferId) => {
+        const token = localStorage.getItem("token");
         if (!token) return;
         await removeCartItem(token, sellerOfferId);
         await refreshCart();
-    }, [token, refreshCart]);
+    }, [refreshCart]);
 
     /* ── Clear all items ── */
     const clearCart = useCallback(async () => {
+        const token = localStorage.getItem("token");
         if (!token) return;
         const items = cart?.items ?? [];
         await Promise.all(
@@ -84,7 +106,7 @@ export function CartProvider({ children }) {
             })
         );
         await refreshCart();
-    }, [token, cart, refreshCart]);
+    }, [cart, refreshCart]);
 
     /* ── Derived values ── */
     const items      = cart?.items         ?? [];

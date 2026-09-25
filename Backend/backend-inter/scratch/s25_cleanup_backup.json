@@ -1,0 +1,175 @@
+{
+  "timestamp": "2026-09-25T16:03:12.361Z",
+  "targetProductIds": [
+    "6ab0053ca48e398e32585958",
+    "6ab0057f597bbe5602a9ccc7",
+    "6ab005fea90b106fceb7b898",
+    "6ab00637fc7fbf6f67de57b0",
+    "6ab0050644a3fa8764ba8d6e"
+  ],
+  "products": [
+    {
+      "_id": "6ab0050644a3fa8764ba8d6e",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf",
+      "category": "Mobile Phones",
+      "description": "Samsung Galaxy S25 Ultra with premium design, advanced camera system and powerful performance.",
+      "howManyProductsSold": 0,
+      "approvalStatus": "pending",
+      "facebookStatus": "not_posted",
+      "facebookPostId": null,
+      "facebookError": null,
+      "facebookPublishedAt": null,
+      "facebookCaption": null,
+      "createdAt": "2026-09-20T16:08:38.269Z",
+      "updatedAt": "2026-09-20T16:08:38.269Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ab0053ca48e398e32585958",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf",
+      "category": "Mobile Phones",
+      "description": "Samsung Galaxy S25 Ultra with premium design, advanced camera system and powerful performance.",
+      "howManyProductsSold": 0,
+      "approvalStatus": "approved",
+      "facebookStatus": "failed",
+      "facebookPostId": null,
+      "facebookError": "Request failed with status code 400",
+      "facebookPublishedAt": null,
+      "facebookCaption": "🚀 Elevate Your Tech Game with the Samsung Galaxy S25 Ultra! ✨\n\nUnleash ultimate power and sophistication right in the palm of your hand! Designed for those who demand the absolute best, the Galaxy S25 Ultra redefines what a smartphone can do. 📸⚡\n\nKey Highlights:\n💎 Sleek, Premium Design that stands out\n📸 Advanced Camera System for breathtaking photos & videos\n⚡ Ultra-Powerful Performance for seamless multitasking and gaming\n\n💰 Price: Rs. 450,000\n\n🔥 Limited stock available! Upgrade your mobile experience today. \n👉 Tap \"Shop Now\" or click the link to place your order! 👇\n\n#SamsungGalaxyS25Ultra #GalaxyS25Ultra #Smartphones #TechTrends #ShopNow",
+      "createdAt": "2026-09-20T16:09:32.942Z",
+      "updatedAt": "2026-09-20T16:11:51.620Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ab0057f597bbe5602a9ccc7",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf",
+      "category": "Mobile Phones",
+      "description": "Samsung Galaxy S25 Ultra with premium design, advanced camera system and powerful performance.",
+      "howManyProductsSold": 0,
+      "approvalStatus": "approved",
+      "facebookStatus": "failed",
+      "facebookPostId": null,
+      "facebookError": "Request failed with status code 400",
+      "facebookPublishedAt": null,
+      "facebookCaption": "🚀 Redefine Innovation with the ALL-NEW Samsung Galaxy S25 Ultra! 📱✨\n\nUpgrade to the ultimate smartphone experience! Built for those who demand the best, the Galaxy S25 Ultra combines cutting-edge tech with unmatched elegance. \n\nHere is why you’ll love it:\n💎 **Premium Design:** Sleek, modern, and built to turn heads.\n📸 **Advanced Camera System:** Capture life’s best moments in stunning, pro-grade detail.\n⚡ **Powerful Performance:** Lightning-fast speed for seamless multitasking and next-level gaming.\n\n💰 **Price:** Rs. 450,000\n\n🔥 Stock is limited! Experience the future of mobile technology today. \n\n👉 **Order today** and get yours delivered right to your doorstep! Tap the link below to buy now. 👇\n\n#SamsungGalaxyS25Ultra #GalaxyS25 #Samsung #MobilePhones #ShopNow",
+      "createdAt": "2026-09-20T16:10:39.496Z",
+      "updatedAt": "2026-09-20T16:12:50.602Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ab005fea90b106fceb7b898",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf",
+      "category": "Mobile Phones",
+      "description": "Samsung Galaxy S25 Ultra with premium design, advanced camera system and powerful performance.",
+      "howManyProductsSold": 0,
+      "approvalStatus": "approved",
+      "facebookStatus": "failed",
+      "facebookPostId": null,
+      "facebookError": "{\"error\":{\"code\":503,\"message\":\"This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.\",\"status\":\"UNAVAILABLE\"}}",
+      "facebookPublishedAt": null,
+      "facebookCaption": "🚀 **Redefine Innovation with the All-New Samsung Galaxy S25 Ultra!** ✨📱\n\nExperience ultimate power, luxury, and technology right in the palm of your hand. Upgrade to the pinnacle of smartphone technology today! \n\n🔥 **Key Features:**\n💎 **Premium Design:** Sleek, durable, and sophisticated aesthetics.\n📸 **Advanced Camera System:** Capture life in pro-level detail, day or night.\n⚡ **Powerful Performance:** Unmatched speed for gaming, multitasking, and productivity.\n\n💰 **Special Price:** Rs. 450,000\n\nReady to experience the future? Don't wait!\n\n🛒 **Order Today & Get Fast Delivery!** Click the link below to **Shop Now!** 👇\n\n#SamsungGalaxyS25Ultra #GalaxyS25 #TechUpgrade #MobilePhones #ShopNow",
+      "createdAt": "2026-09-20T16:12:46.708Z",
+      "updatedAt": "2026-09-20T16:15:20.463Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ab00637fc7fbf6f67de57b0",
+      "productName": "Samsung Galaxy S25 Ultra",
+      "image": "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf",
+      "category": "Mobile Phones",
+      "description": "Samsung Galaxy S25 Ultra with premium design, advanced camera system and powerful performance.",
+      "howManyProductsSold": 0,
+      "approvalStatus": "approved",
+      "facebookStatus": "failed",
+      "facebookPostId": null,
+      "facebookError": "Meta API Error: Error validating access token: Session has expired on Sunday, 20-Sep-26 08:00:00 PDT. The current time is Sunday, 20-Sep-26 09:17:49 PDT.",
+      "facebookPublishedAt": null,
+      "facebookCaption": "🚀 **Experience the Future of Smartphone Tech: Samsung Galaxy S25 Ultra!** 🔥\n\nUpgrade to the ultimate flagship phone designed to power your everyday life with style and speed! 📱✨\n\nHere is why you’ll love it:\n✨ **Premium Design:** Ultra-sleek, durable, and sophisticated aesthetic.\n📸 **Advanced Camera System:** Capture stunning, professional-grade photos and videos anytime, anywhere.\n⚡ **Powerful Performance:** Blazing-fast processing for seamless gaming, streaming, and multitasking.\n\n💰 **Price:** Rs. 450,000\n\n🔥 Stock is limited! Level up your mobile experience today.\n\n🛒 **Click the link below to Shop Now!** 👇\n\n#SamsungGalaxyS25Ultra #GalaxyS25 #FlagshipPhone #TechUpgrade #ShopNow",
+      "createdAt": "2026-09-20T16:13:43.514Z",
+      "updatedAt": "2026-09-20T16:17:49.174Z",
+      "__v": 0
+    }
+  ],
+  "sellerOffers": [
+    {
+      "_id": "6ab0053ca48e398e32585960",
+      "productId": "6ab0053ca48e398e32585958",
+      "sellerId": "6ab0053ca48e398e3258595f",
+      "variantIds": [],
+      "sellerName": "BEETA Tech Store",
+      "price": 450000,
+      "stock": 10,
+      "warranty": "No warranty",
+      "isActive": true,
+      "image": "",
+      "discountPercentage": 0,
+      "deliveryOptions": [
+        "Standard"
+      ],
+      "createdAt": "2026-09-20T16:09:32.989Z",
+      "updatedAt": "2026-09-20T16:09:32.989Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ab0057f597bbe5602a9cccf",
+      "productId": "6ab0057f597bbe5602a9ccc7",
+      "sellerId": "6ab0057f597bbe5602a9ccce",
+      "variantIds": [],
+      "sellerName": "BEETA Tech Store",
+      "price": 450000,
+      "stock": 10,
+      "warranty": "No warranty",
+      "isActive": true,
+      "image": "",
+      "discountPercentage": 0,
+      "deliveryOptions": [
+        "Standard"
+      ],
+      "createdAt": "2026-09-20T16:10:39.548Z",
+      "updatedAt": "2026-09-20T16:10:39.548Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ab005fea90b106fceb7b8a0",
+      "productId": "6ab005fea90b106fceb7b898",
+      "sellerId": "6ab005fea90b106fceb7b89f",
+      "variantIds": [],
+      "sellerName": "BEETA Tech Store",
+      "price": 450000,
+      "stock": 10,
+      "warranty": "No warranty",
+      "isActive": true,
+      "image": "",
+      "discountPercentage": 0,
+      "deliveryOptions": [
+        "Standard"
+      ],
+      "createdAt": "2026-09-20T16:12:46.750Z",
+      "updatedAt": "2026-09-20T16:12:46.750Z",
+      "__v": 0
+    },
+    {
+      "_id": "6ab00637fc7fbf6f67de57b8",
+      "productId": "6ab00637fc7fbf6f67de57b0",
+      "sellerId": "6ab00637fc7fbf6f67de57b7",
+      "variantIds": [],
+      "sellerName": "BEETA Tech Store",
+      "price": 450000,
+      "stock": 10,
+      "warranty": "No warranty",
+      "isActive": true,
+      "image": "",
+      "discountPercentage": 0,
+      "deliveryOptions": [
+        "Standard"
+      ],
+      "createdAt": "2026-09-20T16:13:43.557Z",
+      "updatedAt": "2026-09-20T16:13:43.557Z",
+      "__v": 0
+    }
+  ]
+}

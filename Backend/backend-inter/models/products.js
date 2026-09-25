@@ -66,6 +66,37 @@ const productSchema = new mongoose.Schema(
     facebookCaption: {
       type: String,
       default: null
+    },
+
+    /* 🧠 RAG & Vector Search Metadata Fields */
+    embedding: {
+      type: [Number],
+      default: undefined
+    },
+
+    minPrice: {
+      type: Number,
+      default: null
+    },
+
+    maxPrice: {
+      type: Number,
+      default: null
+    },
+
+    totalStock: {
+      type: Number,
+      default: 0
+    },
+
+    hasActiveOffers: {
+      type: Boolean,
+      default: false
+    },
+
+    embeddingUpdatedAt: {
+      type: Date,
+      default: null
     }
   },
   {

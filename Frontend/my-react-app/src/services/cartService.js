@@ -1,4 +1,5 @@
 import API_BASE_URL from "../config/api";
+import { handleAuthFailure } from "../utils/auth";
 
 const BASE_URL = `${API_BASE_URL}/api/cart`;
 
@@ -10,6 +11,12 @@ export const getCart = async (token) => {
         const res = await fetch(BASE_URL, {
             headers: { Authorization: `Bearer ${token}` },
         });
+
+        if (res.status === 401) {
+            handleAuthFailure();
+            return { items: [], totalPrice: 0 };
+        }
+
         if (!res.ok) throw new Error("Failed to fetch cart");
         return await res.json();
     } catch (err) {
@@ -30,6 +37,12 @@ export const addToCart = async (token, sellerOfferId, quantity = 1, variantId = 
         },
         body: JSON.stringify({ sellerOfferId, quantity, ...(variantId ? { variantId } : {}) }),
     });
+
+    if (res.status === 401) {
+        handleAuthFailure();
+        throw new Error("Your session has expired. Please sign in again.");
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to add to cart");
     return data;
@@ -47,6 +60,12 @@ export const updateCartItem = async (token, sellerOfferId, quantity) => {
         },
         body: JSON.stringify({ sellerOfferId, quantity }),
     });
+
+    if (res.status === 401) {
+        handleAuthFailure();
+        throw new Error("Your session has expired. Please sign in again.");
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to update cart");
     return data;
@@ -64,6 +83,12 @@ export const removeCartItem = async (token, sellerOfferId) => {
         },
         body: JSON.stringify({ sellerOfferId }),
     });
+
+    if (res.status === 401) {
+        handleAuthFailure();
+        throw new Error("Your session has expired. Please sign in again.");
+    }
+
     const data = await res.json();
     if (!res.ok) throw new Error(data.message || "Failed to remove item");
     return data;
