@@ -5,12 +5,18 @@ const facebookPostSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: false,
+      default: null
     },
     pageRef: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "FacebookPage",
-      required: true
+      required: false,
+      default: null
+    },
+    pageId: {
+      type: String,
+      default: null
     },
     content: {
       type: String,
@@ -27,7 +33,8 @@ const facebookPostSchema = new mongoose.Schema(
     },
     scheduledAt: {
       type: Date,
-      required: true
+      required: true,
+      default: Date.now
     },
     status: {
       type: String,
@@ -45,13 +52,59 @@ const facebookPostSchema = new mongoose.Schema(
     graphPostId: {
       type: String,
       default: null
+    },
+    // AI Metadata
+    tone: {
+      type: String,
+      default: "hype"
+    },
+    campaignType: {
+      type: String,
+      default: "product_spotlight"
+    },
+    targetAudience: {
+      type: String,
+      default: null
+    },
+    isAutomated: {
+      type: Boolean,
+      default: true
+    },
+    // Verification & Quality Guardrails
+    verificationStatus: {
+      type: String,
+      enum: ["unverified", "pending_verification", "verified", "rejected", "auto_verified"],
+      default: "auto_verified"
+    },
+    verificationScore: {
+      type: Number,
+      default: 100
+    },
+    verificationChecks: [
+      {
+        name: { type: String },
+        passed: { type: Boolean },
+        details: { type: String }
+      }
+    ],
+    verifiedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null
+    },
+    verifiedAt: {
+      type: Date,
+      default: null
+    },
+    rejectionReason: {
+      type: String,
+      default: null
     }
   },
   { timestamps: true }
 );
 
-facebookPostSchema.index({ userId: 1, scheduledAt: -1 });
+facebookPostSchema.index({ scheduledAt: -1, status: 1 });
 
-const facebookPostModel = mongoose.model("FacebookPost", facebookPostSchema);
-
-export default facebookPostModel;
+const FacebookPost = mongoose.model("FacebookPost", facebookPostSchema);
+export default FacebookPost;

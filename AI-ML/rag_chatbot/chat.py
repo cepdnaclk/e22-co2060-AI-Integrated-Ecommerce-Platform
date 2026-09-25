@@ -37,7 +37,7 @@ def main() -> None:
     nomic_api_key = os.getenv("NOMIC_API_KEY")
     deepseek_base_url = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
     gemini_api_key = os.getenv("GEMINI_API_KEY")
-    gemini_model = os.getenv("GEMINI_MODEL", "models/gemini-2.0-flash")
+    gemini_model = os.getenv("GEMINI_MODEL", "models/gemini-3.6-flash")
     ollama_base_url = os.getenv("OLLAMA_BASE_URL", "http://127.0.0.1:11434/v1")
     ollama_model = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
     ollama_api_key = os.getenv("OLLAMA_API_KEY", "ollama")

@@ -10,6 +10,7 @@ import {
   mapStatusCodeToPaymentStatus,
   formatAmount
 } from "../services/payhereService.js";
+import { onOrderPaid } from "../services/accountingService.js";
 
 /**
  * ======================================================
@@ -233,6 +234,14 @@ export async function notifyPayment(req, res) {
 
         // Clear buyer's cart after successful payment
         await cartModel.deleteOne({ userId: order.userId });
+
+        // 📒 Record accounting journal entry for this paid order
+        try {
+          await onOrderPaid(order, payment_id);
+        } catch (accountingErr) {
+          // Non-blocking: payment still succeeds even if journal fails
+          console.error(`⚠️ Accounting journal error for order ${order.orderId}:`, accountingErr.message);
+        }
       } else if (Number(status_code) === -1) {
         order.paymentStatus = "cancelled";
       } else if (Number(status_code) === -2) {

@@ -61,7 +61,7 @@ const Chatbot = () => {
     const [messages, setMessages] = useState([
         {
             role: "model",
-            text: "Hi! I'm the I-Computers Weather + Shopping assistant. Ask about weather-ready product choices, delivery, or returns.",
+            text: "Hi! I'm your I-Computers AI Assistant powered by LangChain. I can search our catalog in real-time, share YouTube trending electronics, check order status, or help with store policies.",
         }
     ]);
     const [input, setInput] = useState("");
@@ -75,11 +75,10 @@ const Chatbot = () => {
         }
     }, [messages]);
 
-    const handleSend = async (e) => {
-        e.preventDefault();
-        if (!input.trim()) return;
+    const sendUserQuery = async (queryText) => {
+        if (!queryText || loading) return;
 
-        const userMsg = { role: "user", text: input.trim() };
+        const userMsg = { role: "user", text: queryText };
         setMessages((prev) => [...prev, userMsg]);
         setInput("");
         setLoading(true);
@@ -89,7 +88,7 @@ const Chatbot = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    currentMessage: userMsg.text,
+                    currentMessage: queryText,
                     history: messages // Pass earlier messages for context
                 })
             });
@@ -115,6 +114,7 @@ const Chatbot = () => {
         }
     };
 
+<<<<<<< HEAD
     const renderProductCards = (sources) => {
         if (!sources || !Array.isArray(sources) || sources.length === 0) return null;
 
@@ -141,6 +141,21 @@ const Chatbot = () => {
         );
     };
 
+=======
+    const handleSend = async (e) => {
+        e.preventDefault();
+        if (!input.trim()) return;
+        sendUserQuery(input.trim());
+    };
+
+    const SUGGESTIONS = [
+        "🔥 What's trending on YouTube right now?",
+        "🎮 Recommend a high performance gaming laptop",
+        "📦 How can I track my order?",
+        "🛡️ What is your return & warranty policy?"
+    ];
+
+>>>>>>> origin/RAG_FBAUTOMATION
     return (
         <div style={styles.wrapper}>
             {/* ── CHAT WINDOW ── */}
@@ -150,10 +165,15 @@ const Chatbot = () => {
                         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                             <div style={styles.avatar}>🤖</div>
                             <div>
-                                <h3 style={{ margin: 0, fontSize: 16 }}>I-Computers Weather RAG</h3>
-                                <p style={{ margin: 0, fontSize: 12, color: "#94a3b8", display: "flex", alignItems: "center", gap: 4 }}>
-                                    <span style={{ width: 8, height: 8, background: "#4ade80", borderRadius: "50%", display: "inline-block" }} />
-                                    Online
+                                <h3 style={{ margin: 0, fontSize: 15, display: "flex", alignItems: "center", gap: 6 }}>
+                                    I-Computers Assistant
+                                    <span style={{ fontSize: 9, padding: "2px 6px", background: "rgba(168,85,247,0.25)", border: "1px solid rgba(168,85,247,0.4)", borderRadius: 10, color: "#c084fc", fontWeight: 700 }}>
+                                        LangChain ReAct
+                                    </span>
+                                </h3>
+                                <p style={{ margin: 0, fontSize: 11, color: "#94a3b8", display: "flex", alignItems: "center", gap: 4 }}>
+                                    <span style={{ width: 7, height: 7, background: "#4ade80", borderRadius: "50%", display: "inline-block" }} />
+                                    Live Tools Connected
                                 </p>
                             </div>
                         </div>
@@ -189,11 +209,37 @@ const Chatbot = () => {
                         <div ref={messagesEndRef} />
                     </div>
 
+                    {/* Quick suggestion prompt chips */}
+                    <div style={{ padding: "6px 14px", display: "flex", gap: 6, overflowX: "auto", borderTop: "1px solid rgba(255,255,255,0.06)", background: "rgba(0,0,0,0.15)" }}>
+                        {SUGGESTIONS.map((sug, i) => (
+                            <button
+                                key={i}
+                                onClick={() => sendUserQuery(sug)}
+                                disabled={loading}
+                                style={{
+                                    whiteSpace: "nowrap",
+                                    fontSize: 11,
+                                    background: "rgba(255,255,255,0.06)",
+                                    border: "1px solid rgba(255,255,255,0.12)",
+                                    color: "#cbd5e1",
+                                    padding: "4px 10px",
+                                    borderRadius: 14,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s"
+                                }}
+                                onMouseEnter={(e) => e.currentTarget.style.borderColor = "#a855f7"}
+                                onMouseLeave={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)"}
+                            >
+                                {sug}
+                            </button>
+                        ))}
+                    </div>
+
                     <form onSubmit={handleSend} style={styles.inputArea}>
                         <input
                             type="text"
                             style={styles.input}
-                            placeholder="Type a message..."
+                            placeholder="Ask about products, trends, or policies..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             disabled={loading}

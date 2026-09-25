@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { askSupportAgent } from "../services/automationService.js";
 import { isRagChatEnabled, requestRagChat } from "../services/ragChatService.js";
 import { processMongoDbRagQuery } from "../services/mongodbRagService.js";
 import Product from "../models/products.js";
@@ -369,6 +370,16 @@ export async function handleChatMessage(req, res) {
 
     // 7. General Gemini LLM Fallback (for non-product inquiries)
     try {
+        // 1️⃣ Try tool-augmented LangChain Support Agent first
+        try {
+            const agentResponse = await askSupportAgent(message, normalizedHistory);
+            if (agentResponse && agentResponse.reply) {
+                return res.status(200).json({ reply: agentResponse.reply, provider: "langchain-agent" });
+            }
+        } catch (agentError) {
+            console.warn("⚠️ LangChain agent unreachable or failed, trying direct LLM fallback:", agentError.message);
+        }
+
         const llmProvider = (process.env.LLM_PROVIDER || "").trim().toLowerCase();
         const geminiFallbackEnabled = process.env.GEMINI_FALLBACK_ENABLED
             ? process.env.GEMINI_FALLBACK_ENABLED.toLowerCase() === "true"
@@ -387,6 +398,12 @@ export async function handleChatMessage(req, res) {
             return res.status(500).json({
                 error: `GEMINI_API_KEY is not configured on the server.${ragDetail}`,
             });
+        }
+
+        // 2️⃣ Fallback: direct Gemini LLM chat session
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            return res.status(500).json({ error: "GEMINI_API_KEY is not configured on the server." });
         }
 
         const genAI = new GoogleGenerativeAI(apiKey);

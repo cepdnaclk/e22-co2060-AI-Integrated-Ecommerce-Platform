@@ -1,31 +1,9 @@
-/**
- * CartContext — Global Cart State
- * ─────────────────────────────────────────────────────────────────────
- * Single source of truth for cart data across the entire app.
- * All cart-touching components (CartWidget, CartPage, ProductDetails)
- * read from and write to this context so the badge count, mini-cart
- * panel, and full cart page always stay in sync.
- */
+import React, { createContext, useContext, useState } from "react";
 
-import React, {
-    createContext,
-    useContext,
-    useState,
-    useEffect,
-    useCallback,
-} from "react";
-import {
-    getCart,
-    addToCart,
-    updateCartItem,
-    removeCartItem,
-} from "../services/cartService";
+const CartContext = createContext();
 
-/* ── Context object ────────────────────────────────────────────── */
-const CartContext = createContext(null);
-
-/* ── Provider ──────────────────────────────────────────────────── */
 export function CartProvider({ children }) {
+<<<<<<< HEAD
     const [cart,    setCart]    = useState({ items: [], totalPrice: 0 });
     const [loading, setLoading] = useState(false);
     const [error,   setError]   = useState(null);
@@ -130,11 +108,22 @@ export function CartProvider({ children }) {
             {children}
         </CartContext.Provider>
     );
+=======
+  const [cart, setCart] = useState([]);
+  const addToCart = (item) => setCart((prev) => [...prev, item]);
+  const removeFromCart = (id) => setCart((prev) => prev.filter((i) => i._id !== id));
+  const clearCart = () => setCart([]);
+
+  return (
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart }}>
+      {children}
+    </CartContext.Provider>
+  );
+>>>>>>> origin/RAG_FBAUTOMATION
 }
 
-/* ── Hook ──────────────────────────────────────────────────────── */
 export function useCart() {
-    const ctx = useContext(CartContext);
-    if (!ctx) throw new Error("useCart must be used inside <CartProvider>");
-    return ctx;
+  return useContext(CartContext);
 }
+
+export default CartContext;

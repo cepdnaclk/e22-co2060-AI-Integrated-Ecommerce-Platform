@@ -89,6 +89,23 @@ export async function verifySellerEmail(req, res) {
       });
     }
 
+    // 🔍 Prevent duplicate seller creation during verification
+    const existingSeller = await Seller.findOne({
+      userId: pending.userId,
+    });
+
+    if (existingSeller) {
+      // 🧹 Clean up the pending verification
+      await PendingSellerVerification.deleteOne({
+        _id: pending._id,
+      });
+
+      return res.status(400).json({
+        message: "Seller profile already exists",
+        seller: existingSeller,
+      });
+    }
+
     // ✅ Create the actual Seller document
     const seller = await Seller.create({
       userId: pending.userId,

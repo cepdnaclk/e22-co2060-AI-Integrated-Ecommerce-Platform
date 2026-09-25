@@ -13,7 +13,7 @@ from openai import OpenAI
 from pydantic import BaseModel, Field
 
 from ingest import chunk_text, load_mongo_products, load_text_files
-
+from live_query import process_live_query
 
 class ChatMessage(BaseModel):
     role: Literal["user", "model", "assistant"] = "user"
@@ -29,6 +29,14 @@ class ChatResponse(BaseModel):
     reply: str
     sources: List[str] = Field(default_factory=list)
     provider: str
+    is_live_query: bool = False
+
+class QueryRequest(BaseModel):
+    question: str = Field(min_length=1)
+
+class QueryResponse(BaseModel):
+    result: str
+    success: bool
 
 
 class ReindexRequest(BaseModel):
@@ -85,7 +93,7 @@ class RAGRuntime:
             gemini_api_key = os.getenv("GEMINI_API_KEY")
             if not gemini_api_key:
                 raise EnvironmentError("GEMINI_API_KEY is required when LLM_PROVIDER=gemini.")
-            gemini_model = os.getenv("GEMINI_MODEL", "models/gemini-2.0-flash")
+            gemini_model = os.getenv("GEMINI_MODEL", "models/gemini-3.6-flash")
             if not gemini_model.startswith("models/"):
                 gemini_model = f"models/{gemini_model}"
 
@@ -250,12 +258,22 @@ class RAGRuntime:
         docs = (results.get("documents") or [[]])[0]
         metadatas = (results.get("metadatas") or [[]])[0]
         sources = sorted({m["source"] for m in metadatas if m and "source" in m})
+        
+        # Check for live query
+        live_result = process_live_query(current_message)
+        is_live_query = False
+        
+        if live_result:
+            docs.insert(0, live_result)
+            sources.insert(0, "live_database_query")
+            is_live_query = True
 
         if not docs:
             return {
                 "reply": "I could not find that in the knowledge base.",
                 "sources": [],
                 "provider": self.provider,
+                "is_live_query": False,
             }
 
         prompt = self._build_prompt(
@@ -271,6 +289,7 @@ class RAGRuntime:
             "reply": answer,
             "sources": sources,
             "provider": self.provider,
+            "is_live_query": is_live_query,
         }
 
 
@@ -310,7 +329,23 @@ def chat(payload: ChatRequest) -> ChatResponse:
         reply=result["reply"],
         sources=result.get("sources", []),
         provider=result.get("provider", runtime.provider),
+        is_live_query=result.get("is_live_query", False),
     )
+
+@app.post("/query", response_model=QueryResponse)
+def query(payload: QueryRequest) -> QueryResponse:
+    question = payload.question.strip()
+    if not question:
+        raise HTTPException(status_code=400, detail="question is required.")
+        
+    try:
+        live_result = process_live_query(question)
+        if live_result:
+            return QueryResponse(result=live_result, success=True)
+        else:
+            return QueryResponse(result="No live data needed or found for this query.", success=False)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Live query failed: {exc}") from exc
 
 
 @app.post("/reindex", response_model=ReindexResponse)
