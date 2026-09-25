@@ -216,6 +216,21 @@ const orderSchema = new mongoose.Schema(
         type: Date,
         default: null
       }
+    },
+
+    // 🔐 Delivery Verification OTP
+    deliveryVerification: {
+      otpHash: { type: String, default: null },
+      generatedAt: { type: Date, default: null },
+      expiresAt: { type: Date, default: null },
+      attempts: { type: Number, default: 0 },
+      maxAttempts: { type: Number, default: 3 },
+      verifiedAt: { type: Date, default: null },
+      status: {
+        type: String,
+        enum: ["pending", "verified", "failed", "expired"],
+        default: "pending"
+      }
     }
   },
   {
