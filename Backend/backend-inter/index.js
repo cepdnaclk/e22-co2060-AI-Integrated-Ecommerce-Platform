@@ -29,13 +29,14 @@ import automationRouter from "./router/automationRouter.js"; // 🤖 LangChain A
 import dealsRouter from "./router/dealsRouter.js"; // 🏷️ Deals (discounted offers)
 import paymentRouter from "./router/paymentRouter.js"; // 💳 PayHere Payments
 import accountingRouter from "./router/accountingRouter.js"; // 📒 Marketplace Accounting
-
+import payoutRouter from "./router/payoutRouter.js"; // 💸 Seller Payouts
 
 // ================== CRON & WORKERS ==================
 import "./cron/dailySendToAI.js";
 import "./cron/graphRebuildJob.js";
 import "./cron/marketingAutomationJob.js";
 import "./cron/autoFacebookPostingJob.js";
+import "./cron/payoutJob.js"; // 💸 Daily Payout Job
 import "./worker/facebookPublisherWorker.js";
 
 // ================== CONFIG ==================
@@ -144,8 +145,7 @@ app.use("/api/payment", paymentRouter);
 
 // 📒 Marketplace Accounting & Bookkeeping
 app.use("/api/accounting", accountingRouter);
-
-
+app.use("/api/accounting/payouts", payoutRouter);
 app.use("/api/export", exportRouter);
 
 // 📦 Admin Inventory Management

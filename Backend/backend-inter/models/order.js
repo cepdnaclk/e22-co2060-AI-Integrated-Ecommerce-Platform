@@ -149,6 +149,23 @@ const orderSchema = new mongoose.Schema(
       enum: ["pending", "confirmed", "shipped", "delivered", "cancelled"],
       default: "pending"
     },
+    deliveredAt: {
+      type: Date,
+      default: null
+    },
+    gatewaySettlementStatus: {
+      type: String,
+      enum: ["pending", "settled"],
+      default: "pending"
+    },
+    activeReturn: {
+      type: Boolean,
+      default: false
+    },
+    activeDispute: {
+      type: Boolean,
+      default: false
+    },
 
     // 🧾 Seller fulfillment proof + verification + QR metadata
     sellerQr: {
