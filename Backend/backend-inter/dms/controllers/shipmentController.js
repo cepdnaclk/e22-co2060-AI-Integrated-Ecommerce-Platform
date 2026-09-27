@@ -821,6 +821,92 @@ export async function getAdminShipments(req, res) {
 }
 
 
+
+export async function scanCourierQrAtDelivery(req, res) {
+  try {
+    const qrText = `${req.body?.qrText || ""}`.trim();
+
+    if (!qrText) {
+      return res.status(400).json({
+        message: "QR text is required",
+      });
+    }
+
+    const trackingNumber = qrText;
+
+    const order = await DeliveryOrder.findOne(
+      withTenantScope(req, { trackingNumber })
+    ).populate("currentRiderId", "fullName employeeId phone authUserId");
+
+    if (!order) {
+      return res.status(404).json({
+        message: "Delivery order not found for this QR code",
+      });
+    }
+
+    if (["delivered", "returned"].includes(order.status)) {
+      return res.status(400).json({
+        message: `Shipment is already ${order.status}`,
+        trackingNumber: order.trackingNumber,
+      });
+    }
+
+    if (!order.currentRiderId) {
+      return res.status(400).json({
+        message: "No courier/rider is assigned to this shipment",
+        trackingNumber: order.trackingNumber,
+      });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    order.verification = {
+      otp,
+      otpExpiresAt: expiresAt,
+      isVerified: false,
+    };
+
+    await order.save();
+
+    console.log(`[DMS] Delivery OTP for ${order.trackingNumber}: ${otp}`);
+
+    await createAuditLog({
+      category: "dms_workflow",
+      action: "shipment.customer_qr_scanned",
+      actor: actorForAudit(req),
+      context: {
+        courierCompanyId: order.courierCompanyId,
+        branchId: order.currentBranchId,
+        deliveryOrderId: order._id,
+        trackingNumber: order.trackingNumber,
+      },
+      metadata: {
+        source: "customer_courier_qr_scan",
+      },
+      req,
+    });
+
+    return res.json({
+      message: "Courier QR scanned. Delivery OTP generated.",
+      trackingNumber: order.trackingNumber,
+      expiresAt,
+      courier: {
+        id: order.currentRiderId._id,
+        name: order.currentRiderId.fullName,
+        employeeId: order.currentRiderId.employeeId,
+      },
+      otp: process.env.NODE_ENV === "production" ? undefined : otp,
+    });
+  } catch (error) {
+    console.error("Customer courier QR scan error:", error);
+
+    return res.status(500).json({
+      message: "Failed to process courier QR",
+      error: error.message,
+    });
+  }
+}
 export async function initiateDeliveryConfirmation(req, res) {
   try {
     const { trackingNumber } = req.params;
@@ -948,3 +1034,4 @@ export async function verifyDeliveryOtp(req, res) {
     return res.status(500).json({ message: "Failed to verify delivery OTP", error: error.message });
   }
 }
+

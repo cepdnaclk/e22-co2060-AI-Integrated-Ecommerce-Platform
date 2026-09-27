@@ -179,7 +179,7 @@ export const dmsService = {
     return dmsRequest("/center/rider-queue", { params });
   },
 
-  scanSellerQr(payload) {
+  scanCourierQr(e){return va("/shipments/scan-courier-qr",{method:"POST",body:e})},scanSellerQr(payload) {
     return dmsRequest("/shipments/scan-seller-qr", {
       method: "POST",
       body: payload,
@@ -210,4 +210,5 @@ export const dmsService = {
     });
   },
 };
+
 
