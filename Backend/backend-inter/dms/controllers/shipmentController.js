@@ -1,4 +1,5 @@
 import DeliveryOrder from "../models/deliveryOrder.js";
+
 import DeliveryAssignment from "../models/deliveryAssignment.js";
 import ShipmentTrackingEvent from "../models/shipmentTrackingEvent.js";
 import DeliveryDispute from "../models/deliveryDispute.js";
@@ -14,7 +15,10 @@ import { requireFields } from "../utils/validation.js";
 import { assignBranchByRules, findServiceZone } from "../services/routingEngine.js";
 import { detectScanAnomalies } from "../services/fraudService.js";
 import { createAuditLog } from "../services/auditService.js";
-import { emitDeliveryNotification } from "../services/notificationService.js";
+import {
+  emitDeliveryNotification,
+  sendDeliveryOtpEmail,
+} from "../services/notificationService.js";
 import { parseSellerQrOrderId } from "../../services/sellerQrPayloadService.js";
 
 function actorForAudit(req) {
@@ -836,7 +840,8 @@ export async function scanCourierQrAtDelivery(req, res) {
 
     const order = await DeliveryOrder.findOne(
       withTenantScope(req, { trackingNumber })
-    ).populate("currentRiderId", "fullName employeeId phone authUserId");
+    ).populate("currentRiderId", "fullName employeeId phone authUserId")
+  .populate("customerId", "email firstName lastName phone");
 
     if (!order) {
       return res.status(404).json({
@@ -869,6 +874,29 @@ export async function scanCourierQrAtDelivery(req, res) {
 
     await order.save();
 
+    const customerEmail = order.customerId?.email;
+    const customerName = [
+      order.customerId?.firstName,
+      order.customerId?.lastName,
+    ].filter(Boolean).join(" ") || "Customer";
+
+    if (customerEmail) {
+      try {
+        await sendDeliveryOtpEmail({
+          email: customerEmail,
+          customerName,
+          trackingNumber: order.trackingNumber,
+          otp,
+          expiresAt,
+        });
+
+        console.log(`[DMS] Delivery OTP email sent to ${customerEmail}`);
+      } catch (emailError) {
+        console.error("[DMS] Failed to send delivery OTP email:", emailError.message);
+      }
+    } else {
+      console.warn(`[DMS] Customer email not found for ${order.trackingNumber}`);
+    }
     console.log(`[DMS] Delivery OTP for ${order.trackingNumber}: ${otp}`);
 
     await createAuditLog({
@@ -1034,4 +1062,8 @@ export async function verifyDeliveryOtp(req, res) {
     return res.status(500).json({ message: "Failed to verify delivery OTP", error: error.message });
   }
 }
+
+
+
+
 
