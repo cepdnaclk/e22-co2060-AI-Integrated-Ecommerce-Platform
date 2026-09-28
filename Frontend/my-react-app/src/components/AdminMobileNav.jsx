@@ -9,6 +9,7 @@ export default function AdminMobileNav() {
     { label: "Dashboard", icon: "📊", path: "/admin/dashboard" },
     { label: "Products", icon: "📦", path: "/admin/products" },
     { label: "Orders", icon: "📋", path: "/admin/orders" },
+    { label: "Payouts", icon: "💸", path: "/admin/payouts" },
   ];
 
   // Hidden on desktop (lg+), fixed to bottom on mobile

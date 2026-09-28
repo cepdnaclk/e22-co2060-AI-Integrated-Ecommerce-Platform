@@ -9,7 +9,11 @@ import {
   listFacebookPages,
   listScheduledPosts,
   listSelectedPages,
-  saveSelectedPages
+  saveSelectedPages,
+  triggerAutoFacebookPost,
+  getAutoPostStatus,
+  getFacebookPostingOptions,
+  retryFailedPostController
 } from "../controllers/facebookController.js";
 
 const router = express.Router();
@@ -28,5 +32,11 @@ router.post("/pages/select", authMiddleware, saveSelectedPages);
 router.post("/posts", authMiddleware, upload.single("image"), createScheduledPost);
 router.get("/posts", authMiddleware, listScheduledPosts);
 router.delete("/posts/:id", authMiddleware, deleteScheduledPost);
+router.post("/posts/:id/retry", authMiddleware, retryFailedPostController);
+
+// 🤖 Autonomous Facebook Posting Endpoints
+router.post("/auto-post", triggerAutoFacebookPost);
+router.get("/auto-post/status", getAutoPostStatus);
+router.get("/auto-post/options", getFacebookPostingOptions);
 
 export default router;

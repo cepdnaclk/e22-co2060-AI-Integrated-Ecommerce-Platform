@@ -220,3 +220,113 @@ export async function deleteScheduledPost(req, res) {
     return res.status(500).json({ message: "Failed to delete post", error: error.message });
   }
 }
+
+/**
+ * Trigger an automated Facebook post immediately using the LangChain marketing agent
+ */
+export async function triggerAutoFacebookPost(req, res) {
+  try {
+    const { executeAutomatedFacebookPost } = await import("../services/facebookAutoPosterService.js");
+    const {
+      pageId,
+      trendOverride,
+      customProductId,
+      tone,
+      campaignType,
+      targetAudience,
+      promoCode,
+      discountPercent,
+      language,
+      postLength,
+      customImageUrl,
+      mode,
+      scheduledAt
+    } = req.body || {};
+
+    const result = await executeAutomatedFacebookPost({
+      userId: req.user?.id || null,
+      pageId,
+      trendOverride,
+      customProductId,
+      tone,
+      campaignType,
+      targetAudience,
+      promoCode,
+      discountPercent,
+      language,
+      postLength,
+      customImageUrl,
+      mode: mode || "now",
+      scheduledAt
+    });
+
+    return res.status(200).json(result);
+  } catch (error) {
+    console.error("❌ Auto Facebook post error:", error.message);
+    return res.status(500).json({
+      message: "Failed to execute automated Facebook post",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Get Facebook automation status and statistics
+ */
+export async function getAutoPostStatus(req, res) {
+  try {
+    const isAutoPostEnabled = (process.env.ENABLE_FACEBOOK_AUTO_POSTING || "false").toLowerCase() === "true";
+    const cronSchedule = process.env.FB_AUTO_POST_CRON || "0 11 * * *";
+    const pagesCount = await FacebookPage.countDocuments(req.user ? { userId: req.user.id } : {});
+    const recentPosts = await FacebookPost.find(req.user ? { userId: req.user.id } : {})
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .populate("pageRef", "pageId pageName");
+
+    return res.status(200).json({
+      enabled: isAutoPostEnabled,
+      cronSchedule,
+      connectedPagesCount: pagesCount,
+      recentPosts
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch auto-post status",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Get all available options, presets, and campaign types for automated Facebook posting
+ */
+export async function getFacebookPostingOptions(req, res) {
+  try {
+    const { getMarketingOptions } = await import("../services/automationService.js");
+    const options = await getMarketingOptions();
+    return res.status(200).json(options);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to fetch posting options",
+      error: error.message
+    });
+  }
+}
+
+/**
+ * Retries publishing a previously failed post
+ */
+export async function retryFailedPostController(req, res) {
+  try {
+    const { retryFailedFacebookPost } = await import("../services/facebookAutoPosterService.js");
+    const { id } = req.params;
+    const result = await retryFailedFacebookPost(id);
+    return res.status(200).json(result);
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to retry post",
+      error: error.message
+    });
+  }
+}
+

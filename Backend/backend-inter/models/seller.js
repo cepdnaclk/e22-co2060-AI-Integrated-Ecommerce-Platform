@@ -75,6 +75,15 @@ const sellerSchema = new mongoose.Schema(
     isActive: {
       type: Boolean,
       default: true
+    },
+
+    // 🏦 Payout / Bank Details
+    bankDetails: {
+      accountName: { type: String, default: "" },
+      accountNumber: { type: String, default: "" },
+      bankName: { type: String, default: "" },
+      branchCode: { type: String, default: "" },
+      isVerified: { type: Boolean, default: false }
     }
   },
   {
