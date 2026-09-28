@@ -385,6 +385,29 @@ export default function AdminOrders() {
                     </div>
                   )}
 
+                  {/* Accounting Verification */}
+                  <div className="mb-10">
+                    <h4 className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-4">Accounting Verification (Read-Only)</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-purple-500/10 p-4 rounded-xl border border-purple-500/20">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-slate-500 mb-1">Product Total</p>
+                        <p className="text-sm font-bold text-white">{formatCurrency(selectedOrder.productTotal || 0)}</p>
+                      </div>
+                      <div className="bg-sky-500/10 p-4 rounded-xl border border-sky-500/20">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-slate-500 mb-1">Delivery Charge</p>
+                        <p className="text-sm font-bold text-white">{formatCurrency(selectedOrder.deliveryCharge || 0)}</p>
+                      </div>
+                      <div className="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/20">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-slate-500 mb-1">Commission ({selectedOrder.commissionRate || 0}%)</p>
+                        <p className="text-sm font-bold text-white">{formatCurrency(selectedOrder.commissionAmount || 0)}</p>
+                      </div>
+                      <div className="bg-amber-500/10 p-4 rounded-xl border border-amber-500/20">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-slate-500 mb-1">Seller Payable</p>
+                        <p className="text-sm font-bold text-white">{formatCurrency(selectedOrder.sellerPayableAmount || 0)}</p>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Items List */}
                   <div className="mb-10">
                     <h4 className="text-[10px] uppercase tracking-widest font-black text-slate-500 mb-4">Line Items</h4>

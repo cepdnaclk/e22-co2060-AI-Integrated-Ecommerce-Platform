@@ -2,7 +2,8 @@ import express from "express";
 import {
   createPayment,
   notifyPayment,
-  getPaymentStatus
+  getPaymentStatus,
+  simulateTestPayment
 } from "../controllers/paymentController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
@@ -31,5 +32,11 @@ router.post("/notify", notifyPayment);
  * GET /api/payment/status/:orderId
  */
 router.get("/status/:orderId", getPaymentStatus);
+
+/**
+ * 🧪 SIMULATE TEST PAYMENT (Development Only)
+ * POST /api/payment/test-success
+ */
+router.post("/test-success", simulateTestPayment);
 
 export default router;

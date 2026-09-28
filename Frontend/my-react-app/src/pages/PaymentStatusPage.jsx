@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getPaymentStatus } from "../services/paymentService";
+import { getPaymentStatus, simulateTestPayment } from "../services/paymentService";
 
 const S = {
   page: {
@@ -62,6 +62,19 @@ export default function PaymentStatusPage() {
   const [paymentData, setPaymentData] = useState(null);
   const [error, setError] = useState(null);
   const [pollingCount, setPollingCount] = useState(0);
+  const [simulating, setSimulating] = useState(false);
+
+  const handleSimulatePayment = async () => {
+    try {
+      setSimulating(true);
+      await simulateTestPayment(orderId);
+      await fetchStatus();
+    } catch (err) {
+      alert(err.message || "Simulation failed");
+    } finally {
+      setSimulating(false);
+    }
+  };
 
   const fetchStatus = async () => {
     try {
@@ -215,6 +228,19 @@ export default function PaymentStatusPage() {
                 View Orders
               </Link>
             </div>
+            
+            {import.meta.env.DEV && (
+              <div style={{ marginTop: 40, paddingTop: 20, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
+                <p style={{ color: "#94a3b8", fontSize: 12, marginBottom: 10 }}>Development Mode Only</p>
+                <button 
+                  style={{ ...S.btnPrimary, background: "linear-gradient(to right, #8b5cf6, #a855f7)", width: "100%" }} 
+                  onClick={handleSimulatePayment}
+                  disabled={simulating}
+                >
+                  {simulating ? "Processing..." : "🧪 Simulate Successful Payment"}
+                </button>
+              </div>
+            )}
           </>
         );
 

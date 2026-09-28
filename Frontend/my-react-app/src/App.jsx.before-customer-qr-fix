@@ -1,0 +1,236 @@
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import React from "react";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import Home from "./pages/home.jsx";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import Login from "./pages/login.jsx";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import Signup from "./pages/Signup.jsx";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import ProductListing from "./pages/ProductListing.jsx";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import ProductDetails from "./pages/ProductDetails.jsx";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import SellerRegister from "./pages/SellerRegister";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import SellerDashboard from "./pages/SellerDashboard";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import SellerOrderQr from "./pages/SellerOrderQr";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import SellerRestock from "./pages/SellerRestock";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import Profile from "./pages/Profile";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import VerifySellerEmail from "./pages/VerifySellerEmail";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import CreateSellerOffer from "./pages/CreateSellerOffer";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import MySellerOffers from "./pages/MySellerOffers";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import SellerMarketingScheduler from "./pages/SellerMarketingScheduler";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import Chatbot from "./components/Chatbot";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import CartWidget from "./components/CartWidget";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import CreateProduct from "./pages/CreateProduct";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminDashboard from "./pages/AdminDashboard";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminInventory from "./pages/AdminInventory";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminFaceManagement from "./pages/AdminFaceManagement";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminProducts from "./pages/AdminProducts";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminOrders from "./pages/AdminOrders";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminLogin from "./pages/AdminLogin";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminBookkeeping from "./pages/AdminBookkeeping";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminCommissionPolicy from "./pages/AdminCommissionPolicy";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AdminDmsControlTower from "./pages/AdminDmsControlTower";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import DmsLogin from "./pages/DmsLogin";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import DmsRegister from "./pages/DmsRegister";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import DmsPortalHome from "./pages/DmsPortalHome";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import DmsCenterDashboard from "./pages/DmsCenterDashboard";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import DmsQrScanner from "./pages/DmsQrScanner"; // DMS QR scanner route
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import DmsProtectedRoute from "./components/DmsProtectedRoute";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import CartPage from "./pages/CartPage";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import CheckoutPage from "./pages/CheckoutPage";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import OrderHistory from "./pages/OrderHistory";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import AboutUs from "./pages/AboutUs";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import Team from "./pages/Team";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import Deals from "./pages/Deals";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import NewArrivals from "./pages/NewArrivals";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import PaymentStatusPage from "./pages/PaymentStatusPage";
+import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import MockPayHerePage from "./pages/MockPayHerePage";import CustomerCourierQrScanner from "./pages/CustomerCourierQrScanner";
+import { CartProvider } from "./context/CartContext";
+
+function App() {
+  return (
+    <CartProvider>
+      <Router>
+        <Routes>
+          {/* Home Page */}
+          <Route path="/" element={<Home />} />
+
+          {/* About Us & Team Page */}
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/team" element={<Team />} />
+
+          {/* Login Page */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+
+          {/* Browse Products Page */}
+          <Route path="/products" element={<ProductListing />} />
+
+          {/* Deals Page */}
+          <Route path="/deals" element={<Deals />} />
+
+          {/* New Arrivals Page */}
+          <Route path="/new-arrivals" element={<NewArrivals />} />
+
+          {/* Product Details Page */}
+          <Route path="/products/:id" element={<ProductDetails />} />
+
+          {/* Profile Page */}
+          <Route path="/profile" element={<Profile />} />
+
+          {/* Seller Registration Page */}
+          <Route path="/become-seller" element={<SellerRegister />} />
+
+          <Route path="/seller/dashboard" element={<SellerDashboard />} />
+          <Route path="/seller/orders/qr" element={<SellerOrderQr />} />
+          <Route path="/seller/restock" element={<SellerRestock />} />
+          <Route path="/seller/marketing-scheduler" element={<SellerMarketingScheduler />} />
+
+          {/* Seller Offer Management */}
+          <Route path="/seller/offers" element={<MySellerOffers />} />
+          <Route path="/seller/offers/new" element={<CreateSellerOffer />} />
+
+          {/* Seller product creation (no admin auth needed) */}
+          <Route path="/seller/products/new" element={<CreateProduct />} />
+
+          {/* Email Verification for Seller Registration */}
+          <Route path="/verify-seller-email" element={<VerifySellerEmail />} />
+
+          {/* Cart, Checkout & Orders */}
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/orders" element={<OrderHistory />} />
+
+          {/* 💳 PayHere Payment Status Routes */}
+          <Route path="/payment/status/:orderId" element={<PaymentStatusPage />} />
+          <Route path="/payment/return" element={<PaymentStatusPage />} />
+          <Route path="/payment/cancel" element={<PaymentStatusPage />} />
+          <Route path="/payment/mock" element={<MockPayHerePage />} />
+          <Route path="/payment/mock" element={<MockPayHerePage />} />
+
+          {/* Admin Login - Separate from regular login */}
+          <Route path="/admin/login" element={<AdminLogin />} />
+
+          {/* Admin Protected Routes - Requires admin authentication */}
+          <Route path="/admin/dashboard" element={
+            <AdminProtectedRoute>
+              <AdminDashboard />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/products/new" element={
+            <AdminProtectedRoute>
+              <CreateProduct />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/products" element={
+            <AdminProtectedRoute>
+              <AdminProducts />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/orders" element={
+            <AdminProtectedRoute>
+              <AdminOrders />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/inventory" element={
+            <AdminProtectedRoute>
+              <AdminInventory />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/face-management" element={
+            <AdminProtectedRoute>
+              <AdminFaceManagement />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/bookkeeping" element={
+            <AdminProtectedRoute>
+              <AdminBookkeeping />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/commission" element={
+            <AdminProtectedRoute>
+              <AdminCommissionPolicy />
+            </AdminProtectedRoute>
+          } />
+          <Route path="/admin/dms-control" element={
+            <AdminProtectedRoute>
+              <AdminDmsControlTower />
+            </AdminProtectedRoute>
+          } />
+          {/* DMS Delivery Center Portal */}
+          <Route path="/dms/register" element={<DmsRegister />} />
+          <Route path="/dms/login" element={<DmsLogin />} />
+          <Route path="/dms/dashboard" element={
+            <DmsProtectedRoute allowedScopes={["branch", "rider"]}>
+              <DmsPortalHome />
+            </DmsProtectedRoute>
+          } />
+          <Route path="/dms/center/dashboard" element={
+            <DmsProtectedRoute allowedScopes={["branch", "rider"]}>
+              <DmsCenterDashboard />
+            </DmsProtectedRoute>
+          } />
+          <Route path="/dms/center/scan" element={
+            <DmsProtectedRoute allowedScopes={["branch", "rider"]}>
+              <DmsQrScanner />
+            </DmsProtectedRoute>
+          } />
+
+        </Routes>
+        <Chatbot />
+        <CartWidget />
+      </Router>
+    </CartProvider>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+

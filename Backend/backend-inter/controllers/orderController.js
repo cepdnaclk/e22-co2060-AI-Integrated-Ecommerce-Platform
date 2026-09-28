@@ -1,8 +1,8 @@
 import Cart from "../models/cart.js";
 import Order from "../models/order.js";
 import Seller from "../models/seller.js";
+import CommissionPolicy from "../models/commissionPolicy.js";
 import QRCode from "qrcode";
-import { postOrderPaidEventWithRetry } from "../services/bookkeepingService.js";
 import {
   buildSellerQrPayload,
   buildSellerQrText,
@@ -124,6 +124,14 @@ export async function createOrder(req, res) {
 
       const deliveryCharge = await getOrderDeliveryCharge(sellerLocation, customerLocation);
 
+      // 🛒 Get Active Commission Policy
+      const activePolicy = await CommissionPolicy.findOne({ isActive: true }).sort({ effectiveFrom: -1 });
+      const commissionRate = activePolicy ? activePolicy.rate : 0;
+      
+      // Calculate commission ONLY on productTotal (which is totalAmount here before adding deliveryCharge)
+      const commissionAmount = Math.round((totalAmount * commissionRate) / 100);
+      const sellerPayableAmount = totalAmount - commissionAmount;
+
       const order = await Order.create({
         userId: req.user.id,
         sellerId,
@@ -136,6 +144,10 @@ export async function createOrder(req, res) {
         productTotal: totalAmount,
         deliveryCharge,
         totalAmount: totalAmount + deliveryCharge,
+        commissionRate,
+        commissionAmount,
+        sellerPayableAmount,
+        commissionPolicyId: activePolicy ? activePolicy._id : null,
         ...(shippingAddress && { shippingAddress })
       });
 
@@ -148,29 +160,10 @@ export async function createOrder(req, res) {
     cart.items = [];
     await cart.save();
 
-    const bookkeepingResults = await Promise.allSettled(
-      createdOrders.map((order) => postOrderPaidEventWithRetry(order))
-    );
-    const failedBookkeeping = bookkeepingResults
-      .map((result, index) => ({ result, order: createdOrders[index] }))
-      .filter(({ result }) => result.status === "rejected")
-      .map(({ result, order }) => ({
-        orderId: order._id?.toString(),
-        error: result.reason?.message || "Unknown bookkeeping sync error"
-      }));
-
-    if (failedBookkeeping.length > 0) {
-      console.error("⚠️ Bookkeeping sync failures after checkout:", failedBookkeeping);
-    }
 
     res.status(201).json({
       message: "Order placed successfully",
       orders: createdOrders,
-      bookkeeping: {
-        syncedCount: createdOrders.length - failedBookkeeping.length,
-        failedCount: failedBookkeeping.length,
-        failedOrders: failedBookkeeping
-      }
     });
 
   } catch (error) {
@@ -506,3 +499,6 @@ export async function getDeliveryChargePreview(req, res) {
     });
   }
 }
+
+
+

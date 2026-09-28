@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getCart } from "../services/cartService";
 import { placeOrder, getDeliveryChargePreview } from "../services/orderService";
-import { createPayHerePayment, submitPayHereForm } from "../services/paymentService";
+import { createPayHerePayment } from "../services/paymentService";
 import GoogleMapAddressPicker from "../components/GoogleMapAddressPicker";
 import API_BASE_URL from "../config/api";
 
@@ -370,12 +370,33 @@ export default function CheckoutPage() {
                 shippingAddress: shippingData,
                 deliveryCharge
             });
-
-            if (res && res.payhere) {
-                submitPayHereForm(res.payhere);
-            } else {
-                throw new Error("Invalid response from payment server");
+            if (!res || !res.orders || res.orders.length === 0) {
+                throw new Error("Payment server did not return an order.");
             }
+
+            // Get the order created by the backend
+            const orderId = res.orders[0].orderId;
+
+            if (!orderId) {
+                console.error("Payment creation response:", res);
+                throw new Error("Could not find order ID.");
+            }
+
+            // Calculate the total amount for the mock payment screen
+            const paymentAmount = res.orders.reduce(
+                (sum, order) => sum + Number(order.totalAmount || 0),
+                0
+            );
+
+            console.log("🧪 Opening BEETA Mock PayHere:", {
+                orderId,
+                paymentAmount
+            });
+
+            // Open the local mock PayHere page
+            navigate(
+                `/payment/mock?orderId=${encodeURIComponent(orderId)}&amount=${encodeURIComponent(paymentAmount)}&currency=LKR`
+            );
         } catch (err) {
             showToast(err.message, false);
             setPayhereLoading(false);
@@ -926,3 +947,5 @@ export default function CheckoutPage() {
         </div>
     );
 }
+
+
